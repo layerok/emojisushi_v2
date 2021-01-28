@@ -1,0 +1,12 @@
+name: 'Mall Starter'
+description: 'Official starter theme for the Mall e-commerce plugin'
+author: 'OFFLINE GmbH'
+homepage: 'https://offline.swiss'
+code: oc-mall-theme
+require:
+- Rainlab.Translate
+- Rainlab.Pages
+- Rainlab.User
+- Rainlab.Location
+- OFFLINE.SiteSearch
+- OFFLINE.Mall

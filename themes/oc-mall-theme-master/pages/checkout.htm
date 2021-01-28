@@ -1,0 +1,14 @@
+title = "Checkout"
+url = "/checkout/:step?"
+layout = "default"
+is_hidden = 0
+
+[viewBag]
+localeUrl[en] = "/checkout/:step?"
+
+[signUp]
+
+[quickCheckout]
+step = "{{ :step }}"
+==
+{% component 'quickCheckout' %}
