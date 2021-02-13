@@ -405,7 +405,7 @@ class CmsCompoundObject extends CmsObject
     public function getTwigNodeTree($markup = false)
     {
         $loader = new TwigLoader();
-        $twig = new TwigEnvironment($loader, []);
+        $twig = new TwigEnvironment($loader);
         $twig->addExtension(new CmsTwigExtension());
         $twig->addExtension(new SystemTwigExtension);
 

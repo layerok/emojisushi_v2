@@ -57,7 +57,7 @@ return [
             'engine'     => 'InnoDB',
             'host'       => 'localhost',
             'port'       => 3306,
-            'database'   => 'flowers',
+            'database'   => 'emojisushi_v2',
             'username'   => 'root',
             'password'   => 'root',
             'charset'    => 'utf8mb4',

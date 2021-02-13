@@ -1,7 +1,5 @@
 {% if __SELF__.menuItems %}
-    <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto py-4">
-        <div class="lg:flex-grow uppercase font-medium text-center">
-            {% partial __SELF__ ~ "::items" items=__SELF__.menuItems %}
-        </div>
-    </div>
+    <ul style="list-style-type:none" class="{{ code == 'top' ? 'text-sm' : '' }} w-full m-0 py-2 flex justify-between items-center px-1 mr-4 lg:mr-0 overflow-x-auto ">
+        {% partial __SELF__ ~ "::items" items=__SELF__.menuItems %}
+    </ul>
 {% endif %}
