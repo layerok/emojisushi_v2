@@ -1,6 +1,13 @@
 @tailwind preflight;
 @tailwind components;
 
+@responsive {
+    .hidden-important{
+        display:none!important;
+    }
+}
+
+
 @import 'components/buttons';
 @import 'components/forms';
 @import 'components/typography';

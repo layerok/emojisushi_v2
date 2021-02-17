@@ -32,10 +32,13 @@ forceUrl = 1
     {% styles %}
     <link rel="stylesheet" href="{{ ['assets/main.css'] | theme }}">
     <script src="{{ ['@jquery'] | theme }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/iScroll/5.2.0/iscroll.min.js"  crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/drawer/3.2.2/js/drawer.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/drawer/3.2.2/css/drawer.min.css"  crossorigin="anonymous" />
     {% component 'enhancedEcommerceAnalytics' %}
     {% component 'mallDependencies' %}
 </head>
-<body class="bg-black">
+<body class="bg-black text-white drawer drawer--right">
 {% partial 'header' %}
 {% partial 'navigation' %}
 
