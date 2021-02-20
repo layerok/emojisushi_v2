@@ -1,21 +1,23 @@
 [staticMenu]
 code = "main"
 ==
+<div id="nav" class="flex justify-center z-10">
+    <div  class="max-w-6xl w-full mx-auto px-4 flex flex-column  relative bg-black" style="top:-1px">
 
-<div id="nav" class="container mx-auto px-4 flex flex-column z-10 relative bg-black" style="top:-1px">
+        <nav class="w-full border-t border-b border-secondary flex ">
+            {% component 'staticMenu' %}
 
-    <nav class="w-full border-t border-b border-secondary flex ">
-        {% component 'staticMenu' %}
+            <div class="cart-in-menu ">
+                <div class="lg:mx-2 py-2  items-center justify-end relative flex">
+                    {% partial 'cartButton/default' %}
+                </div>
 
-        <div class="cart-in-menu ">
-            <div class="lg:mx-2 py-2  items-center justify-end relative flex">
-                {% partial 'cartButton/default' %}
             </div>
 
-        </div>
-
-    </nav>
+        </nav>
+    </div>
 </div>
+
 
 {% put scripts %}
     <script>
@@ -33,16 +35,14 @@ code = "main"
         function myFunction() {
             if (window.pageYOffset > sticky) {
                 document.body.style.marginTop = height + "px";
-                header.classList.remove('relative');
                 header.classList.add("fixed");
                 header.classList.add("w-full");
-                header.classList.add("top-0");
+                header.style.top = 0 + "px";
             } else {
                 document.body.style.marginTop = 0 + "px";
                 header.classList.remove("fixed");
-                header.classList.add("relative");
                 header.classList.remove("w-full");
-                header.classList.remove("top-o");
+
             }
         }
     </script>

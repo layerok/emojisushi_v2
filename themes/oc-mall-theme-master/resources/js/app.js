@@ -1,3 +1,2 @@
 // JS.
 
-export default {}

@@ -1,6 +1,7 @@
 {% put scripts %}
     <script>
         $(function () {
+
             var $propertiesForm = $('.mall-products-filter');
             var $body = $('body');
 
@@ -61,6 +62,7 @@
 
             $('.mall-slider-handles').each(function () {
                 var el = this;
+                console.log(el.dataset);
                 noUiSlider.create(el, {
                     start: [el.dataset.start, el.dataset.end],
                     connect: true,
