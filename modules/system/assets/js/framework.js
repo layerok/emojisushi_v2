@@ -390,7 +390,6 @@ if (window.jQuery.request !== undefined) {
         $(window).trigger('ajaxBeforeSend', [context])
         $el.trigger('ajaxPromise', [context])
 
-        console.log(requestOptions);
         return $.ajax(requestOptions)
             .fail(function(jqXHR, textStatus, errorThrown) {
                 if (!isRedirect) {

@@ -1,22 +1,68 @@
-<div class="mall-cart__wrapper">
-    <div class="mall-table-overflow" style="overflow-y: auto">
-        <table class="mall-cart__table">
-            <thead>
-                {% partial __SELF__ ~ '::table/header' %}
-            </thead>
-            <tbody>
-                {% for product in cart.products %}
-                    {% partial __SELF__ ~ '::table/entry' product=product %}
-                {% endfor %}
-            </tbody>
-            <tfoot>
-                {% partial __SELF__ ~ '::table/total'      totals=cart.totals %}
-                {% partial __SELF__ ~ '::table/discounts'  discounts=cart.totals.appliedDiscounts %}
-                {% partial __SELF__ ~ '::table/shipping'   shipping=cart.totals.shippingTotal %}
-                {% partial __SELF__ ~ '::table/payment'    payment=cart.totals.paymentTotal %}
-                {% partial __SELF__ ~ '::table/grandtotal' totals=cart.totals %}
-                {% partial __SELF__ ~ '::table/taxes'      totals=cart.totals %}
-            </tfoot>
-        </table>
+{% partial __SELF__ ~ '::table/header' %}
+
+<section class="cart-section">
+    <ul class="cart-list">
+        {% for product in cart.products %}
+            {% partial __SELF__ ~ '::table/entry' product=product %}
+        {% endfor %}
+    </ul>
+</section>
+<footer class="cart-footer">
+    <div class="cart-results">
+
+        <div class="cart-results__left">
+            <div class="_hide _show-in--hidden-wrapper">
+                <div class="cart-total cart-div">
+                    <a class="link-back pointer" onclick="$.magnificPopup.close();">
+                        <span>Продолжить покупки</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="cart-results__right">
+            <div class="cart-total cart-div ">
+
+                <div class="cart-total__prices _pb-sm">
+                    <div class="cart-price">
+                        <strong>{{ 'offline.mall::frontend.total' | trans }}: </strong>
+
+                        <div class="cart-price__total-inner">
+
+{#                            <div class="cart-price--old">#}
+{#                                <span>2 696 </span> <span>₴</span>#}
+{#                            </div>#}
+
+{#                            {{ totals.productPostTaxes | money }}#}
+                            {{ cart.totals.totalPostTaxes | money }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% if cart.products.count > 0 %}
+                    {% partial __SELF__ ~ '::proceedtocheckout' %}
+                {% endif %}
+
+
+            </div>
+        </div>
+
     </div>
-</div>
+</footer>
+
+{#    {% partial __SELF__ ~ '::table/total'      totals=cart.totals %}#}
+{#    {% partial __SELF__ ~ '::table/discounts'  discounts=cart.totals.appliedDiscounts %}#}
+{#    {% partial __SELF__ ~ '::table/shipping'   shipping=cart.totals.shippingTotal %}#}
+{#    {% partial __SELF__ ~ '::table/payment'    payment=cart.totals.paymentTotal %}#}
+{#    {% partial __SELF__ ~ '::table/grandtotal' totals=cart.totals %}#}
+{#    {% partial __SELF__ ~ '::table/taxes'      totals=cart.totals %}#}
+
+
+
+
+

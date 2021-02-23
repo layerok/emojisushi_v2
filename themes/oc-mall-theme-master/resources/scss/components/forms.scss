@@ -68,3 +68,36 @@
 .drawer-hamburger-icon:before {
     background-color:white!important;
 }
+
+
+
+.checked-white:checked + label {
+    @apply text-white;
+}
+
+.checked-black:checked + label {
+    @apply text-black;
+}
+
+.checked-bg-secondary:checked + label {
+    @apply bg-secondary;
+}
+
+.control-holder{
+    position: relative;
+}
+
+.control-holder [data-validate-for].visible {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    display: inline-block;
+    vertical-align: top;
+    user-select: none;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    padding: 0.1em 0.5rem;
+    background-color: #e01515;
+    color: #fff;
+    z-index: 10;
+}

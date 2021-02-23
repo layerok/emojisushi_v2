@@ -320,6 +320,7 @@ class Products extends MallComponent
 
         Flash::success(trans('offline.mall::frontend.cart.added'));
 
+
         return [
             'added'    => true,
             'item'     => $this->dataLayerArray($product, $variant),

@@ -1,7 +1,24 @@
-<select class="mall-selectbox-sm js-mall-quantity" data-id="{{ product.hashId }}" name="quantity">
+{#<select class="mall-selectbox-sm js-mall-quantity" data-id="{{ product.hashId }}" name="quantity">#}
     {% set min = product.data.quantity_min | default(__SELF__.defaultMinQuantity) %}
     {% set max = product.data.quantity_max | default(__SELF__.defaultMaxQuantity) %}
-    {% for i in range(min, max) %}
-        <option value="{{ i }}" {{ i == product.quantity ? 'selected="selected"' : '' }}>{{ i }}</option>
-    {% endfor %}
-</select>
+{#    {% for i in range(min, max) %}#}
+{#        <option value="{{ i }}" {{ i == product.quantity ? 'selected="selected"' : '' }}>{{ i }}</option>#}
+{#    {% endfor %}#}
+{#</select>#}
+
+<div class="cart-item__cell cart-item__cell--spinner">
+    <!-- <div class="cart-item__label">Количество</div> -->
+    <div class="cart-spinner js-wcart-spinner">
+        <button class="cart-button js-wcart-spinner__decrement ">
+            <svg id="minus" viewBox="0 0 50 50"><rect y="23" width="50" height="4"></rect></svg>
+        </button>
+
+        <input class="cart-input js-wcart-spinner__quantity js-mall-quantity" data-id="{{ product.hashId }}" type="tel" value="{{ product.quantity }}">
+
+        <button class="cart-button js-wcart-spinner__increment ">
+            <svg id="plus" viewBox="0 0 50 50">
+                <polygon points="50,23 27,23 27,0 23,0 23,23 0,23 0,27 23,27 23,50 27,50 27,27 50,27"></polygon>
+            </svg>
+        </button>
+    </div>
+</div>

@@ -20,7 +20,9 @@
 //@import 'components/navigation';
 //@import 'components/layout';
 //
-//@import 'mall/cart';
+@import 'mall/cart';
+@import 'mall/cart-popup.scss';
+@import 'mall/popup.scss';
 //@import 'mall/cartsummary';
 //@import 'mall/loader';
 //@import 'mall/pagination';

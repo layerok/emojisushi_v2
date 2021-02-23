@@ -1,0 +1,51 @@
+.hidden-wrapper {
+    position: relative;
+    padding: 2rem 3rem;
+    margin: 1.2rem auto;
+    background-color: #fff;
+    width: 96%;
+    max-width: 1160px;
+}
+
+.hidden-wrapper--sm {
+    max-width: 480px;
+}
+
+.hidden-wrapper--no-gap {
+    padding: 0;
+}
+
+.zoom-in .hidden-wrapper {
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+    transform: scale(0.8);
+}
+
+.zoom-in.mfp-ready .hidden-wrapper {
+    opacity: 1;
+    transform: scale(1)
+}
+
+.zoom-in.mfp-ready.mfp-bg {
+    opacity: 0.8;
+}
+
+.zoom-in.mfp-bg {
+    opacity: 0;
+    -webkit-transition: opacity 0.3s ease-out;
+    transition: opacity 0.3s ease-out;
+}
+
+.zoom-in.mfp-removing .hidden-wrapper {
+    -webkit-transform: scale(0.8);
+    transform: scale(0.8);
+    opacity: 0;
+}
+
+.zoom-in.mfp-removing.mfp-bg {
+    opacity: 0;
+}
+
+.hidden-wrapper ._show-in--hidden-wrapper {
+    display: block;
+}

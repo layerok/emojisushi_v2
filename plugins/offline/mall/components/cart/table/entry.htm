@@ -1,63 +1,141 @@
+
 {% set url = (productPage | page({slug: product.data.slug, variant: product.variant.hashId})) %}
 {% set image = product.variant ? product.variant.image : product.data.image %}
-<tr class="mall-cart__product">
-    <td>
-        {% if image %}
-            <a href="{{ url }}">
-                <img src="{{ image.thumb(100, auto) }}" alt=""/>
-            </a>
-        {% endif %}
-    </td>
-    <td>
-        <a href="{{ url }}">
-            {{ product.variant.name ?: product.data.name }}
-        </a>
-        {% if product.variant %}
-            <br/>
-            <span class="text-muted">
-                {{ product.variant.properties_description | raw }}
-            </span>
-        {% endif %}
-        {% if product.custom_field_values %}
-            <br/>
-            <span class="text-muted">
-                {{ product.custom_field_value_description | raw }}
-            </span>
-        {% endif %}
-        <div>
-            <a href="javascript:;"
-               class="js-mall-remove-product"
-               data-id="{{ product.hashId }}"
-            >
-                {{ 'offline.mall::frontend.remove' | trans }}
-            </a>
-        </div>
-    </td>
-    <td class="text-right">
-        {% partial __SELF__ ~ '::table/quantitydropdown' product=product %}
-    </td>
-    <td class="text-right">
-        {{ product.price() | raw }}
-        {% if product.service_options.count > 0 %}
-            <div class="mall-cart__price-additions">
-                + {{ product.servicePostTaxes | money }}
-            </div>
-        {% endif %}
-    </td>
-    <td class="text-right">
-        {{ product.totalPostTaxes | money }}
-    </td>
-</tr>
+<li class="cart-item js-wcart-item" data-id="299">
+    <div class="cart-item__head">
+        <div class="cart-item__preview">
+            {% if image %}
+                <a href="{{ url }}">
+                    <img src="{{ image.thumb(100, auto) }}" alt="">
+                </a>
+            {% endif %}
 
-{% for option in product.service_options %}
-    <tr class="mall-cart__services {{ loop.first ? 'mall-cart__services--first' }} {{ loop.last ? 'mall-cart__services--last' }}">
-        <td></td>
-        <td colspan="2">
-            {{ option.name }}
-        </td>
-        <td class="text-right">
-            {{ option.price().integer | money }}
-        </td>
-        <td></td>
-    </tr>
-{% endfor %}
+        </div>
+        <div class="cart-item__opener">
+            <button class="cart-button js-wcart-item__collapse-toggle">
+                <svg id="arrow-down" viewBox="0 0 100 100"><polygon points="50,77.6 0,27.8 6,22 50,65.9 94,22 100,27.8"></polygon></svg>
+                <svg id="arrow-up" viewBox="0 0 100 100"><polygon points="100,71.7 94,77.6 50,33.7 6,77.6 0,71.7 50,22"></polygon></svg>
+            </button>
+        </div>
+        <div class="cart-item__short-info">
+            <div class="cart-item__title">{{ product.variant.name ?: product.data.name }}</div>
+{#            {% if product.variant %}#}
+{#                <br/>#}
+{#                <span class="text-muted">#}
+{#                {{ product.variant.properties_description | raw }}#}
+{#            </span>#}
+{#            {% endif %}#}
+{#            {% if product.custom_field_values %}#}
+{#                <br/>#}
+{#                <span class="text-muted">#}
+{#                {{ product.custom_field_value_description | raw }}#}
+{#            </span>#}
+{#            {% endif %}#}
+{#            <div class="cart-item__code"><span>Артикул 1803</span></div>#}
+            <div class="cart-item__sub-title">
+                {{ product.quantity }}
+                шт. -
+                {{ product.price() }}
+
+            </div>
+        </div>
+    </div>
+    <div class="cart-item__body">
+        <div class="cart-item__main">
+            <div class="cart-item__cell cart-item__cell--remover">
+                <div class="cart-notice">
+                    <div class="cart-notice__question">{{ 'offline.mall::frontend.remove' | trans }}?</div>
+                    <div class="cart-notice__answer">
+										<span class="button btn-default  js-wcart-item__remove-notice-close">
+											<span>
+												<svg id="close" viewBox="0 0 371.2300109863281 371.2300109863281">
+                                                    <polygon points="371.23,21.213 350.018,0 185.615,164.402 21.213,0 0,21.213 164.402,185.615 0,350.018 21.213,371.23   185.615,206.828 350.018,371.23 371.23,350.018 206.828,185.615"></polygon>
+                                                </svg>
+												<span>Нет</span>
+											</span>
+										</span>
+                        <span class="button btn-default btn-default-red js-wcart-item__remove">
+											<span>
+												<span class="js-mall-remove-product"
+                                                      data-id="{{ product.hashId }}">Да</span>
+											</span>
+										</span>
+                    </div>
+                </div>
+                <div class="cart-notice-overlay js-wcart-item__remove-notice-close"></div>
+                <button class="cart-button js-wcart-item__remove-notice-open">
+                    <svg id="close" viewBox="0 0 371.2300109863281 371.2300109863281">
+                        <polygon points="371.23,21.213 350.018,0 185.615,164.402 21.213,0 0,21.213 164.402,185.615 0,350.018 21.213,371.23   185.615,206.828 350.018,371.23 371.23,350.018 206.828,185.615"></polygon>
+                    </svg>
+                </button>
+            </div>
+            <div class="cart-item__cell cart-item__cell--image">
+                {% if image %}
+                    <a href="{{ url }}">
+                        <img src="{{ image.thumb(100, auto) }}" alt="">
+                    </a>
+                {% endif %}
+
+            </div>
+            <div class="cart-item__cell cart-item__cell--info">
+                <div class="cart-item__title">
+                    <a href="{{ url }}">{{ product.variant.name ?: product.data.name }}</a>
+                </div>
+{#                <div class="cart-item__code">#}
+{#                    <span>Артикул 1803</span>#}
+{#                </div>#}
+                <div class="cart-div">
+                    <div class="cart-item__prices">
+
+                        <div class="cart-price">
+{# Старая реализация                           <span>674 </span> <span>₴</span>#}
+                            {{ product.price() | raw }}
+                        </div>
+{#                        {% if product.service_options.count > 0 %}#}
+{#                            <div class="mall-cart__price-additions">#}
+{#                                + {{ product.servicePostTaxes | money }}#}
+{#                            </div>#}
+{#                        {% endif %}#}
+{#                        {{ product.totalPostTaxes | money }}#}
+                    </div>
+                </div>
+            </div>
+            {% partial __SELF__ ~ '::table/quantitydropdown' product=product %}
+
+            <div class="cart-item__cell cart-item__cell--prices">
+                <div class="cart-item__label">Цена</div>
+                <div class="cart-div">
+                    <div class="cart-item__prices">
+
+                        <div class="cart-price">
+                            {{ product.price() | raw }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="cart-item__cell cart-item__cell--totals _text-right">
+                <div class="cart-item__label ">Сумма</div>
+                <div class="cart-item__prices">
+                    <div class="cart-price">
+                        {{ product.price() | raw }}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</li>
+
+
+{#{% for option in product.service_options %}#}
+{#    <tr class="mall-cart__services {{ loop.first ? 'mall-cart__services--first' }} {{ loop.last ? 'mall-cart__services--last' }}">#}
+{#        <td></td>#}
+{#        <td colspan="2">#}
+{#            {{ option.name }}#}
+{#        </td>#}
+{#        <td class="text-right">#}
+{#            {{ option.price().integer | money }}#}
+{#        </td>#}
+{#        <td></td>#}
+{#    </tr>#}
+{#{% endfor %}#}

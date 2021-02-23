@@ -107,6 +107,7 @@ return [
         'name_empty' => 'Аноним',
         'surname' => 'Фамилия',
         'email' => 'Email',
+        'phone' => 'Телефон',
         'created_at' => 'Дата регистрации',
         'last_seen' => 'Последняя активность',
         'is_guest' => 'Гость',

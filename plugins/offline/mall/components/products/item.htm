@@ -17,13 +17,10 @@
                 <p class="self-end text-xs lg:text-xl mt-2 mb-1">{{ item.weight }} г</p>
                 {% set price = item.price() %}
                 <div class="flex flex-col sm:flex-row justify-between items-center">
-                    <button
-                        class="order-2 sm:order-1 w-32 bg-secondary text-center text-black p-3 border-none rounded-full cursor-pointer"
-                        href="javascript:;"
-                        data-request="{{ __SELF__ }}::onAddToCart"
-                        data-request-success="data.added && $.publish('mall.cart.productAdded', data)"
-                        data-request-data="product: '{{ item.productHashId }}', variant: '{{ item.variantHashId }}'"
-                        data-request-flash>
+                    <button data-product="{{ item.productHashId }}"
+                            data-variant="{{ item.variantHashId }}"
+                        class="js-mall-add-product order-2 sm:order-1 w-32 bg-secondary text-center text-black p-3 border-none rounded-full cursor-pointer"
+                        >
                         Add to cart
                     </button>
                     <div class="flex flex-col order-1 sm:order-2">

@@ -2,10 +2,20 @@
     <script>
         $(function () {
             var $body = $('body')
-            var $form = $('.mall-quick-checkout')
+            var $form = $('.js-mall-quick-checkout')
             var $overlay = $('.mall-overlay')
 
+            $(window).on('ajaxInvalidField', function(event, fieldElement, fieldName, errorMsg, isFirst) {
+                console.log(fieldElement)
+                $(fieldElement).closest('.control-holder label').addClass('has-error');
+            });
+
+            $(document).on('ajaxPromise', '[data-request]', function() {
+                $(this).closest('form').find('.control-holder label.has-error').removeClass('has-error');
+            });
+
             $body.on('click', '.js-mall-checkout', function (e) {
+                console.log('checkout begin')
                 e.preventDefault()
                 $overlay.prependTo($body).show()
 
@@ -17,7 +27,9 @@
                     })
                     Promise.all(callbacks).then(submit).catch(handleError)
                 } else {
+                    console.log('checkout submit starts')
                     submit()
+
                 }
 
                 function handleError () {
@@ -38,7 +50,7 @@
                             document.location.href = '{{ __SELF__.accountPage | page }}'
                         },
                         handleValidationMessage: function (message, fields) {
-                            $triggerEl.trigger('ajaxValidation', [context, message, fields])
+                            $(window).trigger('ajaxValidation', [context, message, fields])
                             alert("There was an error while processing your order: " + message)
                         }
                     })

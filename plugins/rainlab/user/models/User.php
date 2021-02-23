@@ -48,6 +48,7 @@ class User extends UserBase
         'name',
         'surname',
         'login',
+        'phone',
         'username',
         'email',
         'password',
@@ -55,7 +56,7 @@ class User extends UserBase
         'created_ip_address',
         'last_ip_address'
     ];
-    
+
     /**
      * Reset guarded fields, because we use $fillable instead.
      * @var array The attributes that aren't mass assignable.
