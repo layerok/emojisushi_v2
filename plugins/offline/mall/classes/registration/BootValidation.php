@@ -17,5 +17,13 @@ trait BootValidation
                         $q->where('is_guest', 0);
                     })->count() === 0;
         });
+
+        Validator::extend('phoneUa', function($attribute, $value, $parameters) {
+            $regex = "/^(((\+?)(38))\s?)?(([0-9]{3})|(\([0-9]{3}\)))(\-|\s)?(([0-9]{3})(\-|\s)?
+        ([0-9]{2})(\-|\s)?([0-9]{2})|([0-9]{2})(\-|\s)?([0-9]{2})(\-|\s)?
+        ([0-9]{3})|([0-9]{2})(\-|\s)?([0-9]{3})(\-|\s)?([0-9]{2}))$/";
+
+            return preg_match($regex, $value);
+        });
     }
 }

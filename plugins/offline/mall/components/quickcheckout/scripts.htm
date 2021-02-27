@@ -5,15 +5,6 @@
             var $form = $('.js-mall-quick-checkout')
             var $overlay = $('.mall-overlay')
 
-            $(window).on('ajaxInvalidField', function(event, fieldElement, fieldName, errorMsg, isFirst) {
-                console.log(fieldElement)
-                $(fieldElement).closest('.control-holder label').addClass('has-error');
-            });
-
-            $(document).on('ajaxPromise', '[data-request]', function() {
-                $(this).closest('form').find('.control-holder label.has-error').removeClass('has-error');
-            });
-
             $body.on('click', '.js-mall-checkout', function (e) {
                 console.log('checkout begin')
                 e.preventDefault()
@@ -67,10 +58,10 @@
                 $('.mall-quick-checkout__collapsible-element--open').removeClass('mall-quick-checkout__collapsible-element--open');
                 $(this).addClass('mall-quick-checkout__collapsible-element--open')
             })
-            $('.js-mall-checkout').prop('disabled', true)
-            $('.js-mall-toggle-signup-terms').on('click', function () {
-                $('.js-mall-checkout').prop('disabled', ! this.checked);
-            });
+            // $('.js-mall-checkout').prop('disabled', true)
+            // $('.js-mall-toggle-signup-terms').on('click', function () {
+            //     $('.js-mall-checkout').prop('disabled', ! this.checked);
+            // });
             $body.on('click', '.mall-quick-checkout__payment-methods .mall-quick-checkout__toggle-option', function() {
                 window.Mall.Callbacks.Checkout = {}
             })

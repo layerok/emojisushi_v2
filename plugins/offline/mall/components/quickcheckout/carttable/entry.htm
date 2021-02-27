@@ -16,7 +16,6 @@
 {#{{ product.totalPostTaxes | money }}#}
 
 <div class="flex relative mb-3" >
-
     <button data-id="{{ product.hashId }}" href="javascript:;"
         class="js-mall-remove-product px-0 self-start text-white absolute right-0 top-0 cursor-pointer bg-transparent">×</button>
 
@@ -29,7 +28,7 @@
             <p class="text-bold my-0 text-sm lg:hidden">{{ product.quantity }} шт</p>
         </div>
         <p class="text-sm font-bold mb-3 hidden lg:inline-block">
-            {{ product.description }}
+            {{ product.product.description | raw}}
         </p>
         <div class="flex justify-between lg:items-end items-start">
             <div class=" text-bold mr-4 lg:mr-0">

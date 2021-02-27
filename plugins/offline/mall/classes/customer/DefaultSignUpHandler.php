@@ -39,6 +39,8 @@ class DefaultSignUpHandler implements SignUpHandler
 
         $this->validate($data);
 
+
+
         $requiresConfirmation = ($data['requires_confirmation'] ?? false);
 
         Event::fire('mall.customer.beforeSignup', [$this, $data]);
@@ -49,33 +51,34 @@ class DefaultSignUpHandler implements SignUpHandler
 
             $customer            = new Customer();
             $customer->firstname = $data['firstname'];
-            $customer->lastname  = $data['lastname'];
+//            $customer->lastname  = $data['lastname'];
             $customer->user_id   = $user->id;
             $customer->is_guest  = $this->asGuest;
             $customer->save();
 
             $addressData = $this->transformAddressKeys($data, 'billing');
-            $fullname    = $data['firstname'] . ' ' . $data['lastname'];
+//            $fullname    = $data['firstname'] . ' ' . $data['lastname'];
 
             $billing = new Address();
             $billing->fill($addressData);
-            $billing->name        = $addressData['address_name'] ?? $fullname;
+            $billing->name = $data['firstname'];
+//            $billing->name        = $addressData['address_name'] ?? $fullname;
             $billing->customer_id = $customer->id;
             $billing->save();
             $customer->default_billing_address_id = $billing->id;
 
-            if ( ! empty($data['use_different_shipping'])) {
-                $addressData = $this->transformAddressKeys($data, 'shipping');
-
-                $shipping = new Address();
-                $shipping->fill($addressData);
-                $shipping->name        = $addressData['address_name'] ?? $fullname;
-                $shipping->customer_id = $customer->id;
-                $shipping->save();
-                $customer->default_shipping_address_id = $shipping->id;
-            } else {
-                $customer->default_shipping_address_id = $billing->id;
-            }
+//            if ( ! empty($data['use_different_shipping'])) {
+//                $addressData = $this->transformAddressKeys($data, 'shipping');
+//
+//                $shipping = new Address();
+//                $shipping->fill($addressData);
+//                $shipping->name        = $addressData['address_name'] ?? $fullname;
+//                $shipping->customer_id = $customer->id;
+//                $shipping->save();
+//                $customer->default_shipping_address_id = $shipping->id;
+//            } else {
+//                $customer->default_shipping_address_id = $billing->id;
+//            }
 
             $customer->save();
 
@@ -94,6 +97,8 @@ class DefaultSignUpHandler implements SignUpHandler
         if ($requiresConfirmation === true) {
             return $user;
         }
+
+//        return Auth::login($user, true);
 
         $credentials = [
             'login'    => array_get($data, 'email'),
@@ -126,7 +131,8 @@ class DefaultSignUpHandler implements SignUpHandler
     {
         $data = [
             'name'                  => $data['firstname'],
-            'surname'               => $data['lastname'],
+//            'surname'               => $data['lastname'],
+            'phone'                 => $data['phone'],
             'email'                 => $data['email'],
             'password'              => $data['password'],
             'password_confirmation' => $data['password_repeat'],
@@ -171,21 +177,23 @@ class DefaultSignUpHandler implements SignUpHandler
         $minPasswordLength = \RainLab\User\Models\User::getMinPasswordLength();
         $rules = [
             'firstname'           => 'required',
-            'lastname'            => 'required',
-            'email'               => ['required', 'email', ($forSignup ? 'non_existing_user' : null)],
+            'phone'             => 'required|phoneUa',
+            'email'             => 'required|email',
+//            'lastname'            => 'required',
+       /*     'email'               => ['required', 'email', ($forSignup ? 'non_existing_user' : null)],*/
             'billing_lines'       => 'required',
-            'billing_zip'         => 'required',
-            'billing_city'        => 'required',
-            'billing_country_id'  => 'required|exists:rainlab_location_countries,id',
-            'billing_state_id'    => 'required|exists:rainlab_location_states,id',
-            'shipping_lines'      => 'required_if:use_different_shipping,1',
-            'shipping_zip'        => 'required_if:use_different_shipping,1',
-            'shipping_city'       => 'required_if:use_different_shipping,1',
-            'shipping_state_id'   => 'required_if:use_different_shipping,1|exists:rainlab_location_states,id',
-            'shipping_country_id' => 'required_if:use_different_shipping,1|exists:rainlab_location_countries,id',
+//            'billing_zip'         => 'required',
+//            'billing_city'        => 'required',
+//            'billing_country_id'  => 'required|exists:rainlab_location_countries,id',
+//            'billing_state_id'    => 'required|exists:rainlab_location_states,id',
+//            'shipping_lines'      => 'required_if:use_different_shipping,1',
+//            'shipping_zip'        => 'required_if:use_different_shipping,1',
+//            'shipping_city'       => 'required_if:use_different_shipping,1',
+//            'shipping_state_id'   => 'required_if:use_different_shipping,1|exists:rainlab_location_states,id',
+//            'shipping_country_id' => 'required_if:use_different_shipping,1|exists:rainlab_location_countries,id',
             'password'            => sprintf('required|min:%d|max:255', $minPasswordLength),
             'password_repeat'     => 'required|same:password',
-            'terms_accepted'      => 'required',
+//            'terms_accepted'      => 'required',
         ];
 
         if ((bool)GeneralSettings::get('use_state', true) !== true) {

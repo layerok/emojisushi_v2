@@ -18,10 +18,10 @@ class Address extends Model
 
     public $rules = [
         'lines'       => 'required',
-        'zip'         => 'required',
-        'country_id'  => 'required|exists:rainlab_location_countries,id',
-        'customer_id' => 'required|exists:offline_mall_customers,id',
-        'city'        => 'required',
+//        'zip'         => 'required',
+//        'country_id'  => 'required|exists:rainlab_location_countries,id',
+//        'customer_id' => 'required|exists:offline_mall_customers,id',
+//        'city'        => 'required',
     ];
 
     public $fillable = [

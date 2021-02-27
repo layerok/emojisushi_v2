@@ -5,9 +5,9 @@
     <div class="cart-item__head">
         <div class="cart-item__preview">
             {% if image %}
-                <a href="{{ url }}">
+{#                <a href="{{ url }}">#}
                     <img src="{{ image.thumb(100, auto) }}" alt="">
-                </a>
+{#                </a>#}
             {% endif %}
 
         </div>
@@ -46,20 +46,20 @@
                 <div class="cart-notice">
                     <div class="cart-notice__question">{{ 'offline.mall::frontend.remove' | trans }}?</div>
                     <div class="cart-notice__answer">
-										<span class="button btn-default  js-wcart-item__remove-notice-close">
-											<span>
-												<svg id="close" viewBox="0 0 371.2300109863281 371.2300109863281">
-                                                    <polygon points="371.23,21.213 350.018,0 185.615,164.402 21.213,0 0,21.213 164.402,185.615 0,350.018 21.213,371.23   185.615,206.828 350.018,371.23 371.23,350.018 206.828,185.615"></polygon>
-                                                </svg>
-												<span>Нет</span>
-											</span>
-										</span>
+                        <span class="button btn-default  js-wcart-item__remove-notice-close">
+                            <span>
+                                <span class="js-mall-remove-product text-center bg-danger text-white px-8 py-2 block"
+                                      data-id="{{ product.hashId }}">Да</span>
+                            </span>
+                        </span>
                         <span class="button btn-default btn-default-red js-wcart-item__remove">
-											<span>
-												<span class="js-mall-remove-product"
-                                                      data-id="{{ product.hashId }}">Да</span>
-											</span>
-										</span>
+                            <span class="flex justify-center bg-secondary text-black px-8 py-2">
+{#                                <svg id="close" class="mr-3" viewBox="0 0 371.2300109863281 371.2300109863281">#}
+{#                                    <polygon points="371.23,21.213 350.018,0 185.615,164.402 21.213,0 0,21.213 164.402,185.615 0,350.018 21.213,371.23   185.615,206.828 350.018,371.23 371.23,350.018 206.828,185.615"></polygon>#}
+{#                                </svg>#}
+                                <span>Нет</span>
+                            </span>
+						</span>
                     </div>
                 </div>
                 <div class="cart-notice-overlay js-wcart-item__remove-notice-close"></div>
@@ -71,15 +71,17 @@
             </div>
             <div class="cart-item__cell cart-item__cell--image">
                 {% if image %}
-                    <a href="{{ url }}">
+{#                    <a href="{{ url }}">#}
                         <img src="{{ image.thumb(100, auto) }}" alt="">
-                    </a>
+{#                    </a>#}
                 {% endif %}
 
             </div>
             <div class="cart-item__cell cart-item__cell--info">
                 <div class="cart-item__title">
-                    <a href="{{ url }}">{{ product.variant.name ?: product.data.name }}</a>
+{#                    <a href="{{ url }}">#}
+                        {{ product.variant.name ?: product.data.name }}
+{#                    </a>#}
                 </div>
 {#                <div class="cart-item__code">#}
 {#                    <span>Артикул 1803</span>#}

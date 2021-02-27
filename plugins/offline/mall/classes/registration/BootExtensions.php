@@ -55,7 +55,7 @@ trait BootExtensions
                 'through'    => Customer::class,
                 'throughKey' => 'id',
             ];
-            $model->rules['surname']            = 'required';
+            //$model->rules['surname']            = 'required';
             $model->rules['name']               = 'required';
         });
 
@@ -76,7 +76,7 @@ trait BootExtensions
         });
 
         MallUser::extend(function ($model) {
-            $model->rules['surname'] = 'required';
+           //$model->rules['surname'] = 'required';
             $model->rules['name']    = 'required';
         });
 

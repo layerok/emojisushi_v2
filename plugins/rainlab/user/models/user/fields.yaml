@@ -25,6 +25,11 @@ tabs:
             tab: rainlab.user::lang.user.account
             span: full
 
+        address:
+            label: rainlab.user::lang.user.address
+            tab: rainlab.user::lang.user.account
+            span: full
+
         send_invite:
             type: checkbox
             label: rainlab.user::lang.user.send_invite

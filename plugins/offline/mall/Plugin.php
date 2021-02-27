@@ -1,7 +1,9 @@
 <?php namespace OFFLINE\Mall;
 
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\View;
+use October\Rain\Support\Facades\Validator;
 use OFFLINE\Mall\Classes\Registration\BootComponents;
 use OFFLINE\Mall\Classes\Registration\BootEvents;
 use OFFLINE\Mall\Classes\Registration\BootExtensions;
@@ -15,6 +17,7 @@ use OFFLINE\Mall\Console\Initialize;
 use OFFLINE\Mall\Console\ReindexProducts;
 use OFFLINE\Mall\Console\SeedDemoData;
 use OFFLINE\Mall\Console\SystemCheck;
+use PhoneUa;
 use System\Classes\PluginBase;
 
 class Plugin extends PluginBase
@@ -47,6 +50,31 @@ class Plugin extends PluginBase
 
     public function boot()
     {
+        // Extend all backend form usage
+        Event::listen('backend.form.extendFields', function($widget) {
+
+            // Only for the User controller
+            if (!$widget->getController() instanceof \OFFLINE\Mall\Controllers\Categories) {
+                return;
+            }
+
+            // Only for the User model
+            if (!$widget->model instanceof  \OFFLINE\Mall\Models\Category) {
+                return;
+            }
+
+            // Add an extra birthday field
+            $widget->addFields([
+                'poster id' => [
+                    'label'   => 'offline.mall::lang.category.poster_id',
+                    'span' => 'left',
+                    'type' => 'text'
+                ]
+            ]);
+
+        });
+
+
         $this->registerExtensions();
         $this->registerEvents();
         $this->registerValidationRules();

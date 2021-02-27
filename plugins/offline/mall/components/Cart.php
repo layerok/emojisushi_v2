@@ -205,6 +205,7 @@ class Cart extends MallComponent
             'quantity' => $product->quantity,
             'new_items_count' => optional($this->cart->products)->count() ?? 0,
             'new_items_quantity' => optional($this->cart->products)->sum('quantity') ?? 0,
+            'total_post_taxes' => round($this->cart->totals()->totalPostTaxes()) . " грн."
         ];
     }
 

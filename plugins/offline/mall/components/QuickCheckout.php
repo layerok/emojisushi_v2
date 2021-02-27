@@ -212,7 +212,10 @@ class QuickCheckout extends MallComponent
 
         // The user is not signed in. Let's create a new account.
         if ( ! $this->user) {
-            $this->user = app(SignUpHandler::class)->handle($data, (bool)post('as_guest'));
+
+            // Пользователь всегда гость
+//            (bool)post('as_guest')
+            $this->user = app(SignUpHandler::class)->handle($data, true);
             if ( ! $this->user) {
                 throw new ValidationException(
                     [trans('offline.mall::lang.components.quickCheckout.errors.signup_failed')]

@@ -18,6 +18,7 @@ use OFFLINE\Mall\Models\Currency;
 use OFFLINE\Mall\Models\GeneralSettings;
 use OFFLINE\Mall\Models\Product;
 use OFFLINE\Mall\Models\Variant;
+use poster\src\PosterApi;
 use RainLab\User\Facades\Auth;
 use Redirect;
 
@@ -274,6 +275,10 @@ class Products extends MallComponent
             return $this->controller->run('404');
         }
 
+        PosterApi::init();
+
+        $result = (object)PosterApi::menu()->getCategories();
+
         // If a category is selected and the page title should be set, do so.
         if ($this->category && $this->setPageTitle) {
             $this->page->title            = $this->category->meta_title ?: $this->category->name;
@@ -328,6 +333,7 @@ class Products extends MallComponent
             'new_items_count' => optional($cart->products)->count() ?? 0,
             'new_items_quantity' => optional($cart->products)->sum('quantity') ?? 0,
             'quantity' => $quantity,
+            'totals_post_taxes' => round($cart->totals()->totalPostTaxes()) . " грн."
         ];
     }
 

@@ -14,9 +14,12 @@ class User extends UserBase
     ];
     public $with = ['customer_group'];
     public $rules = [
-        'email'                 => 'required|between:6,255|email',
+        'email'                 => 'between:6,255|email|nullable',
+        'phone'                 => 'required|phoneUa',
         'avatar'                => 'nullable|image|max:4000',
         'password'              => 'required:create|between:4,255|confirmed',
         'password_confirmation' => 'required_with:password|between:4,255',
     ];
+
+
 }

@@ -1,116 +1,120 @@
-<div class="control-holder flex flex-col mb-3 pb-2">
+<div class="control-holder flex flex-col mb-5">
     <input name="firstname"
+           value="{{ user.firstname }}"
            class="px-3 py-2 w-full rounded  placeholder-black text-black"
            type="text"
            placeholder="{{ 'offline.mall::frontend.form.firstname' | trans }}">
     <label data-validate-for="firstname"></label>
 </div>
-<div class="control-holder flex flex-col mb-3 pb-2">
-    <input name="lastname"
-           class="px-3 py-2 w-full rounded  placeholder-black text-black"
-           type="text" placeholder="{{ 'offline.mall::frontend.form.lastname' | trans }}">
-    <label data-validate-for="lastname"></label>
-</div>
-<div class="control-holder flex flex-col mb-3 pb-2">
+{#<div class="control-holder flex flex-col mb-5">#}
+{#    <input name="lastname"#}
+{#           class="px-3 py-2 w-full rounded  placeholder-black text-black"#}
+{#           type="text" placeholder="{{ 'offline.mall::frontend.form.lastname' | trans }}">#}
+{#    <label data-validate-for="lastname"></label>#}
+{#</div>#}
+<div class="control-holder flex flex-col mb-5">
     <input name="email"
            class="px-3 py-2 w-full rounded  placeholder-black text-black"
            type="text"
+           value="{{ user.email }}"
            placeholder="{{ 'offline.mall::frontend.form.email' | trans }}">
     <label data-validate-for="email"></label>
 </div>
-<div class="flex flex-col mb-3 pb-2">
+<div class="control-holder flex flex-col mb-5">
     <input name="phone"
            data-type="phone"
-           value=""
+           value="{{ user.phone }}"
            type="tel"
            class="px-3 py-2 w-full rounded  placeholder-black text-black"
            placeholder="Телефон"
            >
+    <label data-validate-for="phone"></label>
 </div>
 
-<div class="flex flex-col mb-3 pb-2">
+<div class="control-holder flex flex-col mb-5">
     <input
-        name="address"
+        name="billing_lines"
         class="px-3 py-2 w-full rounded  placeholder-black text-black"
         type="text"
         placeholder="Адрес доставки">
+    <label data-validate-for="billing_lines"></label>
 </div>
-<div class="flex flex-col mb-3 pb-2">
-    <input name="comment"
+<div class="control-holder flex flex-col mb-5">
+    <input name="billing_details"
            class="px-3 py-2 w-full rounded  placeholder-black text-black"
            type="text"
            placeholder="Комментарий к заказу">
 </div>
-<div class="flex flex-col mb-3 pb-2">
+<div class="flex flex-col mb-5">
     <input name="sticks"
            class="px-3 py-2 w-full rounded  placeholder-black text-black"
            type="text"
            placeholder="Палочки на сколько персон?">
 </div>
 
-<div class="flex flex-column mb3 pb2">
+<div class="flex flex-col mb-5">
     <input
         name="change"
         class="px-3 py-2 w-full rounded  placeholder-black text-black"
         type="text"
         placeholder="Приготовить сдачу с">
 </div>
+{#Короче может когда-то мне это пригодиться#}
+{#<p >#}
+{#    Already have an account?#}
+{#    <a href="{{ __SELF__.loginPage | page }}?redirect={{ __SELF__.currentPage }}">Sign in</a>#}
+{#</p>#}
 
-<p >
-    Already have an account?
-    <a href="{{ __SELF__.loginPage | page }}?redirect={{ __SELF__.currentPage }}">Sign in</a>
-</p>
-
-<label class="mall-checkbox">
-    <input class="js-mall-toggle-guest-signup"
-           type="checkbox" name="as_guest"
-           value="1">
-    <span>{{ 'offline.mall::frontend.signup.as_guest' | trans }}</span>
-</label>
-<div class="mall-quick-checkout__password-inputs">
-    <div class="mall-form-control">
-        <label
-            for="signup_password">{{ 'offline.mall::frontend.form.password' | trans }}</label>
-        <input id="signup_password" type="password" name="password">
-        <div data-validate-for="password"></div>
-    </div>
-    <div class="mall-form-control">
-        <label
-            for="password_repeat">{{ 'offline.mall::frontend.form.password_repeat' | trans }}</label>
-        <input id="password_repeat" type="password" name="password_repeat">
-        <div data-validate-for="password_repeat"></div>
-    </div>
-</div>
-
-
+{#<label class="mall-checkbox">#}
+{#    <input class="js-mall-toggle-guest-signup"#}
+{#           type="checkbox" name="as_guest"#}
+{#           value="1">#}
+{#    <span>{{ 'offline.mall::frontend.signup.as_guest' | trans }}</span>#}
+{#</label>#}
+{#<div class="mall-quick-checkout__password-inputs">#}
+{#    <div class="mall-form-control">#}
+{#        <label#}
+{#            for="signup_password">{{ 'offline.mall::frontend.form.password' | trans }}</label>#}
+{#        <input id="signup_password" type="password" name="password">#}
+{#        <div data-validate-for="password"></div>#}
+{#    </div>#}
+{#    <div class="mall-form-control">#}
+{#        <label#}
+{#            for="password_repeat">{{ 'offline.mall::frontend.form.password_repeat' | trans }}</label>#}
+{#        <input id="password_repeat" type="password" name="password_repeat">#}
+{#        <div data-validate-for="password_repeat"></div>#}
+{#    </div>#}
+{#</div>#}
 
 
 
 
 
-<div class="mall-quick-checkout__address">
+
+{#Тут короче какае-то пиндоская доставка, там нужна указывать штат, город, лупанутые короч#}
+{#<div class="mall-quick-checkout__address">#}
 
 
 
 
-    <div class="mall-quick-checkout__billing-address">
+{#    <div class="mall-quick-checkout__billing-address">#}
 
-        {% partial __SELF__ ~ '::addressform' type='billing' %}
+{#        {% partial __SELF__ ~ '::addressform' type='billing' %}#}
 
-        <div class="mall-quick-checkout__shipping-address-option">
-            <label class="mall-checkbox">
-                <input class="js-mall-toggle-shipping-address"
-                       type="checkbox"
-                       name="use_different_shipping" value="1">
-                <span>{{ 'offline.mall::frontend.signup.different_address' | trans }}</span>
-            </label>
-        </div>
-    </div>
+{#        <div class="mall-quick-checkout__shipping-address-option">#}
+{#            <label class="mall-checkbox">#}
+{#                <input class="js-mall-toggle-shipping-address"#}
+{#                       type="checkbox"#}
+{#                       name="use_different_shipping" value="1">#}
+{#                <span>{{ 'offline.mall::frontend.signup.different_address' | trans }}</span>#}
+{#            </label>#}
+{#        </div>#}
+{#    </div>#}
 
-    <div class="mall-shipping-address" style="display: none; padding-top: 4rem;">
-        <h2 class="mall-quick-checkout__heading">
-            {{ 'offline.mall::frontend.shipping_address' | trans }}
-        </h2>
-        {% partial __SELF__ ~ '::addressform' type='shipping' %}
-    </div>
-</div>
+{#    <div class="mall-shipping-address" style="display: none; padding-top: 4rem;">#}
+{#        <h2 class="mall-quick-checkout__heading">#}
+{#            {{ 'offline.mall::frontend.shipping_address' | trans }}#}
+{#        </h2>#}
+{#        {% partial __SELF__ ~ '::addressform' type='shipping' %}#}
+{#    </div>#}
+{#</div>#}

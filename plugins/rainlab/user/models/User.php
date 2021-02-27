@@ -49,6 +49,7 @@ class User extends UserBase
         'surname',
         'login',
         'phone',
+        'address',
         'username',
         'email',
         'password',
