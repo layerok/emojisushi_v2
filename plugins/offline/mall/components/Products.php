@@ -18,7 +18,6 @@ use OFFLINE\Mall\Models\Currency;
 use OFFLINE\Mall\Models\GeneralSettings;
 use OFFLINE\Mall\Models\Product;
 use OFFLINE\Mall\Models\Variant;
-use poster\src\PosterApi;
 use RainLab\User\Facades\Auth;
 use Redirect;
 
@@ -269,15 +268,14 @@ class Products extends MallComponent
      */
     public function onRun()
     {
+
+
+
         try {
             $this->setData();
         } catch (ModelNotFoundException $e) {
             return $this->controller->run('404');
         }
-
-        PosterApi::init();
-
-        $result = (object)PosterApi::menu()->getCategories();
 
         // If a category is selected and the page title should be set, do so.
         if ($this->category && $this->setPageTitle) {

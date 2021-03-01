@@ -64,7 +64,6 @@ class Category extends Model
     public $fillable = [
         'name',
         'slug',
-        'poster_id',
         'code',
         'description_short',
         'description',
