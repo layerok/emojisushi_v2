@@ -1,6 +1,6 @@
 {{ form_open() }}
 <select name="locale" data-request="localePicker::onSwitchLocale"
-        class="mall-selectbox-sm bg-secondary text-black border border-black">
+        class="mall-selectbox-sm bg-secondary rounded text-black border border-black">
     {% for code, name in locales %}
         <option value="{{ code }}" {{ code == activeLocale ? 'selected' }}>{{ name }}</option>
     {% endfor %}

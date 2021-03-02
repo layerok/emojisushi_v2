@@ -163,7 +163,7 @@ class Cart extends MallComponent
     /**
      * The user updated the quantity of a specific cart item.
      *
-     * @return void
+     *
      */
     public function onUpdateQuantity()
     {
@@ -180,7 +180,13 @@ class Cart extends MallComponent
             return;
         } finally {
             $this->setData();
+
+            return [
+                'total_post_taxes' => round(substr($this->cart->totals()->totalPostTaxes(),0, -2)) . " грн."
+            ];
         }
+
+
     }
 
     /**
@@ -205,7 +211,7 @@ class Cart extends MallComponent
             'quantity' => $product->quantity,
             'new_items_count' => optional($this->cart->products)->count() ?? 0,
             'new_items_quantity' => optional($this->cart->products)->sum('quantity') ?? 0,
-            'total_post_taxes' => round($this->cart->totals()->totalPostTaxes()) . " грн."
+            'total_post_taxes' => round(substr($this->cart->totals()->totalPostTaxes(),0, -2)) . " грн."
         ];
     }
 

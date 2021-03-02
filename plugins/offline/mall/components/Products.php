@@ -16,10 +16,14 @@ use OFFLINE\Mall\Models\Cart as CartModel;
 use OFFLINE\Mall\Models\Category as CategoryModel;
 use OFFLINE\Mall\Models\Currency;
 use OFFLINE\Mall\Models\GeneralSettings;
+use OFFLINE\Mall\Models\ImageSet;
 use OFFLINE\Mall\Models\Product;
 use OFFLINE\Mall\Models\Variant;
+use poster\src\PosterApi;
 use RainLab\User\Facades\Auth;
 use Redirect;
+use System\Models\File;
+use GuzzleHttp\Client;
 
 /**
  * The Products components displays a list of Products.
@@ -268,8 +272,6 @@ class Products extends MallComponent
      */
     public function onRun()
     {
-
-
 
         try {
             $this->setData();

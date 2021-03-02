@@ -13,18 +13,24 @@
 {#            {{ __SELF__.renderPaymentForm() | raw }}#}
 {#        {% endif %}#}
 
+{#<button href="javascript:;"#}
+{#        data-request="onChangePaymentMethod"#}
+{#        data-request-data="id: '{{ method.id }}'"#}
+{#        data-request-success="$.publish('mall.cart.paymentMethodChanged', data)"#}
+{#        class=" w-full  p-2 text-center cursor-pointer text-black {{ isActiveMethod ? 'bg-secondary' : 'bg-white' }}  {{ loop.first ? 'rounded-l' }} {{ loop.last ? 'rounded-r' }}" >#}
+{#    {{ method.name }}#}
+{#</button>#}
 
 <div class="flex mb-3 pb-2">
-    {% for method in __SELF__.paymentMethods %}
+    {% for key, method in __SELF__.paymentMethods %}
     {% set isActiveMethod = cart.payment_method.id == method.id %}
 
-        <button href="javascript:;"
-                data-request="onChangePaymentMethod"
-                data-request-data="id: '{{ method.id }}'"
-                data-request-success="$.publish('mall.cart.paymentMethodChanged', data)"
-                class=" w-full  p-2 text-center cursor-pointer text-black {{ isActiveMethod ? 'bg-secondary' : 'bg-white' }}  {{ loop.first ? 'rounded-l' }} {{ loop.last ? 'rounded-r' }}" >
+        <input id="deliveryMethod{{ key }}" class="checked-bg-secondary checked-black hidden"
+               type="radio" name="delivery_id" value="{{ method.id }}" checked="">
+        <label class=" w-full bg-white  p-2 text-center cursor-pointer text-black   {{ loop.first ? 'rounded-l' }} {{ loop.last ? 'rounded-r' }}"
+               for="deliveryMethod{{ key }}">
             {{ method.name }}
-        </button>
+        </label>
 
     {% else %}
         <p>No method available.</p>

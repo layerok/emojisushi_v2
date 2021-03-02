@@ -76,7 +76,6 @@ forceUrl = 1
         }
 
         $.subscribe('mall.discount.applied', refreshCart);
-        $.subscribe('mall.cart.update', refreshCart);
         $.subscribe('mall.shipping.update', refreshCart);
         $.subscribe('mall.address.update', refreshCart);
         //$.subscribe('mall.cart.productAdded', refreshCart);
@@ -97,6 +96,11 @@ forceUrl = 1
         $.subscribe('mall.cart.productRemoved', function (e, data) {
             $count.text(data.new_items_count);
             $total.text(data.total_post_taxes);
+        });
+
+        $.subscribe('mall.cart.update', function (e, data) {
+            $total.text(data.total_post_taxes);
+            refreshCart();
         });
 
 
@@ -152,11 +156,21 @@ forceUrl = 1
 
         $body.on('click', '.js-wcart-item__remove-notice-open', function(){
             console.log('clicked');
+            $('.js-wcart-item.is-notice').each(function(){
+                $(this).removeClass('is-notice');
+            })
             $(this).closest('.js-wcart-item').addClass('is-notice');
+
         });
         $body.on('click', '.js-wcart-item__remove-notice-close', function(){
             $(this).closest('.js-wcart-item').removeClass('is-notice');
         });
+
+        $body.on('click', '.js-wcart-item__remove', function(){
+            $(this).closest('.js-wcart-item').removeClass('is-notice');
+        });
+
+
 
         $body.on('click', '.js-wcart-item__collapse-toggle', function(){
             $(this).closest('.js-wcart-item').toggleClass('is-opened');
