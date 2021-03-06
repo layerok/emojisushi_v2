@@ -2,13 +2,18 @@
     <script>
         $(function () {
             $.subscribe('mall.products.load.start', function () {
-                $('.mall-products').find('.mall-loader').css({opacity: 1, visibility: 'visible'})
+                $('.js-mall-loader').css({opacity: 1, visibility: 'visible'})
             });
 
             $.subscribe('mall.products.load.complete', function () {
                 $.request('{{ __SELF__ }}::onRun', {
-                    update: {'{{ __SELF__ }}::entries': '.mall-products'},
+                    update: {'{{ __SELF__ }}::entries': '.js-mall-products'},
+                    success: function(data){
+                        this.success(data);
+                        $('.js-mall-loader').css({opacity: 0, visibility: 'hidden'})
+                    }
                 });
+
             });
 
             $('body').on('click', '.mall-pagination--products a', function (e) {

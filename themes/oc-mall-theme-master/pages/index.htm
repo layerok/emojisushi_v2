@@ -1,10 +1,19 @@
-title = "Homepage"
+title = "Главная"
 url = "/"
 layout = "default"
 is_hidden = 0
 
 [viewBag]
 localeUrl[en] = "/"
+localeTitle[ua] = "Головна"
+
+[products]
+filterComponent = "productsFilter"
+setPageTitle = 0
+includeVariants = 1
+includeChildren = 0
+perPage = 9
+paginate = 0
+sort = "bestseller"
 ==
-<h1>Welcome to the OFFLINE Mall</h1>
-<p>Feel free to look around...</p>
+{% component 'products' %}

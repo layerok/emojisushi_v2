@@ -15,7 +15,7 @@ return [
     'stock.unavailable' => 'Нет в наличии',
     'stock.many_available' => 'В наличии',
     'cart' => 'Корзина',
-    'cart.add' => 'Добавить в корзину',
+    'cart.add' => 'В корзину',
     'cart.empty' => 'Ваша корзина пуста!',
     'cart.added' => 'Товар добавлен в корзину',
     'quantity' => 'Количество',

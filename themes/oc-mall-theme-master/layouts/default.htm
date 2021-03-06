@@ -53,6 +53,15 @@ forceUrl = 1
     {% partial 'cart' %}
 </div>
 
+<div class="js-mall-loader flex justify-center items-center min-screen w-full fixed z-40 bg-black"
+     style="visibility: hidden; opacity: 0;top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: all ease-in 0.5s">
+    <img src="/themes/oc-mall-theme-master/assets/images/bean_eater.svg" alt="">
+</div>
+
 <script src="{{ 'assets/app.js' | theme }}"></script>
 {% framework extras %}
 {% scripts %}
@@ -69,7 +78,7 @@ forceUrl = 1
 
     $(function () {
         var $body = $('body');
-        $$update = {'cart': '.js-mall-cart'};
+        $$update = {'cart': '#js-mall-cart'};
 
         if($('#quickCheckout').length){
             $$update = { ...$$update, 'quickCheckout::cart': '.js-mall-cart-checkout' }
