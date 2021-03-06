@@ -1,4 +1,4 @@
-<h4 class="mb-4">
+<h4 class="mb-4 pl-8">
     <a href="{{ result.url }}">{{ result.title | raw }}</a>
     {% if __SELF__.showProviderBadge %}
         <span class="float-right text-xs bg-smoke-light px-3 py-2 rounded ml-8 mb-8">
@@ -7,10 +7,13 @@
     {% endif %}
 </h4>
 
-<p class="text-sm mb-4">
+<p class="text-sm pl-8 mb-4">
     {{ result.excerpt | raw }}
 </p>
 
-<p class="text-sm">
-    <a href="{{ result.url | app }}" class="ss-result__link">{{ 'offline.mall::frontend.search.visit' | trans }} &rarr;</a>
-</p>
+<button data-product="{{ result.model.productHashId }}"
+        data-variant="{{ result.model.variantHashId }}"
+        class="ml-8 js-mall-add-product order-2 sm:order-1 w-32 bg-secondary text-center text-black p-3 border-none rounded-full cursor-pointer"
+>
+    {{ 'offline.mall::frontend.cart.add' | trans }}
+</button>

@@ -167,7 +167,8 @@ class SearchResults extends BaseComponent
     {
         $search = new SearchService($this->query, $this->controller);
 
-        return $search->results();
+        $foo = $search->results();
+        return $foo;
     }
 
     /**

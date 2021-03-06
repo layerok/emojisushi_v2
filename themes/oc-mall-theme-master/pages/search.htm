@@ -3,12 +3,22 @@ url = "/suche"
 layout = "default"
 is_hidden = 0
 
+[viewBag]
+localeUrl[en] = "/search"
+
 [searchResults]
 resultsPerPage = 8
 showProviderBadge = 1
+noResultsMessage = "Your search returned no results."
+visitPageMessage = "Visit page"
 
-[viewBag]
-localeUrl[en] = "/search"
+[products]
+filterComponent = "productsFilter"
+setPageTitle = 0
+includeVariants = 1
+includeChildren = 0
+perPage = 9
+paginate = 1
 ==
 <div class="w-full px-4 m-auto">
     <h2 class="mb-8">{{ 'offline.mall::frontend.search.heading' | trans({query: searchResults.query}) | escape }}</h2>
