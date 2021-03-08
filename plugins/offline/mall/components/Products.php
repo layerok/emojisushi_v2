@@ -2,6 +2,7 @@
 
 use ArrayAccess;
 use Flash;
+use Imagick;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -13,6 +14,7 @@ use OFFLINE\Mall\Classes\Exceptions\OutOfStockException;
 use OFFLINE\Mall\Classes\Index\Index;
 use OFFLINE\Mall\Classes\Traits\CustomFields;
 use OFFLINE\Mall\Models\Cart as CartModel;
+use OFFLINE\Mall\Models\Category;
 use OFFLINE\Mall\Models\Category as CategoryModel;
 use OFFLINE\Mall\Models\Currency;
 use OFFLINE\Mall\Models\GeneralSettings;

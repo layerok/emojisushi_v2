@@ -26,7 +26,6 @@ trait MenuItems
         if ( ! $category) {
             return;
         }
-
         // Replace this menu item with its products.
         if ($item->replace) {
             $page = GeneralSettings::get('product_page', 'product');
@@ -92,12 +91,14 @@ trait MenuItems
         $iterator  = function ($items, $baseUrl = '') use (&$iterator, &$structure, $url, $locale) {
             $branch = [];
             foreach ($items as $item) {
-                $branchItem = self::getMenuItem($item, $url);
-                $item->setTranslateContext($locale);
-                if ($item->children->count() > 0) {
-                    $branchItem['items'] = $iterator($item->children, $item->slug);
+                if($item->published){
+                    $branchItem = self::getMenuItem($item, $url);
+                    $item->setTranslateContext($locale);
+                    if ($item->children->count() > 0) {
+                        $branchItem['items'] = $iterator($item->children, $item->slug);
+                    }
+                    $branch[] = $branchItem;
                 }
-                $branch[] = $branchItem;
             }
 
             return $branch;

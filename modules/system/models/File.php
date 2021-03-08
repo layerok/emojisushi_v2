@@ -40,6 +40,7 @@ class File extends FileBase
             $url = parent::getThumb($width, $height, $options);
         }
 
+
         return $url;
     }
 
