@@ -5,6 +5,9 @@ module.exports = {
                 'primary': '#3490dc',
                 'secondary': '#F8CE46',
                 'danger': '#e3342f',
+            },
+            inset: {
+                'full': '-180%'
             }
         },
     }

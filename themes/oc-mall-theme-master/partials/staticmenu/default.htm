@@ -1,8 +1,8 @@
 {% if __SELF__.menuItems %}
-    <div id="nav-{{ code }}">
+    <div class="overflow-x-auto {{ code != 'top' ? 'flex items-center': ''}} " id="nav-{{ code }}">
         <ul
             style="list-style-type:none"
-            class="{{ code == 'top' ? 'text-sm flex-col items-end lg:flex-row lg:items-center' : 'items-center' }} w-full m-0 py-2 flex flex-no-wrap justify-between  px-1 mr-4 lg:mr-0 overflow-x-auto ">
+            class="{{ code == 'top' ? 'text-sm flex-col items-end lg:flex-row lg:items-center' : 'items-center' }} w-full m-0 py-2 flex flex-no-wrap justify-between  px-1 mr-4 lg:mr-0 ">
             {% partial __SELF__ ~ "::items" items=__SELF__.menuItems %}
         </ul>
     </div>

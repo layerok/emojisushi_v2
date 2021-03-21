@@ -120,6 +120,8 @@ class Controller extends ControllerBase
      */
     public function __construct()
     {
+
+
         /*
          * Allow early access to route data.
          */

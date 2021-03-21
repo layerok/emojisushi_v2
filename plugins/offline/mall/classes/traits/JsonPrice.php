@@ -105,6 +105,21 @@ trait JsonPrice
         ]);
     }
 
+    public function priceSum($currency = null)
+    {
+        if ($currency === null) {
+            $currency = Currency::activeCurrency();
+        }
+        if (is_string($currency)) {
+            $currency = Currency::whereCode($currency)->firstOrFail();
+        }
+
+        return new Price([
+            'price'       => $this->price[$currency->code] * $this->quantity ?? 0,
+            'currency_id' => $currency->id,
+        ]);
+    }
+
     protected function priceAccessorMethods(string $suffix): array
     {
         return collect($this->getPriceColumns())->map(function ($column) use ($suffix) {

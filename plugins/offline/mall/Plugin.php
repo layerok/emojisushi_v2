@@ -1,6 +1,7 @@
 <?php namespace OFFLINE\Mall;
 
 
+use Session;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\View;
 use October\Rain\Support\Facades\Validator;
@@ -58,6 +59,8 @@ class Plugin extends PluginBase
         $this->registerConsoleCommand('offline.mall.reindex', ReindexProducts::class);
         $this->registerConsoleCommand('offline.mall.system-check', SystemCheck::class);
         $this->registerConsoleCommand('offline.mall.initialize', Initialize::class);
+
+
 
         View::share('app_url', config('app.url'));
     }
