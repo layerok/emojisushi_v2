@@ -234,6 +234,7 @@ class Products extends MallComponent
     protected function setData()
     {
 
+          //Product::where('poster_id', '=', 459)->first()->delete();
 //        PosterApi::init();
 //        $result = (object)PosterApi::menu()->getProduct([
 //            'product_id' => 530
