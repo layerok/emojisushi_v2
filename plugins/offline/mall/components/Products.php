@@ -234,18 +234,6 @@ class Products extends MallComponent
     protected function setData()
     {
 
-          //Product::where('poster_id', '=', 459)->first()->delete();
-//        PosterApi::init();
-//        $result = (object)PosterApi::menu()->getProduct([
-//            'product_id' => 530
-//        ]);
-//        $product = $result->response;
-//        if ($product) {
-//            $transition = new PosterTransition;
-//            $transition->createProduct($product);
-//        }
-
-
         $this->setVar('includeChildren', (bool)$this->property('includeChildren'));
         $this->setVar('includeVariants', (bool)$this->property('includeVariants'));
         $this->setVar('filter', $this->property('filter'));
