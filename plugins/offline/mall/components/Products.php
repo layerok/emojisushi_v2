@@ -2,7 +2,7 @@
 
 use ArrayAccess;
 use Flash;
-use Lovata\BaseCode\Classes\Helper\PosterTransition;
+use Lovata\BaseCode\Classes\Telegram;
 use Session;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -19,14 +19,11 @@ use OFFLINE\Mall\Models\Category;
 use OFFLINE\Mall\Models\Category as CategoryModel;
 use OFFLINE\Mall\Models\Currency;
 use OFFLINE\Mall\Models\GeneralSettings;
-use OFFLINE\Mall\Models\ImageSet;
 use OFFLINE\Mall\Models\Product;
 use OFFLINE\Mall\Models\Variant;
-use poster\src\PosterApi;
 use RainLab\User\Facades\Auth;
 use Redirect;
-use System\Models\File;
-use GuzzleHttp\Client;
+
 
 /**
  * The Products components displays a list of Products.
@@ -233,7 +230,6 @@ class Products extends MallComponent
      */
     protected function setData()
     {
-
         $this->setVar('includeChildren', (bool)$this->property('includeChildren'));
         $this->setVar('includeVariants', (bool)$this->property('includeVariants'));
         $this->setVar('filter', $this->property('filter'));

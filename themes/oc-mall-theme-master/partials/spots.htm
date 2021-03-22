@@ -36,7 +36,7 @@ function onStart(){
 }
 ==
 
-<div class="flex flex-col relative"
+<div class="flex flex-col relative cursor-pointer"
      x-data="dropdown()"
      x-init='activeSpotId = {{ this.page.activeSpotId }};
             spots = {{ this.page.spots|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }};getActiveSpot()'
