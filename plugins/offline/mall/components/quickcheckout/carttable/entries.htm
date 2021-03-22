@@ -2,7 +2,7 @@
 <div class="flex flex-col ">
     <h3 class="sm:hidden text-xl text-bold mt-0 pl-2">Мой заказ:</h3>
     <!-- product container -->
-    <div data-cart-checkout-items="" data-cart-clear="">
+    <div>
         {% for product in __SELF__.cart.products %}
             {% partial __SELF__ ~ '::carttable/entry' product=product %}
         {% endfor %}

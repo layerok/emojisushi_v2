@@ -70,8 +70,11 @@ function onStart()
 </main>
 
 {% partial 'footer' %}
-<div id="js-mall-cart" class="hidden-wrapper hidden-wrapper--no-gap mfp-hide">
-    {% partial 'cart' %}
+<div id="js-mfp-wrapper" class="hidden-wrapper hidden-wrapper--no-gap mfp-hide">
+    <div id="js-mall-cart">
+        {% partial 'cart' %}
+    </div>
+
 </div>
 
 <div class="js-mall-loader flex justify-center items-center min-screen w-full fixed z-40 bg-black"
