@@ -2,8 +2,8 @@
 
 use ArrayAccess;
 use Flash;
-use Lovata\BaseCode\Classes\Telegram;
 use Session;
+use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -23,6 +23,7 @@ use OFFLINE\Mall\Models\Product;
 use OFFLINE\Mall\Models\Variant;
 use RainLab\User\Facades\Auth;
 use Redirect;
+
 
 
 /**
