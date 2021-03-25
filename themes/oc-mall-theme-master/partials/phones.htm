@@ -1,27 +1,4 @@
-==
-use Symfony\Component\HttpFoundation\Session\Session;
-function onStart() {
-    $session = new Session();
 
-    $activeSpotId = $session->get('activeSpotId');
-
-    $phones = [];
-
-    if(!isset($activeSpotId)) {
-        $activeSpotId = 1;
-    }
-
-    if ($activeSpotId == 1) {
-        $phones[] = "+38 (093) 366 28 69";
-        $phones[] = "+38 (068) 303 45 51";
-    } else {
-        $phones[] = "+38 (093) 045 14 40";
-        $phones[] = "+38 (098) 970 37 67";
-    }
-
-    $this->page['phones'] = $phones;
-}
-==
 <!-- Телефоны -->
 <div  class="w-full lg:flex hidden text-right mr-2">
     {% for phone in this.page.phones %}
