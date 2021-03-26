@@ -1,11 +1,15 @@
 ==
+<?php
 use Symfony\Component\HttpFoundation\Session\Session;
+use Carbon\Carbon;
 function onStart() {
     $session = new Session();
     $spotsInfo['spots'] = [
         [
             'id'=> 1,
             'name' => 'Черноморск',
+            'chat_id' => env('TELEGRAM_CHAT_ID_CHERNO'),
+            'spot_tablet' => 1,
             'phones' => [
                 "+38 (093) 366 28 69",
                 "+38 (068) 303 45 51"
@@ -14,6 +18,8 @@ function onStart() {
         [
             'id'=> 2,
             'name' => 'Одесса',
+            'chat_id' => env('TELEGRAM_CHAT_ID_ODESSA'),
+            'spot_tablet' => 2,
             'phones' => [
                 "+38 (093) 045 14 40",
                 "+38 (098) 970 37 67"
@@ -22,6 +28,10 @@ function onStart() {
     ];
     if (!$session->has('activeSpotId')) {
         $session->set('activeSpotId', $spotsInfo['spots'][0]['id']);
+    }
+
+    if (!$session->has('activeSpotId')) {
+        $session->set('activeSpotId', $spotsInfo['spots'][0]['chat_id']);
     }
 
     if (isset($_POST['spot'])) {
@@ -34,6 +44,7 @@ function onStart() {
 
         if ($exist) {
             $session->set('activeSpotId', $_POST['spot']);
+
         }
     }
     $session->set('spots', $spotsInfo['spots']);
@@ -42,6 +53,7 @@ function onStart() {
         if ($session->get('activeSpotId') == $s['id']) {
             $this->page['activeSpotName'] = $s['name'];
             $this->page['phones'] = $s['phones'];
+            $session->set('activeChatId', $s['chat_id']);
         }
     }
 
@@ -50,11 +62,37 @@ function onStart() {
 
     $this->page['query'] = input('q');
 
+    $start = explode(':','10:00');
+    $finish = explode(':','22:30');
+
+    $dt = Carbon::now();
+    $hour = $dt->hour;
+    $minute = $dt->minute;
+
+
+    $closed =
+    ($hour < $start[0]  || ($start[0] == $hour && $minute < $start[1])) ||
+    ($hour > $finish[0] || ($finish[0] == $hour && $minute > $finish[1] ));
+
+
+    $this->page['shop_is_closed'] = $closed;
 
 }
+?>
 ==
 <header class="header py-4 lg:py-5">
+    {% if this.page.shop_is_closed %}
+        <script>
+            Swal.fire({
+                title: 'Ресторан закрыт!',
+                text: 'Заказы принимаются с 10:00 до 22:30',
+                icon: 'warning',
+                confirmButtonText: 'Ок'
+            })
+        </script>
+    {% endif %}
     <div class="drawer-nav border-l border-secondary" role="navigation">
+
         <div class="p-3 ">
             <div class="pr-3 flex flex-col items-end">
                 <div class="px-3">

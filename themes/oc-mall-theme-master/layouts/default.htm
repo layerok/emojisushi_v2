@@ -19,25 +19,7 @@ default = 0
 forceUrl = 1
 
 [enhancedEcommerceAnalytics]
-==
-<?
-use Carbon\Carbon;
-function onStart()
-{
-    $start = explode(':','10:00');
-    $finish = explode(':','22:30');
 
-    $dt = Carbon::now();
-    $hour = $dt->hour;
-    $minute = $dt->minute;
-
-    $closed =
-    ($hour < $start[0]  || ($start[0] == $hour && $minute < $start[1])) ||
-    ($hour > $finish[0] || ($finish[0] == $hour && $minute > $finish[1] ));
-
-    $this->viewBag->setProperty('shop_is_closed', $closed);
-}
-?>
 ==
 <!doctype html>
 <html lang="en">
@@ -260,16 +242,7 @@ function onStart()
 
 </script>
 
-{% if viewBag.shop_is_closed %}
-    <script>
-        Swal.fire({
-            title: 'Ресторан закрыт!',
-            text: 'Заказы принимаются с 10:00 до 22:30',
-            icon: 'warning',
-            confirmButtonText: 'Ок'
-        })
-    </script>
-{% endif %}
+
 
 
 
