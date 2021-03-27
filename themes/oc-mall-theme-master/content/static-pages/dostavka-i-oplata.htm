@@ -5,6 +5,12 @@ layout = "default"
 is_hidden = 0
 navigation_hidden = 0
 ==
+use Symfony\Component\HttpFoundation\Session\Session;
+function onStart() {
+    $session = new Session();
+    $this->page['activeSpotId'] = $session->get('activeSpotId');
+}
+==
 <div class="px-4">
 
 	<h2 class="text-3xl mb-4">Доставка</h2>
@@ -19,8 +25,10 @@ navigation_hidden = 0
 
 	<h2 class="text-3xl mb-4">Условия бесплатной доставки</h2>
 
-	<ul>
+	<ul class="mb-8">
 		<li>При заказе на сумму от 250 грн. доставка бесплатная</li>
 		<li>Стоимость доставки на сумму до 250 грн. составляет 25 грн.</li>
 	</ul>
+
+    <iframe src="https://www.google.com/maps/d/embed?mid=15tq0LKbuZUtWZW5Wy8XurmS3qIE3AU4W" width="100%" height="480"></iframe>
 </div>
