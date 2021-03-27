@@ -1,0 +1,22 @@
+title = "Доставка и оплата"
+url = "/dostavka-i-oplata"
+layout = "default"
+is_hidden = 0
+==
+use Symfony\Component\HttpFoundation\Session\Session;
+function onStart() {
+    $session = new Session();
+
+
+    $this->page['activeSpotId'] = $session->get('activeSpotId');
+
+}
+
+==
+<div class="px-4">
+    {% if this.page.activeSpotId == 1 %}
+        {% content 'cherno.htm' %}
+    {% else %}
+        {% content 'odessa.htm' %}
+    {% endif %}
+</div>

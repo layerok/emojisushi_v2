@@ -1,14 +1,10 @@
 items:
     -
-        title: 'Статичные страницы'
-        type: all-static-pages
+        title: 'Доставка и оплата'
+        type: cms-page
         code: ''
-        replace: 1
+        reference: dostavka-i-oplata
         viewBag:
-            locale:
-                ru:
-                    title: ''
-                    url: ''
             isHidden: '0'
             cssClass: ''
             isExternal: '0'
