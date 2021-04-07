@@ -21,7 +21,7 @@ forceUrl = 1
 [enhancedEcommerceAnalytics]
 
 ==
-<?php
+
 use Symfony\Component\HttpFoundation\Session\Session;
 use Carbon\Carbon;
 function onStart() {
@@ -29,52 +29,53 @@ function onStart() {
     $spotsInfo['spots'] = [
         [
             'id'=> 1,
-'name' => 'Черноморск',
-'chat_id' => env('TELEGRAM_CHAT_ID_CHERNO'),
-'spot_tablet' => 1,
-'phones' => [
-"+38 (093) 366 28 69",
-"+38 (068) 303 45 51"
-]
-],
-[
-'id'=> 2,
-'name' => 'Одесса',
-'chat_id' => env('TELEGRAM_CHAT_ID_ODESSA'),
-'spot_tablet' => 2,
-'phones' => [
-"+38 (093) 045 14 40",
-"+38 (098) 970 37 67"
-]
-],
-];
-if (!$session->has('activeSpotId')) {
-$session->set('activeSpotId', $spotsInfo['spots'][0]['id']);
-}
+            'name' => 'Черноморск',
+            'chat_id' => env('TELEGRAM_CHAT_ID_CHERNO'),
+            'spot_tablet' => 1,
+            'phones' => [
+            "+38 (093) 366 28 69",
+            "+38 (068) 303 45 51"
+        ]
+    ],
+        [
+            'id'=> 2,
+            'name' => 'Одесса',
+            'chat_id' => env('TELEGRAM_CHAT_ID_ODESSA'),
+            'spot_tablet' => 2,
+            'phones' => [
+            "+38 (093) 045 14 40",
+            "+38 (098) 970 37 67"
+        ]
+    ],
+    ];
 
-$exist = 0;
-if (isset($_POST['spot'])) {
+    if (!$session->has('activeSpotId')) {
+        $session->set('activeSpotId', $spotsInfo['spots'][0]['id']);
+    }
 
-foreach ($spotsInfo['spots'] as $s) {
-if ($_POST['spot'] == $s['id']) {
-$exist++;
-}
-}
+    $exist = 0;
+    if (isset($_POST['spot'])) {
 
-if ($exist) {
-$session->set('activeSpotId', $_POST['spot']);
+        foreach ($spotsInfo['spots'] as $s) {
+            if ($_POST['spot'] == $s['id']) {
+                $exist++;
+            }
+        }
 
-}
-}
-$session->set('spots', $spotsInfo['spots']);
+        if ($exist) {
+            $session->set('activeSpotId', $_POST['spot']);
 
-foreach ($spotsInfo['spots'] as $s) {
-if ($session->get('activeSpotId') == $s['id']) {
-$this->page['activeSpotName'] = $s['name'];
-$this->page['phones'] = $s['phones'];
-$session->set('activeChatId', $s['chat_id']);
-}
-}
+        }
+    }
+    $session->set('spots', $spotsInfo['spots']);
+
+    foreach ($spotsInfo['spots'] as $s) {
+        if ($session->get('activeSpotId') == $s['id']) {
+            $this->page['activeSpotName'] = $s['name'];
+            $this->page['phones'] = $s['phones'];
+            $session->set('activeChatId', $s['chat_id']);
+        }
+    }
 
 $this->page['activeSpotId'] = $session->get('activeSpotId');
 $this->page['spots'] = $session->get('spots');
@@ -84,7 +85,7 @@ $this->page['query'] = input('q');
 $start = explode(':','10:00');
 $finish = explode(':','22:30');
 
-$dt = Carbon::now();
+$dt = Carbon::now()->timezone('Europe/Kiev');;
 $hour = $dt->hour;
 $minute = $dt->minute;
 
@@ -97,7 +98,7 @@ $closed =
 $this->page['shop_is_closed'] = $closed;
 
 }
-?>
+
 ==
 <!doctype html>
 <html lang="en">
@@ -112,6 +113,7 @@ $this->page['shop_is_closed'] = $closed;
     {% styles %}
     <link rel="stylesheet" href="{{ ['assets/main.css'] | theme }}">
     <script src="{{ ['@jquery'] | theme }}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw==" crossorigin="anonymous" />
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.1/dist/alpine.min.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" crossorigin="anonymous" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js" crossorigin="anonymous"></script>
@@ -150,6 +152,8 @@ $this->page['shop_is_closed'] = $closed;
 <script src="{{ 'assets/app.js' | theme }}"></script>
 {% framework extras %}
 {% scripts %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA==" crossorigin="anonymous"></script>
 
 <script>
     function dropdown() {

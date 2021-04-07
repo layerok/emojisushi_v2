@@ -2,7 +2,7 @@
 
 use ArrayAccess;
 use Flash;
-use Session;
+use Symfony\Component\HttpFoundation\Session\Session;
 use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -23,6 +23,8 @@ use OFFLINE\Mall\Models\Product;
 use OFFLINE\Mall\Models\Variant;
 use RainLab\User\Facades\Auth;
 use Redirect;
+
+use Carbon\Carbon;
 
 
 
