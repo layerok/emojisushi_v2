@@ -77,27 +77,47 @@ function onStart() {
         }
     }
 
-$this->page['activeSpotId'] = $session->get('activeSpotId');
-$this->page['spots'] = $session->get('spots');
-
-$this->page['query'] = input('q');
-
-$start = explode(':','10:00');
-$finish = explode(':','22:30');
-
-$dt = Carbon::now()->timezone('Europe/Kiev');;
-$hour = $dt->hour;
-$minute = $dt->minute;
 
 
-$closed =
-($hour < $start[0]  || ($start[0] == $hour && $minute < $start[1])) ||
-($hour > $finish[0] || ($finish[0] == $hour && $minute > $finish[1] ));
+    $this->page['activeSpotId'] = $session->get('activeSpotId');
+    $this->page['spots'] = $session->get('spots');
+
+    $this->page['query'] = input('q');
+
+    $start = explode(':','10:00');
+    $finish = explode(':','22:30');
+
+    $dt = Carbon::now()->timezone('Europe/Kiev');;
+    $hour = $dt->hour;
+    $minute = $dt->minute;
 
 
-$this->page['shop_is_closed'] = $closed;
+    $closed =
+    ($hour < $start[0]  || ($start[0] == $hour && $minute < $start[1])) ||
+    ($hour > $finish[0] || ($finish[0] == $hour && $minute > $finish[1] ));
+
+
+    $this->page['shop_is_closed'] = $closed;
+
+    $expiration_time = 60 * 60;
+
+    $session->set('GUESS_LOCATION', false);
+    ini_set('session.gc-maxlifetime', $expiration_time);
+
+    $hasLastActivity = $session->has('LAST_ACTIVITY');
+    $lastActivity = $session->get('LAST_ACTIVITY');
+    if (!$hasLastActivity || $hasLastActivity && (time() - $lastActivity > $expiration_time)) {
+        // last request was more than 30 minutes ago
+        $session->remove('GUESS_LOCATION');  // destroy session data in storage
+        $session->remove('LAST_ACTIVITY');
+    }
+    $session->set('LAST_ACTIVITY', time()); // update last activity time stamp
+
+
+    $this->page['guess_location'] = $session->get('GUESS_LOCATION') ?? true;
 
 }
+
 
 ==
 <!doctype html>
@@ -140,6 +160,12 @@ $this->page['shop_is_closed'] = $closed;
 
 </div>
 
+<div id="js-mfp-location" class="hidden-wrapper hidden-wrapper--no-gap mfp-hide">
+    <div class="flex justify-center p-16">
+        {% partial 'spots' class='text-black' %}
+    </div>
+</div>
+
 <div class="js-mall-loader flex justify-center items-center min-screen w-full fixed z-40 bg-black"
      style="visibility: hidden; opacity: 0;top: 0;
     left: 0;
@@ -154,6 +180,19 @@ $this->page['shop_is_closed'] = $closed;
 {% scripts %}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA==" crossorigin="anonymous"></script>
+
+{% if this.page.guess_location %}
+    <script>
+        // Open directly via API
+        $.magnificPopup.open({
+            items: {
+                src: '#js-mfp-location', // can be a HTML string, jQuery object, or CSS selector
+                type: 'inline'
+            }
+        });
+    </script>
+
+{% endif %}
 
 <script>
     function dropdown() {
@@ -183,6 +222,8 @@ $this->page['shop_is_closed'] = $closed;
             close() { this.show = false },
         }
     }
+
+
 
     $('.js-mfp-inline').magnificPopup({
         type:'inline',
