@@ -11,6 +11,10 @@
     display: none;
 }
 
+.main-background {
+    color: #F8CE46;
+}
+
 
 
 
@@ -47,3 +51,23 @@
 //@import 'mall/modal';
 
 @tailwind utilities;
+
+@layer utilities {
+    @variants dark {
+        .border-l-transparent {
+            border-left-color: transparent;
+        }
+        .border-b-transparent {
+            border-bottom-color: transparent;
+        }
+        .border-r-transparent {
+            border-right-color: transparent;
+        }
+        .border-top-black {
+            border-top-color: black;
+        }
+        .border-t-white {
+            border-top-color: white;
+        }
+    }
+}

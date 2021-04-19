@@ -7,7 +7,7 @@
     <span class="text-xs font-light {{ class }}">Откуда вы?</span>
     <span class="flex items-center">
                 <span class="text-2xl font-bold mr-2 {{ class }}" x-text="getActiveSpot()">{{ this.page.activeSpotName }}</span>
-                <span class="border-4 border-transparent" style="border-top-color: {{ class == 'text-white' ? 'white': 'black' }}"></span>
+                <span class="border-4 border-l-transparent border-r-transparent border-b-transparent dark:border-t-white border-top-black " ></span>
             </span>
     <div x-cloak class="absolute z-40 bottom-full" x-show="show">
         <div class="flex flex-col items-center">
