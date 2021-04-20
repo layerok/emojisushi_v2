@@ -7,6 +7,13 @@
     }
 }
 
+
+@variants hover {
+    .underline {
+        text-decoration: underline;
+    }
+}
+
 [x-cloak] {
     display: none;
 }
@@ -68,6 +75,23 @@
         }
         .border-t-white {
             border-top-color: white;
+        }
+
+        .border-r-black {
+            border-right-color: black;
+        }
+
+        .border-l-secondary {
+            border-left-color: #F8CE46;
+        }
+        .border-b-secondary {
+            border-bottom-color: #F8CE46;
+        }
+        .border-r-secondary {
+            border-right-color: #F8CE46;
+        }
+        .border-t-secondary {
+            border-top-color: #F8CE46;
         }
     }
 }

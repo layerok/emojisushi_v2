@@ -1,6 +1,4 @@
-.placeholder-white::placeholder{
-    color:white;
-}
+
 .search-bar__input{
     position:absolute;
     opacity: 0;
@@ -40,21 +38,14 @@
 }
 
 
-.drawer-nav{
-    z-index:20!important;
-    background-color: black!important;
-}
 .drawer-open .drawer-hamburger-icon {
-    background-color: transparent!important;
+
 }
 .drawer-open .drawer-hamburger {
     position: fixed!important;
     right: 259px!important;
 }
 .drawer-open .drawer-hamburger{
-    border: 1px #F8CE46 solid!important;
-    background-color: black!important;
-    border-right: 1px black solid!important;
     z-index: 21!important;
 }
 .drawer-hamburger {
@@ -66,7 +57,7 @@
 .drawer-hamburger-icon,
 .drawer-hamburger-icon:after,
 .drawer-hamburger-icon:before {
-    background-color:white!important;
+    @apply dark:bg-white bg-black;
 }
 
 
@@ -80,7 +71,7 @@
 }
 
 .checked-bg-secondary:checked + label {
-    @apply bg-secondary;
+    @apply bg-secondary border border-black dark:border-transparent;
 }
 
 .control-holder{
