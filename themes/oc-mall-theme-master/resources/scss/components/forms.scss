@@ -78,6 +78,10 @@
     position: relative;
 }
 
+.drawer-open .drawer-hamburger {
+    @apply border dark:border-r-black border-r-secondary border-l-secondary border-t-secondary border-b-secondary;
+}
+
 .control-holder [data-validate-for].visible {
     position: absolute;
     top: 100%;

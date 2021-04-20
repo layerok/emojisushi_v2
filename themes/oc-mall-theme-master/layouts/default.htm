@@ -116,22 +116,35 @@ function onStart() {
     <link rel="stylesheet" href="{{ ['assets/main.css'] | theme }}">
     <script src="{{ ['@jquery'] | theme }}"></script>
     <script>
+
         // On page load or when changing themes, best to add inline in `head` to avoid FOUC
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark')
+        if (localStorage.theme === 'dark' || isDarkThemePreferred()) {
+            setDarkTheme();
         } else {
+            setLightTheme()
+        }
+
+        function isDarkThemePreferred() {
+            return true;
+            //return (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        }
+
+        function setLightTheme() {
             document.documentElement.classList.remove('dark')
             localStorage.theme = 'light';
         }
 
+        function setDarkTheme() {
+            document.documentElement.classList.add('dark')
+            localStorage.theme = 'dark';
+        }
+
         function toggleTheme(currentTheme) {
-            console.log(currentTheme);
-            if (currentTheme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.remove('dark')
-                localStorage.theme = 'light';
+
+            if (currentTheme === 'dark') {
+                setLightTheme();
             } else {
-                document.documentElement.classList.add('dark')
-                localStorage.theme = 'dark';
+                setDarkTheme();
             }
         }
 
@@ -141,14 +154,6 @@ function onStart() {
             })
         })
 
-        // Whenever the user explicitly chooses light mode
-        localStorage.theme = 'light'
-
-        // Whenever the user explicitly chooses dark mode
-        localStorage.theme = 'dark'
-
-        // Whenever the user explicitly chooses to respect the OS preference
-        // localStorage.removeItem('theme')
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw==" crossorigin="anonymous" />
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.1/dist/alpine.min.js" defer></script>
