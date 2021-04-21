@@ -116,17 +116,22 @@ function onStart() {
     <link rel="stylesheet" href="{{ ['assets/main.css'] | theme }}">
     <script src="{{ ['@jquery'] | theme }}"></script>
     <script>
-
+        if(!themeExists()) {
+            localStorage.theme = 'dark';
+        }
         // On page load or when changing themes, best to add inline in `head` to avoid FOUC
-        if (localStorage.theme === 'dark' || isDarkThemePreferred()) {
+        if (localStorage.theme === 'dark') {
             setDarkTheme();
         } else {
             setLightTheme()
         }
 
+        function themeExists() {
+            return ('theme' in localStorage)
+        }
+
         function isDarkThemePreferred() {
-            return true;
-            //return (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+            return (themeExists() && window.matchMedia('(prefers-color-scheme: dark)').matches)
         }
 
         function setLightTheme() {
