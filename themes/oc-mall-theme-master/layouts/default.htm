@@ -127,7 +127,11 @@ function onStart() {
         }
 
         function themeExists() {
-            return ('theme' in localStorage)
+            return propertyExists('theme')
+        }
+
+        function propertyExists(prop) {
+            return (prop in localStorage);
         }
 
         function isDarkThemePreferred() {
@@ -198,6 +202,12 @@ function onStart() {
     <img src="/themes/oc-mall-theme-master/assets/images/bean_eater.svg" alt="">
 </div>
 
+<div id="js-mfp-location" class="hidden-wrapper hidden-wrapper--no-gap mfp-hide">
+    <div class="flex justify-center p-16">
+        {% partial 'spots' class='text-black' %}
+    </div>
+</div>
+
 <script src="{{ 'assets/app.js' | theme }}"></script>
 {% framework extras %}
 {% scripts %}
@@ -207,6 +217,44 @@ function onStart() {
 
 
 <script>
+
+    function diff_minutes(dt2, dt1)
+    {
+
+        var diff =(dt2.getTime() - dt1.getTime()) / 1000;
+        diff /= 60;
+        return Math.abs(Math.round(diff));
+
+    }
+
+    let show = 0;
+    let timeout = 30;
+    let now = new Date();
+    if(!propertyExists('lastActivity')){
+        show++;
+    } else {
+        console.log("Последняя активность была: ",diff_minutes(new Date(localStorage.lastActivity), new Date(now)), " минут назад")
+        if(diff_minutes(new Date(localStorage.lastActivity), new Date(now)) > timeout) {
+            show++;
+        }
+    }
+
+    if(show) {
+        $.magnificPopup.open({
+            items: {
+                src: '#js-mfp-location', // can be a HTML string, jQuery object, or CSS selector
+                type: 'inline'
+            }
+        });
+    }
+
+
+    localStorage.lastActivity = new Date();
+
+
+
+
+
     function dropdown() {
         return {
             show: false,
