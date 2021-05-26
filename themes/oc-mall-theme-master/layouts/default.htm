@@ -24,39 +24,21 @@ forceUrl = 1
 
 use Symfony\Component\HttpFoundation\Session\Session;
 use Carbon\Carbon;
+use Lovata\BaseCode\Models\Branches;
 function onStart() {
     $session = new Session();
-    $spotsInfo['spots'] = [
-        [
-            'id'=> 1,
-            'name' => 'Черноморск',
-            'chat_id' => env('TELEGRAM_CHAT_ID_CHERNO'),
-            'spot_tablet' => 1,
-            'phones' => [
-            "+38 (093) 366 28 69",
-            "+38 (068) 303 45 51"
-        ]
-    ],
-        [
-            'id'=> 2,
-            'name' => 'Одесса',
-            'chat_id' => env('TELEGRAM_CHAT_ID_ODESSA'),
-            'spot_tablet' => 2,
-            'phones' => [
-            "+38 (093) 045 14 40",
-            "+38 (098) 970 37 67"
-        ]
-    ],
-    ];
+    $spots = Branches::all();
+
+
 
     if (!$session->has('activeSpotId')) {
-        $session->set('activeSpotId', $spotsInfo['spots'][0]['id']);
+        $session->set('activeSpotId', $spots[0]['id']);
     }
 
     $exist = 0;
     if (isset($_POST['spot'])) {
 
-        foreach ($spotsInfo['spots'] as $s) {
+        foreach ($spots as $s) {
             if ($_POST['spot'] == $s['id']) {
                 $exist++;
             }
@@ -67,9 +49,9 @@ function onStart() {
 
         }
     }
-    $session->set('spots', $spotsInfo['spots']);
+    $session->set('spots', $spots);
 
-    foreach ($spotsInfo['spots'] as $s) {
+    foreach ($spots as $s) {
         if ($session->get('activeSpotId') == $s['id']) {
             $this->page['activeSpotName'] = $s['name'];
             $this->page['phones'] = $s['phones'];
@@ -115,58 +97,9 @@ function onStart() {
     {% styles %}
     <link rel="stylesheet" href="{{ ['assets/main.css'] | theme }}">
     <script src="{{ ['@jquery'] | theme }}"></script>
-    <script>
-        if(!themeExists()) {
-            localStorage.theme = 'dark';
-        }
 
-        // On page load or when changing themes, best to add inline in `head` to avoid FOUC
-        if (localStorage.theme === 'dark') {
-            setDarkTheme();
-        } else {
-            setLightTheme()
-        }
-
-        function themeExists() {
-            return propertyExists('theme')
-        }
-
-        function propertyExists(prop) {
-            return (prop in localStorage);
-        }
-
-        function isDarkThemePreferred() {
-            return (themeExists() && window.matchMedia('(prefers-color-scheme: dark)').matches)
-        }
-
-        function setLightTheme() {
-            document.documentElement.classList.remove('dark')
-            localStorage.theme = 'light';
-        }
-
-        function setDarkTheme() {
-            document.documentElement.classList.add('dark')
-            localStorage.theme = 'dark';
-        }
-
-        function toggleTheme(currentTheme) {
-
-            if (currentTheme === 'dark') {
-                setLightTheme();
-            } else {
-                setDarkTheme();
-            }
-        }
-
-        $(document).ready(function() {
-            $('#toggleDarkMode').click(function() {
-                toggleTheme(localStorage.theme);
-            })
-        })
-
-    </script>
+    <script src="{{ 'assets/js/scripts.js' | theme }}"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw==" crossorigin="anonymous" />
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.1/dist/alpine.min.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" crossorigin="anonymous" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/iScroll/5.2.0/iscroll.min.js"  crossorigin="anonymous"></script>
@@ -178,8 +111,7 @@ function onStart() {
 </head>
 <body class="min-h-screen flex flex-col justify-between bg-secondary text-black dark:bg-black dark:text-white drawer drawer--right relative">
 
-
-{% partial 'header' %}
+{% partial 'header'  %}
 {% partial 'navigation' %}
 
 <main class="flex-grow max-w-6xl w-full mx-auto py-8">
@@ -205,7 +137,7 @@ function onStart() {
 
 <div id="js-mfp-location" class="hidden-wrapper hidden-wrapper--no-gap mfp-hide">
     <div class="flex justify-center p-16">
-        {% partial 'spots' class='text-black' %}
+        {% partial 'spots' spots = this.page.spots %}
     </div>
 </div>
 
@@ -217,215 +149,7 @@ function onStart() {
 
 
 
-<script>
-
-    function diff_minutes(dt2, dt1)
-    {
-
-        var diff =(dt2.getTime() - dt1.getTime()) / 1000;
-        diff /= 60;
-        return Math.abs(Math.round(diff));
-
-    }
-
-    let show = 0;
-    let timeout = 30;
-    let now = new Date();
-    if(!propertyExists('lastActivity')){
-        show++;
-    } else {
-        console.log("Последняя активность была: ",diff_minutes(new Date(localStorage.lastActivity), new Date(now)), " минут назад")
-        if(diff_minutes(new Date(localStorage.lastActivity), new Date(now)) > timeout) {
-            show++;
-        }
-    }
-
-    if(show) {
-        $.magnificPopup.open({
-            items: {
-                src: '#js-mfp-location', // can be a HTML string, jQuery object, or CSS selector
-                type: 'inline'
-            }
-        });
-    }
-
-
-    localStorage.lastActivity = new Date();
-
-
-
-
-
-    function dropdown() {
-        return {
-            show: false,
-            activeSpotId: 1,
-            spots: [],
-            getActiveSpot() {
-                let key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0]: "name";
-                let _this2 = this;
-                let value = "";
-                _this2.spots.forEach(function(el){
-                    if(el.id == _this2.activeSpotId){
-                        value = el[key];
-                    }
-                })
-
-                return value;
-            },
-            changeSpot(id){
-                this.activeSpotId = id;
-                this.close();
-                this.$nextTick(() => { this.$refs.spotForm.submit(); });
-
-            },
-            open() { this.show = true },
-            close() { this.show = false },
-        }
-    }
-
-
-
-    $('.js-mfp-inline').magnificPopup({
-        type:'inline',
-        removalDelay: 300,
-        fixedContentPos: false,
-        fixedBgPos: true,
-        mainClass: 'zoom-in',
-        midClick: true // Allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source in href.
-    });
-
-
-    $(function () {
-        var $body = $('body');
-        $$update = {'cart': '#js-mall-cart'};
-
-        if($('#quickCheckout').length){
-            $$update = { ...$$update, 'quickCheckout::cart': '.js-mall-cart-checkout' }
-        }
-
-        $.subscribe('mall.discount.applied', refreshCart);
-        $.subscribe('mall.shipping.update', refreshCart);
-        $.subscribe('mall.address.update', refreshCart);
-        //$.subscribe('mall.cart.productAdded', refreshCart);
-
-        function refreshCart () {
-            $.request('cart::onRun', {
-                update: $$update
-            })
-        }
-
-
-        var $count = $('.mall-cart-count');
-        var $total = $('.mall-cart-total');
-        $.subscribe('products.cart.productAdded', function (e, data) {
-            $count.removeClass('invisible').text(data.new_items_count).show();
-            $total.text(data.total_post_taxes);
-        });
-        $.subscribe('mall.cart.productRemoved', function (e, data) {
-            $count.text(data.new_items_count);
-            $total.text(data.total_post_taxes);
-        });
-
-        $.subscribe('mall.cart.update', function (e, data) {
-            $total.text(data.total_post_taxes);
-            refreshCart();
-        });
-
-
-
-
-        $body.on('change', '.js-mall-quantity', function () {
-            $.request('cart::onUpdateQuantity', {
-                data: {id: this.dataset.id, quantity: this.value},
-                update: $$update,
-                loading: $.oc.stripeLoadIndicator,
-                flash: true,
-                success: function (data) {
-                    this.success(data)
-                    $.publish('mall.cart.update', data)
-                },
-                handleFlashMessage: function (message, type) {
-                    $.oc.flashMsg({text: message, class: type})
-                }
-            })
-        });
-
-
-        $body.on('click', '.js-mall-add-product', function () {
-            $.request('products::onAddToCart', {
-                data: {product: this.dataset.product, variant: this.dataset.variant},
-                update: $$update,
-                loading: $.oc.stripeLoadIndicator,
-                flash: true,
-                success: function (data) {
-                    this.success(data)
-                    $.publish('mall.cart.update', data)
-                    $.publish('products.cart.productAdded', data)
-                },
-                handleFlashMessage: function (message, type) {
-                    $.oc.flashMsg({text: message, class: type})
-                }
-            })
-        });
-
-        $body.on('click', '.js-mall-remove-product', function () {
-            $.request('cart::onRemoveProduct', {
-                data: {id: this.dataset.id},
-                update: $$update,
-                loading: $.oc.stripeLoadIndicator,
-                success: function (data) {
-                    this.success(data)
-                    $.publish('mall.cart.update', data)
-                    $.publish('mall.cart.productRemoved', data)
-                }
-            })
-        });
-
-
-        $body.on('click', '.js-wcart-item__remove-notice-open', function(){
-            console.log('clicked');
-            $('.js-wcart-item.is-notice').each(function(){
-                $(this).removeClass('is-notice');
-            })
-            $(this).closest('.js-wcart-item').addClass('is-notice');
-
-        });
-        $body.on('click', '.js-wcart-item__remove-notice-close', function(){
-            $(this).closest('.js-wcart-item').removeClass('is-notice');
-        });
-
-        $body.on('click', '.js-wcart-item__remove', function(){
-            $(this).closest('.js-wcart-item').removeClass('is-notice');
-        });
-
-
-
-        $body.on('click', '.js-wcart-item__collapse-toggle', function(){
-            $(this).closest('.js-wcart-item').toggleClass('is-opened');
-        });
-
-        $body.on('click', '.js-wcart-spinner__increment', function(){
-            console.log('click');
-            let $input = $(this).parent().find('.js-wcart-spinner__quantity');
-            let $currVal = parseInt($input.val());
-            $input.val($currVal + 1);
-            $input.trigger('change');
-        });
-
-        $body.on('click', '.js-wcart-spinner__decrement', function(){
-            let $input = $(this).parent().find('.js-wcart-spinner__quantity');
-            let $currVal = parseInt($input.val());
-            if($currVal < 2){
-                return;
-            }
-            $input.val($currVal - 1);
-            $input.trigger('change');
-        });
-
-    })
-
-</script>
+<script src="{{ 'assets/js/scripts1.js' | theme }}"></script>
 
 
 

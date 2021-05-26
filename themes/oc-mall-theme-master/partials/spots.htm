@@ -1,24 +1,22 @@
-<div class="flex flex-col relative cursor-pointer"
-     x-data="dropdown()"
-     x-init='activeSpotId = {{ this.page.activeSpotId }};
-            spots = {{ this.page.spots|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }};getActiveSpot()'
-     x-on:click="open()"
-     x-on:click.away="close()"  >
+{#{{ this.page.activeSpotId }}#}
+{#{{ this.page.spots|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }}#}
+{#dark:text-white text-black#}
+<div class="flex flex-col relative cursor-pointer">
     <span class="text-xs font-light {{ class }}">Откуда вы?</span>
     <span class="flex items-center">
-                <span class="text-2xl font-bold mr-2 {{ class }}" x-text="getActiveSpot()">{{ this.page.activeSpotName }}</span>
+                <span class="text-2xl font-bold mr-2 {{ class }}" >{{ this.page.activeSpotName }}</span>
                 <span class="border-4 border-l-transparent border-r-transparent border-b-transparent dark:border-t-white border-top-black " ></span>
             </span>
-    <div x-cloak class="absolute z-40 bottom-full" x-show="show">
+    <div  class="absolute z-40 bottom-full" >
         <div class="flex flex-col items-center">
             <span class="border-8 border-transparent" style="border-bottom-color: white"></span>
-            <form method="post" x-ref="spotForm" class="p-4 bg-white rounded">
-                <input :value="activeSpotId" type="hidden" name="spot" >
-                <template x-for="item in spots" :key="item">
-                    <div :class="{ 'font-bold': item.id === activeSpotId }"
-                         x-on:click.stop="changeSpot(item.id)"
-                         class="text-black" x-text="item.name"></div>
-                </template>
+            <form method="post"  class="p-4 bg-white rounded">
+                <input value="activeSpotId" type="hidden" name="spot" >
+                {% for spot in spots %}
+                    <div class="text-black {{ item.id == activeSpotId ? 'font-bold': '' }}">
+                        {{ spot.name }}
+                    </div>
+                {% endfor %}
             </form>
         </div>
 

@@ -48,7 +48,7 @@
             {% partial "svg/logo" %}
         </a>
         <div class="hidden lg:block">
-            {% partial 'spots' class='dark:text-white text-black' %}
+            {% partial 'spots' spots = this.page.spots  %}
         </div>
 
 
