@@ -1,68 +1,72 @@
-function diff_minutes(dt2, dt1)
-{
+My.namespace('Classes.Dropdown')
+My.namespace('Classes.WorkingHoursChecker')
+My.namespace('Inst.BranchDropdown');
+My.namespace('Inst.Checker');
 
-    var diff =(dt2.getTime() - dt1.getTime()) / 1000;
-    diff /= 60;
-    return Math.abs(Math.round(diff));
+My.Classes.WorkingHoursChecker = function () {
+    var Hours = {};
+    function WorkingHoursChecker()
+    {
+        Hours = this;
+        this.showSpotsDropdown = false;
+        this.timeout = 30;
+        this.now = new Date();
+        this.lastVisitDate = new Date(localStorage.lastActivity);
 
-}
-
-let show = 0;
-let timeout = 30;
-let now = new Date();
-if(!propertyExists('lastActivity')){
-    show++;
-} else {
-    console.log("Последняя активность была: ",diff_minutes(new Date(localStorage.lastActivity), new Date(now)), " минут назад")
-    if(diff_minutes(new Date(localStorage.lastActivity), new Date(now)) > timeout) {
-        show++;
     }
-}
 
-if(show) {
-    $.magnificPopup.open({
-        items: {
-            src: '#js-mfp-location', // can be a HTML string, jQuery object, or CSS selector
-            type: 'inline'
+    WorkingHoursChecker.prototype.check = function () {
+        _dbg();
+        if (!My.Inst.Storage.exists('lastActivity')) {
+            this.showSpotsDropdown = true;
+        } else {
+            this.showSpotsDropdown = _diff_minutes(this.lastVisitDate, this.now) > this.timeout;
         }
-    });
-}
-
-
-localStorage.lastActivity = new Date();
-
-
-
-
-
-function dropdown() {
-    return {
-        show: false,
-        activeSpotId: 1,
-        spots: [],
-        getActiveSpot() {
-            let key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0]: "name";
-            let _this2 = this;
-            let value = "";
-            _this2.spots.forEach(function(el){
-                if(el.id == _this2.activeSpotId){
-                    value = el[key];
-                }
-            })
-
-            return value;
-        },
-        changeSpot(id){
-            this.activeSpotId = id;
-            this.close();
-            this.$nextTick(() => { this.$refs.spotForm.submit(); });
-
-        },
-        open() { this.show = true },
-        close() { this.show = false },
     }
-}
 
+    WorkingHoursChecker.prototype.init = function () {
+
+        this.check();
+
+        if (this.showSpotsDropdown) {
+            $.magnificPopup.open({
+                items: {
+                    src: '#js-mfp-location', // can be a HTML string, jQuery object, or CSS selector
+                    type: 'inline'
+                }
+            });
+        }
+
+
+        localStorage.lastActivity = new Date();
+    }
+
+    function _diff_minutes(dt2, dt1)
+    {
+
+        var diff =(dt2.getTime() - dt1.getTime()) / 1000;
+        diff /= 60;
+        return Math.abs(Math.round(diff));
+
+    }
+
+    function _dbg()
+    {
+        console.log("Последняя активность была: ", _diff_minutes(Hours.lastVisitDate, Hours.now), " минут назад")
+    }
+
+    return WorkingHoursChecker;
+}();
+
+
+
+My.Inst.Checker = new My.Classes.WorkingHoursChecker();
+
+My.Inst.BranchDropdown.init();
+My.Inst.Checker.init();
+
+
+let d = new Date(new Date().toLocaleString("ru-RU", {timeZone: "Europe/Kiev"})); // timezone ex: Asia/Jerusalem
 
 
 $('.js-mfp-inline').magnificPopup({
@@ -163,7 +167,6 @@ $(function () {
 
 
     $body.on('click', '.js-wcart-item__remove-notice-open', function(){
-        console.log('clicked');
         $('.js-wcart-item.is-notice').each(function(){
             $(this).removeClass('is-notice');
         })

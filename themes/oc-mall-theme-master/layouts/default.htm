@@ -54,7 +54,7 @@ function onStart() {
     foreach ($spots as $s) {
         if ($session->get('activeSpotId') == $s['id']) {
             $this->page['activeSpotName'] = $s['name'];
-            $this->page['phones'] = $s['phones'];
+            $this->page['phones'] = explode(',',$s['phones']);
             $session->set('activeChatId', $s['chat_id']);
         }
     }
@@ -87,30 +87,13 @@ function onStart() {
 <!doctype html>
 <html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="description" content="{{ this.page.meta_description }}">
-    <link rel="icon" href="{{ '/favicon.ico' | app }}" />
-    <title>{{ this.page.title }}</title>
+    {% partial 'head' %}
     {% styles %}
-    <link rel="stylesheet" href="{{ ['assets/main.css'] | theme }}">
-    <script src="{{ ['@jquery'] | theme }}"></script>
-
-    <script src="{{ 'assets/js/scripts.js' | theme }}"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw==" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" crossorigin="anonymous" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/iScroll/5.2.0/iscroll.min.js"  crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/drawer/3.2.2/js/drawer.min.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="/themes/oc-mall-theme-master/assets/libs/drawer/drawer.css"  />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     {% component 'enhancedEcommerceAnalytics' %}
     {% component 'mallDependencies' %}
+
 </head>
 <body class="min-h-screen flex flex-col justify-between bg-secondary text-black dark:bg-black dark:text-white drawer drawer--right relative">
-
 {% partial 'header'  %}
 {% partial 'navigation' %}
 
@@ -119,38 +102,21 @@ function onStart() {
 </main>
 
 {% partial 'footer' %}
-<div id="js-mfp-wrapper" class="hidden-wrapper hidden-wrapper--no-gap mfp-hide">
-    <div id="js-mall-cart">
-        {% partial 'cart' %}
-    </div>
 
-</div>
+{% partial 'cartmodal' %}
 
-<div class="js-mall-loader flex justify-center items-center min-screen w-full fixed z-40 bg-black"
-     style="visibility: hidden; opacity: 0;top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    transition: all ease-in 0.5s">
-    <img src="/themes/oc-mall-theme-master/assets/images/bean_eater.svg" alt="">
-</div>
+{% partial 'spinner' %}
 
-<div id="js-mfp-location" class="hidden-wrapper hidden-wrapper--no-gap mfp-hide">
-    <div class="flex justify-center p-16">
-        {% partial 'spots' spots = this.page.spots %}
-    </div>
-</div>
+{% partial 'spotmodal' %}
 
 <script src="{{ 'assets/app.js' | theme }}"></script>
+
 {% framework extras %}
 {% scripts %}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA==" crossorigin="anonymous"></script>
-
-
-
+<script src="{{ 'assets/js/spotDropdown.js' | theme }}"></script>
 <script src="{{ 'assets/js/scripts1.js' | theme }}"></script>
-
 
 
 

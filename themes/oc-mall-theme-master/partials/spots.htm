@@ -1,19 +1,19 @@
 {#{{ this.page.activeSpotId }}#}
 {#{{ this.page.spots|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }}#}
-{#dark:text-white text-black#}
-<div class="flex flex-col relative cursor-pointer">
+
+<div class="flex flex-col relative  js-spot-dropdown">
     <span class="text-xs font-light {{ class }}">Откуда вы?</span>
-    <span class="flex items-center">
-                <span class="text-2xl font-bold mr-2 {{ class }}" >{{ this.page.activeSpotName }}</span>
-                <span class="border-4 border-l-transparent border-r-transparent border-b-transparent dark:border-t-white border-top-black " ></span>
-            </span>
-    <div  class="absolute z-40 bottom-full" >
+    <span class="flex items-center js-spot-dropdown-title-container cursor-pointer">
+        <span class="text-2xl font-bold mr-2 {{ class }} js-spot-dropdown-title {{ class }}" >{{ this.page.activeSpotName }}</span>
+        <span class="border-4 border-l-transparent border-r-transparent border-b-transparent dark:border-t-white border-top-black"></span>
+    </span>
+    <div  class="absolute z-40 bottom-full js-spot-dropdown-list hidden" >
         <div class="flex flex-col items-center">
             <span class="border-8 border-transparent" style="border-bottom-color: white"></span>
-            <form method="post"  class="p-4 bg-white rounded">
-                <input value="activeSpotId" type="hidden" name="spot" >
+            <form method="post" class="p-4 bg-white rounded js-spot-dropdown-form">
+                <input class="js-spot-dropdown-input" value="{{ this.page.activeSpotId }}" type="hidden" name="spot" >
                 {% for spot in spots %}
-                    <div class="text-black {{ item.id == activeSpotId ? 'font-bold': '' }}">
+                    <div data-id="{{ spot.id }}" class="text-black js-spot-dropdown-list-item cursor-pointer {{ spot.id == this.page.activeSpotId ? 'font-bold': '' }}">
                         {{ spot.name }}
                     </div>
                 {% endfor %}
