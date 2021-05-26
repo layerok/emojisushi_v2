@@ -1,3 +1,6 @@
+My.namespace('Classes.Dropdown')
+My.namespace('Inst.BranchDropdown');
+
 (function(factory) {
     factory(window.jQuery);
 })(function($) {
