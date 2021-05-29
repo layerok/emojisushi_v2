@@ -25,9 +25,12 @@ forceUrl = 1
 use Symfony\Component\HttpFoundation\Session\Session;
 use Carbon\Carbon;
 use Lovata\BaseCode\Models\Branches;
+use OFFLINE\Mall\Models\Cart;
+
 function onStart() {
     $session = new Session();
     $spots = Branches::all();
+
 
 
 
@@ -38,6 +41,7 @@ function onStart() {
     $exist = 0;
     if (isset($_POST['spot'])) {
 
+
         foreach ($spots as $s) {
             if ($_POST['spot'] == $s['id']) {
                 $exist++;
@@ -46,8 +50,29 @@ function onStart() {
 
         if ($exist) {
             $session->set('activeSpotId', $_POST['spot']);
+            $spot_id = $_POST['spot'];
+        $products_to_hide = DB::table('lovata_basecode_hide_products_in_branch')
+            ->where('branch_id', '=', $spot_id)->pluck('product_id')->all();
 
+        $categories_to_hide = DB::table('lovata_basecode_hide_categories_in_branch')
+            ->where('branch_id', '=', $spot_id)->pluck('category_id')->all();
+
+        $cart = Cart::bySession();
+        foreach($cart->products as $pr) {
+            if(in_array($pr->product_id, $products_to_hide)) {
+                $cart->removeProduct($pr);
+            }
+
+            $hidden_category = $pr->product->categories()->whereIn('offline_mall_categories.id', $categories_to_hide)->exists();
+            if($hidden_category) {
+                $cart->removeProduct($pr);
+            }
         }
+    }
+
+
+
+
     }
 
 
