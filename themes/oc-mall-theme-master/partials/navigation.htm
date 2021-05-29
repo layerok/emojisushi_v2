@@ -1,15 +1,15 @@
 [staticMenu]
-code = "main"
+code = {{ code }}
 ==
 <div id="nav" class="flex justify-center z-10">
     <div  class="max-w-6xl w-full mx-auto px-4 flex flex-column  relative bg-secondary dark:bg-black" style="top:-1px">
 
         <nav class="w-full border-t border-b dark:border-secondary border-black flex justify-between">
-            {% component 'staticMenu' code = 'main' %}
+            {% component 'staticMenu' %}
 
             <div class="cart-in-menu ">
                 <div class="lg:mx-2 py-2  items-center justify-end relative flex">
-                    {% partial 'cartButton/default' %}
+                    {% partial 'cartButton/default' code=code %}
                 </div>
 
             </div>

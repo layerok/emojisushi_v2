@@ -2,6 +2,21 @@ My.Inst.BranchDropdown.init();
 My.Inst.Checker.init();
 
 
+
+$(document).ready(function() {
+    $(".mcs-horizontal-example").mCustomScrollbar({
+        axis:"x",
+        theme: "light-thin",
+        advanced:{
+            autoExpandHorizontalScroll:true //optional (remove or set to false for non-dynamic/static elements)
+        }
+    });
+
+})
+
+
+
+
 let d = new Date(new Date().toLocaleString("ru-RU", {timeZone: "Europe/Kiev"})); // timezone ex: Asia/Jerusalem
 
 

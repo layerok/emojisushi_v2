@@ -1,5 +1,5 @@
 {% for item in items if not item.viewBag.isHidden %}
-    <li  class="inline-block mv1 flex-shrink-0"><!---->
+    <li  class="inline-block mv1 flex-shrink-0 item"><!---->
         {% if item.url %}
             <a href="{{ item.url }}"  class="{{ item.isActive ? 'border border-black dark:border-0 dark:bg-secondary dark:text-black' : 'dark:text-white text-black' }} sm:py-1 flex items-center  px-2 py-1 rounded-full sm:mr-2 mr-1 border border-transparent hover:border-black  hover:bg-secondary dark:hover:text-black  no-underline">
                 {{ item.title }}
