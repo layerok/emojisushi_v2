@@ -18,6 +18,7 @@ use OFFLINE\Mall\Classes\Index\IndexNotSupportedException;
 use OFFLINE\Mall\Classes\Index\IndexResult;
 use OFFLINE\Mall\Models\Currency;
 use Throwable;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class MySQL implements Index
 {
@@ -161,9 +162,22 @@ class MySQL implements Index
         $skip  = $perPage * ($forPage - 1);
         $items = $this->search($index, $filters, $order);
 
+        $session = new Session();
+        $spot_id = $session->get('activeSpotId');
+
+        $products_to_hide = DB::table('lovata_basecode_hide_products_in_branch')
+            ->where('branch_id', '=', $spot_id)->pluck('product_id')->all();
+
+
+        $filtered_items = array_filter($items, function ($item) use($products_to_hide) {
+            return !in_array($item->product_id, $products_to_hide);
+        });
+
         $slice = array_map(function ($item) {
             return $item->is_ghost ? 'product-' . $item->other_id : $item->id;
-        }, array_slice($items, $skip, $perPage));
+        }, array_slice($filtered_items, $skip, $perPage));
+
+
 
         return new IndexResult($slice, count($items));
     }
@@ -173,13 +187,19 @@ class MySQL implements Index
         $idCol      = $index === 'products' ? 'product_id' : 'variant_id';
         $otherIdCol = $idCol === 'product_id' ? 'variant_id' : 'product_id';
 
+
         $db = DB::table($this->db()->table)->select([
             $idCol . ' as id',
             $otherIdCol . ' as other_id',
-            'is_ghost',
+            'product_id',
+            'is_ghost'
         ]);
 
+
+
         $db->where('index', $index)->where('published', true);
+
+
 
         $filters = $this->applySpecialFilters($filters, $db);
 

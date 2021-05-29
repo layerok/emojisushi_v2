@@ -4,6 +4,7 @@ use Cms\Classes\Page;
 use DB;
 use Html;
 use Illuminate\Support\Collection;
+use Lovata\BaseCode\Models\Branches;
 use Model;
 use October\Rain\Database\Traits\Nullable;
 use October\Rain\Database\Traits\SoftDelete;

@@ -365,6 +365,7 @@ class Products extends MallComponent
         $itemIds  = array_filter($result->ids, 'is_int');
         $ghostIds = array_diff($result->ids, $itemIds);
 
+
         $models = $model->with($this->productIncludes())->find($itemIds);
         $ghosts = $this->getGhosts($ghostIds);
 
@@ -505,7 +506,12 @@ class Products extends MallComponent
      */
     protected function productIncludes(): array
     {
-        return ['translations', 'image_sets.images', 'customer_group_prices', 'additional_prices'];
+        return [
+            'translations',
+            'image_sets.images',
+            'customer_group_prices',
+            'additional_prices'
+        ];
     }
 
     /**
