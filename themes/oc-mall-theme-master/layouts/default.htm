@@ -49,7 +49,7 @@ function onStart() {
 
         }
     }
-    $session->set('spots', $spots);
+
 
     foreach ($spots as $s) {
         if ($session->get('activeSpotId') == $s['id']) {
@@ -62,7 +62,7 @@ function onStart() {
 
 
     $this->page['activeSpotId'] = $session->get('activeSpotId');
-    $this->page['spots'] = $session->get('spots');
+    $this->page['spots'] = $spots;
 
     $this->page['query'] = input('q');
 

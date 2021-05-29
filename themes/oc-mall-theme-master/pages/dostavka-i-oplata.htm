@@ -4,19 +4,16 @@ layout = "default"
 is_hidden = 0
 ==
 use Symfony\Component\HttpFoundation\Session\Session;
+use Lovata\BaseCode\Models\Branches;
 function onStart() {
     $session = new Session();
-
-
-    $this->page['activeSpotId'] = $session->get('activeSpotId');
+    $spot_id = $session->get('activeSpotId');
+    $spot = Branches::where('id', '=', $spot_id)->first();
+    $this->page['spot'] = $spot;
 
 }
 
 ==
 <div class="px-4">
-    {% if this.page.activeSpotId == 1 %}
-        {% content 'cherno.htm' %}
-    {% else %}
-        {% content 'odessa.htm' %}
-    {% endif %}
+    {{ this.page.spot.delivery | raw }}
 </div>
