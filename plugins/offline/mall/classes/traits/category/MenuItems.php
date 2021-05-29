@@ -3,12 +3,14 @@
 namespace OFFLINE\Mall\Classes\Traits\Category;
 
 use Cache;
+use DB;
 use Cms\Classes\Controller;
 use Cms\Classes\Page;
 use InvalidArgumentException;
 use OFFLINE\Mall\Models\Category;
 use OFFLINE\Mall\Models\GeneralSettings;
 use OFFLINE\Mall\Models\Product;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 trait MenuItems
 {
@@ -87,11 +89,18 @@ trait MenuItems
                 ), $url);
         }
 
+        $session = new Session();
+        $spot_id = $session->get('activeSpotId');
+
+        $categories_to_hide = DB::table('lovata_basecode_hide_categories_in_branch')
+            ->where('branch_id', '=', $spot_id)->pluck('category_id')->all();
+
         $structure = [];
-        $iterator  = function ($items, $baseUrl = '') use (&$iterator, &$structure, $url, $locale) {
+        $iterator  = function ($items, $baseUrl = '')
+        use (&$iterator, &$structure, $url, $locale, $categories_to_hide) {
             $branch = [];
             foreach ($items as $item) {
-                if($item->published){
+                if($item->published && !in_array($item->id, $categories_to_hide)){
                     $branchItem = self::getMenuItem($item, $url);
                     $item->setTranslateContext($locale);
                     if ($item->children->count() > 0) {
@@ -103,6 +112,9 @@ trait MenuItems
 
             return $branch;
         };
+
+
+
 
         $structure['items'] = $iterator($category->getEagerRoot());
 
@@ -199,6 +211,7 @@ trait MenuItems
      */
     protected function mapCacheKey($locale)
     {
+
         return Category::MAP_CACHE_KEY . '.' . $locale;
     }
 
@@ -211,7 +224,9 @@ trait MenuItems
      */
     protected function treeCacheKey($locale)
     {
-        return Category::TREE_CACHE_KEY . '.' . $locale;
+        $session = new Session();
+        $spot_id = $session->get('activeSpotId');
+        return Category::TREE_CACHE_KEY . '.' . $locale . '.' . $spot_id;
     }
 
     /**

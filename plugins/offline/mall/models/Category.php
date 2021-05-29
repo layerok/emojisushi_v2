@@ -3,6 +3,7 @@
 use Cache;
 use DB;
 use Illuminate\Support\Facades\Queue;
+use Lovata\BaseCode\Models\Branches;
 use Model;
 use October\Rain\Database\Traits\NestedTree;
 use October\Rain\Database\Traits\SoftDelete;
@@ -87,6 +88,12 @@ class Category extends Model
             'key'      => 'category_id',
             'otherKey' => 'product_id',
             'pivot'    => ['sort_order'],
+        ],
+        'hide_categories_in_branch'          => [
+            Branches::class,
+            'table'    => 'lovata_basecode_hide_categories_in_branch',
+            'key'      => 'category_id',
+            'otherKey' => 'branch_id',
         ],
         'publishedProducts' => [
             Product::class,

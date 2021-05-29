@@ -34,6 +34,13 @@ fields:
         comment: 'offline.mall::lang.category.code_comment'
         span: left
         type: text
+    hide_categories_in_branch:
+        label: 'Скрыть категорию в заведении'
+        oc.commentPosition: ''
+        nameFrom: name
+        descriptionFrom: description
+        span: right
+        type: relation
 tabs:
     fields:
         inherit_property_groups:

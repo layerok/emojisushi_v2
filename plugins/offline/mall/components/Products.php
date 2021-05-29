@@ -2,6 +2,8 @@
 
 use ArrayAccess;
 use Flash;
+use DB;
+use App;
 use Symfony\Component\HttpFoundation\Session\Session;
 use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -460,8 +462,24 @@ class Products extends MallComponent
                 'OFFLINE.Mall: A :slug URL parameter is needed when selecting products by category slug.'
             );
         }
+        $session = new Session();
+        $spot_id = $session->get('activeSpotId');
 
-        return CategoryModel::bySlugOrId($this->param('slug'), $this->property('category'));
+        $category = CategoryModel::bySlugOrId($this->param('slug'), $this->property('category'));
+
+        $hidden = DB::table('lovata_basecode_hide_categories_in_branch')
+            ->where([
+                ['branch_id', '=', $spot_id],
+                ['category_id', '=', $category['id']]
+            ])->exists();
+
+        if($hidden) {
+            throw new ModelNotFoundException;
+        } else {
+            return $category;
+        }
+
+
     }
 
     /**
