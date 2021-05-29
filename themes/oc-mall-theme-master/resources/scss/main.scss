@@ -14,9 +14,6 @@
     }
 }
 
-[x-cloak] {
-    display: none;
-}
 
 .main-background {
     color: #F8CE46;
@@ -30,17 +27,20 @@
     -webkit-flex-direction: row; flex-direction: row;
 }
 
+
+
 .mcs-horizontal-example .mCSB_container{
-    display: -webkit-flex; display: flex;
+    display: -webkit-flex; display: flex; justify-content: space-around;
+}
+
+.mcs-horizontal-example .mCustomScrollBox {
+    width: 100%;
 }
 
 .mcs-horizontal-example .item{
     -webkit-flex-shrink: 0; flex-shrink: 0;
 }
 
-.mcs-horizontal-example .mCSB_container {
-    margin-bottom: 17px!important;
-}
 
 
 
