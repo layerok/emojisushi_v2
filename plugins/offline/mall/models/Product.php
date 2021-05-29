@@ -181,9 +181,9 @@ class Product extends Model
             'otherKey' => 'category_id',
             'pivot'    => ['sort_order'],
         ],
-        'hideInBranches'      => [
+        'hide_products_in_branch'      => [
             Branches::class,
-            'table'    => 'offline_mall_category_product',
+            'table'    => 'lovata_basecode_hide_products_in_branch',
             'key'      => 'product_id',
             'otherKey' => 'branch_id',
         ],

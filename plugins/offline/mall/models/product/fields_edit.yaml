@@ -32,6 +32,14 @@ tabs:
             type: switch
             comment: 'offline.mall::lang.product.published_comment'
             tab: 'offline.mall::lang.product.general'
+        hide_products_in_branch:
+            label: 'Скрыть товар в заведении'
+            oc.commentPosition: ''
+            nameFrom: name
+            descriptionFrom: description
+            span: right
+            type: relation
+            tab: 'offline.mall::lang.product.general'
         categories:
             label: 'offline.mall::lang.common.categories'
             oc.commentPosition: ''
