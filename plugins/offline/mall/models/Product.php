@@ -21,6 +21,7 @@ use OFFLINE\Mall\Classes\Traits\ProductPriceAccessors;
 use OFFLINE\Mall\Classes\Traits\PropertyValues;
 use OFFLINE\Mall\Classes\Traits\StockAndQuantity;
 use OFFLINE\Mall\Classes\Traits\UserSpecificPrice;
+use Lovata\BaseCode\Models\Branches;
 use RainLab\Translate\Models\Locale;
 use System\Models\File;
 
@@ -179,6 +180,12 @@ class Product extends Model
             'key'      => 'product_id',
             'otherKey' => 'category_id',
             'pivot'    => ['sort_order'],
+        ],
+        'hideInBranches'      => [
+            Branches::class,
+            'table'    => 'offline_mall_category_product',
+            'key'      => 'product_id',
+            'otherKey' => 'branch_id',
         ],
         'custom_fields'   => [
             CustomField::class,
