@@ -22,89 +22,23 @@ forceUrl = 1
 
 ==
 
-use Symfony\Component\HttpFoundation\Session\Session;
-use Carbon\Carbon;
-use Lovata\BaseCode\Models\Branches;
-use OFFLINE\Mall\Models\Cart;
+
+
+use Lovata\BaseCode\Classes\Helper\Utils;
 
 function onStart() {
-    $session = new Session();
-    $spots = Branches::all();
+    $info = Utils::handleBranches();
 
-
-
-
-    if (!$session->has('activeSpotId')) {
-        $session->set('activeSpotId', $spots[0]['id']);
-    }
-
-    $exist = 0;
-    if (isset($_POST['spot'])) {
-
-
-        foreach ($spots as $s) {
-            if ($_POST['spot'] == $s['id']) {
-                $exist++;
-            }
-        }
-
-        if ($exist) {
-            $session->set('activeSpotId', $_POST['spot']);
-            $spot_id = $_POST['spot'];
-        $products_to_hide = DB::table('lovata_basecode_hide_products_in_branch')
-            ->where('branch_id', '=', $spot_id)->pluck('product_id')->all();
-
-        $categories_to_hide = DB::table('lovata_basecode_hide_categories_in_branch')
-            ->where('branch_id', '=', $spot_id)->pluck('category_id')->all();
-
-        $cart = Cart::bySession();
-        foreach($cart->products as $pr) {
-            if(in_array($pr->product_id, $products_to_hide)) {
-                $cart->removeProduct($pr);
-            }
-
-            $hidden_category = $pr->product->categories()->whereIn('offline_mall_categories.id', $categories_to_hide)->exists();
-            if($hidden_category) {
-                $cart->removeProduct($pr);
-            }
-        }
-    }
-
-
-
-
-    }
-
-
-    foreach ($spots as $s) {
-        if ($session->get('activeSpotId') == $s['id']) {
-            $this->page['activeSpotName'] = $s['name'];
-            $this->page['phones'] = explode(',',$s['phones']);
-            $session->set('activeChatId', $s['chat_id']);
-        }
-    }
-
-
-
-    $this->page['activeSpotId'] = $session->get('activeSpotId');
-    $this->page['spots'] = $spots;
-
+    $this->page['spots'] = $info['spots'];
+    $this->page['phones'] = $info['phones'];
+    $this->page['activeSpotName'] = $info['activeSpotName'];
+    $this->page['activeSpotId'] = $info['activeSpotId'];
     $this->page['query'] = input('q');
 
-    $start = explode(':','10:00');
-    $finish = explode(':','22:30');
-
-    $dt = Carbon::now()->timezone('Europe/Kiev');;
-    $hour = $dt->hour;
-    $minute = $dt->minute;
 
 
-    $closed =
-    ($hour < $start[0]  || ($start[0] == $hour && $minute < $start[1])) ||
-    ($hour > $finish[0] || ($finish[0] == $hour && $minute > $finish[1] ));
 
-
-    $this->page['shop_is_closed'] = $closed;
+    $this->page['shop_is_closed'] = Utils::checkWorkingHours();
 }
 
 
