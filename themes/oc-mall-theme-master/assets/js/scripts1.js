@@ -4,13 +4,29 @@ My.Inst.Checker.init();
 
 
 $(document).ready(function() {
-    $(".mcs-horizontal-example").mCustomScrollbar({
-        axis:"x",
-        theme: "light-thin",
-        advanced:{
-            autoExpandHorizontalScroll:true //optional (remove or set to false for non-dynamic/static elements)
+
+    function initScrollbar() {
+        var $selector = $('.mcs-horizontal-example');
+
+        if(window.innerWidth > 991) {
+            $selector.mCustomScrollbar('destroy');
+            $selector.mCustomScrollbar({
+                axis: "x",
+                theme: "light-thin"
+            });
+
+        } else {
+            $selector.mCustomScrollbar('destroy');
         }
-    });
+    }
+
+    window.addEventListener('resize', function() {
+        initScrollbar()
+    })
+
+    initScrollbar();
+
+
 
 })
 
