@@ -6,7 +6,9 @@
     "helpers": "tests/js/helpers"
   },
   "scripts": {
-    "test": "mocha --require @babel/register tests/js/cases/**/*.js"
+    "test": "mocha --require @babel/register tests/js/cases/**/*.js",
+      "install": "cd themes/oc-mall-theme-master && npm install --global gulp-cli && npm install",
+      "build": "cd themes/oc-mall-theme-master && gulp",
   },
   "repository": {
     "type": "git",
