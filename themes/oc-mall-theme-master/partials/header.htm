@@ -44,7 +44,7 @@
             <span class="sr-only">toggle navigation</span>
             <span class="drawer-hamburger-icon white"></span>
         </button>
-        <a href="/{{ activeLocale }}" class="block">
+        <a href="{{ 'index' | page }}" class="block">
             {% partial "svg/logo" %}
         </a>
         <div class="hidden lg:block">
@@ -68,7 +68,7 @@
                     </div>
                     <div>
                         <p class="my-4">
-                            <span class="dark:text-secondary text-black">Время работы:</span> 10:00-23:00
+                            <span class="dark:text-secondary text-black">Время работы:</span> {{ '10:00-23:00' | _ }}
                         </p>
                     </div>
                 </div>

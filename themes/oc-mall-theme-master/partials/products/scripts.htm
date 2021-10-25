@@ -1,0 +1,33 @@
+{% put scripts %}
+    <script>
+        $(function () {
+            $.subscribe('mall.products.load.start', function () {
+                $('.js-mall-loader').css({opacity: 1, visibility: 'visible'})
+            });
+
+            $.subscribe('mall.products.load.complete', function () {
+                $.request('{{ __SELF__ }}::onRun', {
+                    update: {'{{ __SELF__ }}::entries': '.js-mall-products'},
+                    success: function(data){
+                        this.success(data);
+                        $('.js-mall-loader').css({opacity: 0, visibility: 'hidden'})
+                    }
+                });
+
+            });
+
+            $('body').on('click', '.mall-pagination--products a', function (e) {
+                e.preventDefault()
+                $.publish('mall.products.load.start')
+
+                history.replaceState(null, '', $(this).attr('href'))
+                $.publish('mall.products.load.complete')
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            })
+        })
+    </script>
+{% endput %}
