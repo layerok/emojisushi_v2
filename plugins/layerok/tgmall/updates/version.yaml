@@ -1,0 +1,14 @@
+1.0.0:
+    - 'Init plugin'
+1.1.2:
+    - 'Create actions table'
+    - create_actions_table.php
+1.1.3:
+    - 'Create admins table'
+    - create_admins_table.php
+1.1.4:
+    - 'Create contacts table'
+    - create_contacts_table.php
+1.1.5:
+    - 'Create reviews table'
+    - create_reviews_table.php
