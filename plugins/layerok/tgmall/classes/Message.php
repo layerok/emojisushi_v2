@@ -6,6 +6,8 @@ use Layerok\TgMall\Facades\Telegram;
 use Layerok\TgMall\Models\Admin;
 use Layerok\TgMall\Models\Contact;
 use Illuminate\Support\Facades\Lang;
+use OFFLINE\Mall\Models\Customer;
+use OFFLINE\Mall\Models\User;
 
 class Message
 {
@@ -24,46 +26,57 @@ class Message
         $message = $responseData->message->text;
         $firstName = $responseData->message->from->first_name;
         $username = $responseData->message->from->username;
-
+        \Log::info('got message: ' . $message);
         $admin = Admin::where('chat_id', '=', $chatId)->first();
 
-        $file_id = max($responseData->message->photo)->file_id;
+//        $file_id = max($responseData->message->photo)->file_id;
+//
+//        if ($file_id != "" && $admin) {
+//            Telegram::sendMessage($chatId, $file_id);
+//            exit();
+//        } elseif ($responseData->message->animation->file_id != "") {
+//            Telegram::sendMessage($chatId, $responseData->message->animation->file_id);
+//            exit();
+//        }
 
-        if ($file_id != "" && $admin) {
-            Telegram::sendMessage($chatId, $file_id);
-            exit();
-        } elseif ($responseData->message->animation->file_id != "") {
-            Telegram::sendMessage($chatId, $responseData->message->animation->file_id);
-            exit();
-        }
-
-        if ($message == "/test") {
-            $photo = "https://webmaster-shulyak.ru/works/test-shop/admin/actions/temp-img/test.jpg";
-
-            $sf = Telegram::sendPhoto($chatId, $photo);
-
-            Telegram::sendMessage($chatId, $sf);
-        }
-
-        if ($message == "/test2") {
-            $photo = "https://m.mac-cosmetics.ru/media/export/cms/products/640x600/mac_sku_M2LPHW_640x600_0.jpg";
-
-            $sf = Telegram::sendPhoto($chatId, $photo);
-
-            Telegram::sendMessage($chatId, $sf);
-        }
+//        if ($message == "/test") {
+//            $photo = "https://webmaster-shulyak.ru/works/test-shop/admin/actions/temp-img/test.jpg";
+//
+//            $sf = Telegram::sendPhoto($chatId, $photo);
+//
+//            Telegram::sendMessage($chatId, $sf);
+//        }
+//
+//        if ($message == "/test2") {
+//            $photo = "https://m.mac-cosmetics.ru/media/export/cms/products/640x600/mac_sku_M2LPHW_640x600_0.jpg";
+//
+//            $sf = Telegram::sendPhoto($chatId, $photo);
+//
+//            Telegram::sendMessage($chatId, $sf);
+//        }
 
         if ($message == "/start") {
-            $contact = Contact::where('chat_id', '=', $chatId)->first();
-            if (!$contact) {
-                Contact::create([
-                    "chat_id" => $chatId,
-                    "first_name" => $firstName,
-                    "username" => $username
+            \Log::info('inside /start handler');
+            $customer = Customer::where('tg_chat_id', '=', $chatId)->first();
+            \Log::info('customer found: ' . json_encode($customer));
+            if (!$customer) {
+                $pass = "qweasdqweasd";
+                $user = User::create([
+                    'name' => "jonh",
+                    'password' => $pass,
+                    'password_confirmation' => $pass
+                ]);
+                Customer::create([
+                    "tg_chat_id" => $chatId,
+                    "firstname" => $firstName,
+                    "lastname"  => "(empty)",
+                    "tg_username" => $username,
+                    "user_id" => $user->id
                 ]);
             }
 
-            $this->fns->sendMainPanel1();
+
+            $this->fns->sendMainPanel1($chatId, $firstName);
         } elseif ($message == Lang::get('layerok.tgmall::telegram.review')) {
             $z = 1;
             $k = new InlineKeyboard();

@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Route;
 use Layerok\TgMall\Classes\CallbackQuery;
 use Layerok\TgMall\Models\Contact;
 use Layerok\TgMall\Models\Action as ActionModel;
+use OFFLINE\Mall\Models\Customer;
+use OFFLINE\Mall\Models\User;
 
 $botToken = Config::get('layerok.tgmall::botToken');
 $webhookUrl = '/webhook' . $botToken;
@@ -17,7 +19,7 @@ Route::post($webhookUrl, function () {
      * Input file where webhook requests, sent from the bot, come.
      **/
 
-    $testMode = true;
+    $testMode = false;
     $sys = new Sys();
     $fns = new Functions();
 
@@ -26,12 +28,13 @@ Route::post($webhookUrl, function () {
     date_default_timezone_set("Europe/Kiev");
 
 
+    $data = json_encode([
+            date('m.d.Y h:i:s', time()) => $responseData
+        ]) . "\n";
+    \Log::info($data);
+
 
     if ($testMode) {
-        $data = json_encode([
-                date('m.d.Y h:i:s', time()) => $responseData
-            ]) . "\n";
-        \Log::info($data);
         return;
     }
 
@@ -74,13 +77,37 @@ Route::post($webhookUrl, function () {
 
 Route::get('/test-tgmall', function () {
     //\Log::info(Telegram::getAuthor());
+//
+//    $action = \DB::table('layerok_tgmall_actions')
+//        ->select('action_id')
+//        ->first();
+//
+//    $contact = Contact::where('chat_id', '=', 2)->first();
+//
+//    $pass = "qweasdqweasd";
+//    $user = User::updateOrCreate([
+//        'name' => "jonh",
+//        'password' => $pass,
+//        'password_confirmation' => $pass
+//    ]);
+//
+//    $customer = Customer::updateOrCreate([
+//        "tg_chat_id" => '3423',
+//        "firstname" => "test",
+//        "lastname"  => "test",
+//        "tg_username" => "test",
+//        "user_id" => 5
+//    ]);
 
-    $action = \DB::table('layerok_tgmall_actions')
-        ->select('action_id')
-        ->first();
+//    dd($customer);
 
-    $contact = Contact::where('chat_id', '=', 2)->first();
+//    $arr = [];
+//
+//    if(isset($arr[0]) && $arr == "clear") {
+//        dd($arr[0]);
+//    }
 
+    $msg = Lang::get('layerok.tgmall::lang.telegram.menu');
+    dd($msg);
 
-    dd($contact);
 });

@@ -16,9 +16,21 @@ class Customer extends Model
     protected $casts = [
         'is_guest' => 'boolean',
     ];
+
+    public $fillable = [
+        'tg_chat_id',
+        'tg_username',
+        'tg_phone',
+        'tg_address',
+        'user_id',
+        'firstname',
+        'lastname'
+    ];
+
+
     public $rules = [
         'firstname' => 'required',
-//        'lastname'  => 'required',
+        'lastname'  => 'required',
         'is_guest'  => 'boolean',
         'user_id'   => 'required|exists:users,id',
     ];

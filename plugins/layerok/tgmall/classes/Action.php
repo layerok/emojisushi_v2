@@ -5,6 +5,7 @@ use Layerok\TgMall\Facades\Telegram;
 use Layerok\TgMall\Models\Contact;
 use Illuminate\Support\Facades\Lang;
 use Layerok\TgMall\Models\Review;
+use OFFLINE\Mall\Models\Customer;
 
 class Action
 {
@@ -29,10 +30,10 @@ class Action
     public function handle()
     {
         if ($this->actionId == 1) {
-            $contact = Contact::where('chat_id', '=', $this->chatId)->first();
+            $contact = Customer::where('tg_chat_id', '=', $this->chatId)->first();
             if (!$contact) {
-                $contact = Contact::create([
-                    'chat_id' => $this->chatId
+                $contact = Customer::create([
+                    'tg_chat_id' => $this->chatId
                 ]);
             }
 
@@ -45,7 +46,7 @@ class Action
             $this->sys->addAction(2, $this->chatId);
             $this->clearActions = false;
         } elseif ($this->actionId == 2) {
-            Contact::where('chat_id', '=', $this->chatId)
+            Customer::where('tg_chat_id', '=', $this->chatId)
                 ->update([
                     "address" => $this->message
                 ]);
@@ -57,7 +58,7 @@ class Action
             $this->sys->addAction(3, $this->chatId);
             $this->clearActions = false;
         } elseif ($this->actionId == 3) {
-            Contact::where('chat_id', '=', $this->chatId)
+            Customer::where('tg_chat_id', '=', $this->chatId)
                 ->update([
                     "telephone" => $this->message
                 ]);

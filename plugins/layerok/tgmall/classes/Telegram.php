@@ -24,17 +24,19 @@ class Telegram
     // Accepts the chat ID to send to, text, keyboard (Optional)
     // Example: sendMessage (123456789, "Hello", ['inline_keyboard' => [[["text" => 'Hello', "callback_data" => "hello"]]]]);
     // Parameters: if $ marmurkup = [0], then the keyboard will be cleared
-    function sendMessage($chatId, $text, $markup=[]) {
-        if(!empty($markup)) {
-            if($markup[0] == "clear") {
+    public function sendMessage($chatId, $text, $markup = [])
+    {
+        \Log::info('inside sendMessage');
+        if (count($markup) > 0) {
+            if (isset($markup[0]) && $markup[0] == "clear") {
                 $markup = json_encode(['remove_keyboard' => true]);
             } else {
                 $markup = json_encode($markup);
             }
         }
         $parameters = [
-            "chat_id" 	=> $chatId,
-            "text"    	=> $text,
+            "chat_id" => $chatId,
+            "text" => $text,
             "reply_markup" => $markup,
             "parse_mode" => "HTML",
             "disable_web_page_preview" => false
@@ -168,49 +170,5 @@ class Telegram
 
 }
 
-// A constructor class that assembles an inline keyboard and prepares it to be sent to the user
-class InlineKeyboard {
-    public $keyboard = []; // Main keyboard body
 
-    // Method for adding a button to the keyboard
-    // Accepts the line number where the button should be placed (from 1), button text, callback_data, button type (callback_data or URL)
-    // Example: $keyboard->addButton(1, "Hello", "user_greeted")
-    function addButton($row, $text, $callbackData, $type="callback_data") {
-        if($row != 0) $row--;
-        if($type != "url") $callbackData = json_encode($callbackData);
-        $temp = ["text" => $text, $type => $callbackData];
-        $this->keyboard[$row][] = $temp;
-
-    }
-
-    // Method for assembling keyboard and preparing for sending to user
-    // Accepts nothing
-    // Example: $keyboard->printInlineKeyboard();
-    function printInlineKeyboard() {
-        return ["inline_keyboard" => array_values($this->keyboard)];
-    }
-}
-
-// Class for constructing a conventional embedded keyboard
-class Keyboard {
-    public $keyboard = []; // Main keyboard body
-
-    // Method for adding a button to the keyboard
-    // Accepts the line number where the button should be placed (from 1), button text
-    // Example: $keyboard->addButton(1, "Hello")
-    function addButton($row, $text) {
-        if($row != 0) $row--;
-        $this->keyboard[$row][] = $text;
-    }
-
-    // Method for assembling keyboard and preparing for sending to user
-    // Accepts a flag whether to resize the keyboard (optional)
-    // Example: $keyboard->printKeyboard(false);
-    function printKeyboard($resizeKeyboard = true) {
-        return [
-            "keyboard" => array_values($this->keyboard),
-            "resize_keyboard" => $resizeKeyboard
-        ];
-    }
-}
 ?>

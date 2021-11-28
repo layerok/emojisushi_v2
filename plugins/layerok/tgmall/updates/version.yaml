@@ -15,3 +15,6 @@
 1.1.6:
     - 'Update contacts table'
     - update_contacts_table.php
+1.1.7:
+    - 'Alter offline_mall_customers table'
+    - alter_offline_mall_customers_table.php

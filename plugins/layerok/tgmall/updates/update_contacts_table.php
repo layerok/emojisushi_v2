@@ -1,6 +1,6 @@
 <?php
 
-namespace Lovata\BaseCode\Updates;
+namespace Layerok\TgMall\Updates;
 
 use October\Rain\Database\Schema\Blueprint;
 use Schema;
