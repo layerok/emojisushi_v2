@@ -1,10 +1,14 @@
 <?php
 namespace Layerok\TgMall\Classes;
 
+use Layerok\TgMall\Models\Action;
+
 class Sys
 {
     public $fns;
-    function __construct() {
+
+    public function __construct()
+    {
         $this->fns = new Functions();
     }
     // Function for defining a new action
@@ -15,21 +19,15 @@ class Sys
             "chat_id" => $chatId,
             "action_id" => $index
         ];
-        $sqli->insertData("actions", $insert);
+        Action::create($insert);
         return true;
     }
 
     // Method for processing and removing action
     public function clearActions($chatId): void
     {
-        \DB::table('layerok_tgmall_actions')->where('chat_id', '=', $chatId)->delete();
+        Action::where('chat_id', '=', $chatId)
+            ->delete();
     }
 
-    public function isCallbackQuery($data):bool
-    {
-        if (empty($data)) {
-            return false;
-        }
-        return true;
-    }
 }

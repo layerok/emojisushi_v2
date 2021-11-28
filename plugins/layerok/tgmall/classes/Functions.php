@@ -235,4 +235,12 @@ class Functions
             $tg->sendMessage($chatId, \Lang::get("layerok.tgmall::telegram.busket_is_empty"));
         }
     }
+
+    public function isCallbackQuery($responseData):bool
+    {
+        if (empty($responseData->callback_query->data)) {
+            return false;
+        }
+        return true;
+    }
 }

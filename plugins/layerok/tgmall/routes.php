@@ -14,11 +14,12 @@ $webhookUrl = '/webhook' . $botToken;
 
 Route::post($webhookUrl, function () {
     /**
-     * Input file where webhook requests go from bot.
+     * Input file where webhook requests, sent from the bot, come.
      **/
 
     $testMode = true;
     $sys = new Sys();
+    $fns = new Functions();
 
     $responseBody = file_get_contents('php://input');
     $responseData = json_decode($responseBody);
@@ -35,7 +36,7 @@ Route::post($webhookUrl, function () {
     }
 
 
-    if ($sys->isCallbackQuery($responseData->callback_query->data)) {
+    if ($fns->isCallbackQuery($responseData)) {
         $callbackQueryId = $responseData->callback_query->id;
         $callbackQueryText = "";
         $cb = new CallbackQuery();

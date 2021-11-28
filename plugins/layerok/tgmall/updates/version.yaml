@@ -12,3 +12,6 @@
 1.1.5:
     - 'Create reviews table'
     - create_reviews_table.php
+1.1.6:
+    - 'Update contacts table'
+    - update_contacts_table.php

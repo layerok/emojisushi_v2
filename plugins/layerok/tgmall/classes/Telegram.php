@@ -165,17 +165,7 @@ class Telegram
 
         return $curlResult;
     }
-    // /*
-    // function loadLocalMediaFile($method, $parameters) {
 
-    // $url = "https://api.telegram.org/bot" . $this->botToken . "/" . $method;
-    // $ch = curl_init();
-    // curl_setopt($ch, CURLOPT_URL, $url);
-    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    // curl_setopt($ch, CURLOPT_POSTFIELDS, $parameters);
-    // $output = curl_exec($ch);
-    // }
-    // */
 }
 
 // A constructor class that assembles an inline keyboard and prepares it to be sent to the user
