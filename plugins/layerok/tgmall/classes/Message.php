@@ -47,13 +47,15 @@ class Message
 //            Telegram::sendMessage($chatId, $sf);
 //        }
 //
-//        if ($message == "/test2") {
-//            $photo = "https://m.mac-cosmetics.ru/media/export/cms/products/640x600/mac_sku_M2LPHW_640x600_0.jpg";
-//
-//            $sf = Telegram::sendPhoto($chatId, $photo);
-//
-//            Telegram::sendMessage($chatId, $sf);
-//        }
+        if ($message == "/photo") {
+            $photo = "https://emojisushi.com.ua/storage/app/media/broken.png";
+
+
+            $sf = Telegram::sendPhoto($chatId, $photo);
+
+
+            Telegram::sendMessage($chatId, $sf);
+        }
 
         if ($message == "/start") {
             \Log::info('inside /start handler');
@@ -77,7 +79,8 @@ class Message
 
 
             $this->fns->sendMainPanel1($chatId, $firstName);
-        } elseif ($message == Lang::get('layerok.tgmall::telegram.review')) {
+        }
+        elseif ($message == Lang::get('layerok.tgmall::telegram.review')) {
             $z = 1;
             $k = new InlineKeyboard();
 
@@ -97,7 +100,7 @@ class Message
                 $k->printInlineKeyboard()
             );
         } elseif ($message == Lang::get('layerok.tgmall::telegram.menu')) {
-            $this->fns->printMainMenu();
+            $this->fns->printMainMenu($chatId);
         } elseif ($message == Lang::get('layerok.tgmall::telegram.contact')) {
             Telegram::sendMessage(
                 $chatId,

@@ -1,76 +1,14 @@
 <?php
-use Layerok\TgMall\Facades\Telegram;
-use Layerok\TgMall\Classes\Functions;
-use Layerok\TgMall\Classes\Action;
-use Layerok\TgMall\Classes\Message;
-use Layerok\TgMall\Classes\Sys;
+
 use Illuminate\Support\Facades\Route;
-use Layerok\TgMall\Classes\CallbackQuery;
-use Layerok\TgMall\Models\Contact;
-use Layerok\TgMall\Models\Action as ActionModel;
-use OFFLINE\Mall\Models\Customer;
-use OFFLINE\Mall\Models\User;
+use OFFLINE\Mall\Models\Category;
+use Layerok\TgMall\Classes\Webhook;
 
 $botToken = Config::get('layerok.tgmall::botToken');
 $webhookUrl = '/webhook' . $botToken;
 
 Route::post($webhookUrl, function () {
-    /**
-     * Input file where webhook requests, sent from the bot, come.
-     **/
-
-    $testMode = false;
-    $sys = new Sys();
-    $fns = new Functions();
-
-    $responseBody = file_get_contents('php://input');
-    $responseData = json_decode($responseBody);
-    date_default_timezone_set("Europe/Kiev");
-
-
-    $data = json_encode([
-            date('m.d.Y h:i:s', time()) => $responseData
-        ]) . "\n";
-    \Log::info($data);
-
-
-    if ($testMode) {
-        return;
-    }
-
-
-    if ($fns->isCallbackQuery($responseData)) {
-        $callbackQueryId = $responseData->callback_query->id;
-        $callbackQueryText = "";
-        $cb = new CallbackQuery();
-
-        $cb->handle($responseData);
-        Telegram::answerCallbackQuery($callbackQueryId, $callbackQueryText);
-    } else {
-        $chatId = $responseData->message->chat->id;
-        $message = $responseData->message->text;
-        //$messageId = $responseData->message->message_id;
-
-
-        if ($message == "/start") {
-            $sys->clearActions($chatId);
-        }
-
-        $actions = ActionModel::select('action_id')
-            ->where('chat_id', '=', $chatId)
-            ->get();
-
-
-        if ($actions->count()) {
-            $action = new Action($chatId, $actions->first()->action_id, $message);
-            if ($action->clearActions) {
-                $sys->clearActions($chatId);
-            };
-        } else {
-            $msg = new Message();
-            $msg->handle($responseData);
-        }
-    }
+    new Webhook();
 });
 
 
@@ -107,7 +45,22 @@ Route::get('/test-tgmall', function () {
 //        dd($arr[0]);
 //    }
 
-    $msg = Lang::get('layerok.tgmall::lang.telegram.menu');
-    dd($msg);
+//    $msg = Lang::get('layerok.tgmall::lang.telegram.menu');
+//    dd($msg);
+
+    $product = \OFFLINE\Mall\Models\Product::find(56);
+
+//    $photoIdOrUrl = $product->image->file_id ?? $product->image->path;
+//
+//    $product->image->file_id = null;
+//    $product->image->save();
+//
+//
+//
+//    dd($photoIdOrUrl);
+
+    $products = Category::where('id', '=', 2)->first()->products;
+
+    dd($products);
 
 });

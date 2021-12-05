@@ -1,50 +1,55 @@
 <?php
 namespace Layerok\TgMall\Classes;
 
-use Illuminate\Support\Facades\Lang;
+use Layerok\TgMall\Classes\Callback\Constants;
 use Layerok\TgMall\Facades\Telegram;
+use OFFLINE\Mall\Models\Category;
 
 class Functions
 {
+    use \Layerok\TgMall\Traits\Lang;
     public function getExtension($filename)
     {
         $explode = explode('.', $filename);
         return end($explode);
     }
 
-//    public function printMainMenu()
-//    {
-//        $keyboard = new InlineKeyboard();
-//        $i = 1;
-//        foreach ($sqli->getArrayData("categories", "1") as $row) {
-//            $keyboard->addButton(
-//                $i,
-//                $row["title"],
-//                [
-//                    "tag" => "select_category", "category_id" => $row["id"],
-//                    "page" => 1
-//                ]
-//            );
-//            $i++;
-//        }
-//        $keyboard->addButton(
-//            $z,
-//            Lang::get('layerok.tgmall::lang.telegram.in_menu_main'),
-//            "in_menu_main"
-//        );
-//        Telegram::sendMessage(
-//            $chatId,
-//            Lang::get('layerok.tgmall::lang.telegram.menu_text'),
-//            $keyboard->printInlineKeyboard()
-//        );
-//    }
-//
-//
+    public function printMainMenu($chatId)
+    {
+        \Log::info('Начинаем формировать список кнопок категорий');
+        $keyboard = new InlineKeyboard();
+        $categories = Category::all();
+        $categories->map(function ($row, $idx) use ($keyboard) {
+            $keyboard->addButton(
+                (int)$idx + 1,
+                $row->name,
+                [
+                    "tag" => "select_category",
+                    "category_id" => $row->id,
+                    "page" => 1
+                ]
+            );
+        });
+        \Log::info('Колличество категорий: ' . $categories->count());
+
+        $keyboard->addButton(
+            $categories->count() + 1,
+            $this->lang('in_menu_main'),
+            "in_menu_main"
+        );
+        Telegram::sendMessage(
+            $chatId,
+            $this->lang('menu_text'),
+            $keyboard->printInlineKeyboard()
+        );
+    }
+
+
 //    public function askName($chatId)
 //    {
 //        Telegram::sendMessage(
 //            $chatId,
-//            Lang::get('layerok.tgmall::lang.telegram.ask_name')
+//            $this->lang('ask_name')
 //        );
 //        addAction(1, $chatId);
 //
@@ -52,23 +57,23 @@ class Functions
 
     public function sendMainPanel1($chatId, $firstName)
     {
-        \Log::info('inside sendMainPanel1 fn');
+        \Log::info('Начинаем формировать главное меню');
         if (empty($firstName)) {
-            $name = Lang::get('layerok.tgmall::lang.telegram.added_start_text') .
-                Lang::get('layerok.tgmall::lang.telegram.start_text');
+            $name = $this->lang('added_start_text') .
+                $this->lang('start_text');
         }
         else {
-            $name = $firstName . Lang::get('layerok.tgmall::lang.telegram.added_start_text_in_name') .
-                Lang::get('layerok.tgmall::lang.telegram.start_text');
+            $name = $firstName . $this->lang('added_start_text_in_name') .
+                $this->lang('start_text');
         }
 
         $keyboard = new InlineKeyboard();
-        $keyboard->addButton(1, Lang::get('layerok.tgmall::lang.telegram.menu'), "menu");
-        $keyboard->addButton(1, Lang::get('layerok.tgmall::lang.telegram.busket'), "busket");
-        $keyboard->addButton(2, Lang::get('layerok.tgmall::lang.telegram.delivery_and_pay'), "delivery_and_pay");
-        $keyboard->addButton(2, Lang::get('layerok.tgmall::lang.telegram.my_order'), "my_order");
-        $keyboard->addButton(3, Lang::get('layerok.tgmall::lang.telegram.review'), "review");
-        $keyboard->addButton(3, Lang::get('layerok.tgmall::lang.telegram.contact'), "contact");
+        $keyboard->addButton(1, $this->lang('menu'), Constants::SHOW_MENU);
+        $keyboard->addButton(1, $this->lang('busket'), "busket");
+        $keyboard->addButton(2, $this->lang('delivery_and_pay'), "delivery_and_pay");
+        $keyboard->addButton(2, $this->lang('my_order'), "my_order");
+        $keyboard->addButton(3, $this->lang('review'), "review");
+        $keyboard->addButton(3, $this->lang('contact'), "contact");
 
         Telegram::sendMessage($chatId, $name, $keyboard->printInlineKeyboard());
     }
@@ -82,15 +87,15 @@ class Functions
 //
 //        $pointTitle = $sqli->selectData("points", "`id` = " . $contactz["point_id"], "title");
 //
-//        $msg = "<b>" . \Lang::get('layerok.tgmall::lang.telegram.new_order') . " №" . $order["id"] . "</b>\n\n";
-//        $msg .= \Lang::get('layerok.tgmall::lang.telegram.dish') . "\n";
+//        $msg = "<b>" . \$this->lang('new_order') . " №" . $order["id"] . "</b>\n\n";
+//        $msg .= \$this->lang('dish') . "\n";
 //
 //        $allAmount = 0;
 //
 //        foreach($sqli->getArrayData("positions_in_order", "`order_id` = " . $order["id"]) as $row) {
 //            $position = $sqli->selectData("positions", "`id` = " . $row["position_id"]);
 //            $amount = $row["count"] * $position["amount"];
-//            $msg .= $position["title"] . " - " . $row["count"] . " " . \Lang::get('layerok.tgmall::lang.telegram.measuring_system') . " (" . $position["amount"] . " " . \Lang::get('layerok.tgmall::lang.telegram.valute') . " / " . $amount . " " . \Lang::get('layerok.tgmall::lang.telegram.valute') . ")\n";
+//            $msg .= $position["title"] . " - " . $row["count"] . " " . \$this->lang('measuring_system') . " (" . $position["amount"] . " " . \$this->lang('valute') . " / " . $amount . " " . \$this->lang('valute') . ")\n";
 //            $allAmount += $amount;
 //        }
 //
@@ -103,21 +108,21 @@ class Functions
 //        if($discountAmount != 0) {
 //            $amountText = " -$discountAmount грн. по промокоду `" . $order["promocode"] . "`";
 //        } else {
-//            $amountText = "0" . \Lang::get('layerok.tgmall::lang.telegram.valute');
+//            $amountText = "0" . \$this->lang('valute');
 //        }
 //
 //
-//        $msg .= "\n" . \Lang::get('layerok.tgmall::lang.telegram.amount') . "\n" . \Lang::get('layerok.tgmall::lang.telegram.fullprice') . $allAmount . \Lang::get('layerok.tgmall::lang.telegram.valute') . "\n" . \Lang::get('layerok.tgmall::lang.telegram.discount') . $amountText . "\n" . \Lang::get('layerok.tgmall::lang.telegram.all') . $allAmountAfterDisc . \Lang::get('layerok.tgmall::lang.telegram.valute');
+//        $msg .= "\n" . \$this->lang('amount') . "\n" . \$this->lang('fullprice') . $allAmount . \$this->lang('valute') . "\n" . \$this->lang('discount') . $amountText . "\n" . \$this->lang('all') . $allAmountAfterDisc . \$this->lang('valute');
 //
-//        $msg .= "\n\n" . \Lang::get('layerok.tgmall::lang.telegram.contact_text');
-//        $msg .= "\n" . \Lang::get('layerok.tgmall::lang.telegram.name_text') . $contactz["name"];
-//        $msg .= "\n" . \Lang::get('layerok.tgmall::lang.telegram.adress_text') . $contactz["address"];
-//        $msg .= "\n" . \Lang::get('layerok.tgmall::lang.telegram.phone_text') . $contactz["telephone"];
+//        $msg .= "\n\n" . \$this->lang('contact_text');
+//        $msg .= "\n" . \$this->lang('name_text') . $contactz["name"];
+//        $msg .= "\n" . \$this->lang('adress_text') . $contactz["address"];
+//        $msg .= "\n" . \$this->lang('phone_text') . $contactz["telephone"];
 //
-//        $msg .= "" . \Lang::get('layerok.tgmall::lang.telegram.pay_type');
+//        $msg .= "" . \$this->lang('pay_type');
 //
-//        if($order["pay_type"] == 1) $msg .= \Lang::get('layerok.tgmall::lang.telegram.pay_online');
-//        else $msg .= \Lang::get('layerok.tgmall::lang.telegram.pay_offline');
+//        if($order["pay_type"] == 1) $msg .= \$this->lang('pay_online');
+//        else $msg .= \$this->lang('pay_offline');
 //
 //
 //        $q = [
@@ -168,7 +173,7 @@ class Functions
 //    {
 //        global $sqli, $tg, $_text;
 //
-//        $tg->sendMessage($chatId, \Lang::get('layerok.tgmall::lang.telegram.busket'));
+//        $tg->sendMessage($chatId, \$this->lang('busket'));
 //
 //
 //        $sendErrorMessage = true;
@@ -191,12 +196,12 @@ class Functions
 //
 //                $sendErrorMessage = false;
 //                $k = new InlineKeyboard();
-//                $k->addButton(1, \Lang::get('layerok.tgmall::lang.telegram.minus'), ["tag" => "position_count_basket" , "position_id" =>$position["id"], "count" => $prevPage]);
+//                $k->addButton(1, \$this->lang('minus'), ["tag" => "position_count_basket" , "position_id" =>$position["id"], "count" => $prevPage]);
 //                $k->addButton(1, $countPosition . "/10", "count_form");
-//                $k->addButton(1, \Lang::get('layerok.tgmall::lang.telegram.plus'), ["tag" => "position_count_basket" , "position_id" =>$position["id"], "count" => $nextPage]);
-//                $k->addButton(1, \Lang::get('layerok.tgmall::lang.telegram.del'), ["tag" => "delete_position" , "position_in_order_id" =>$row["id"]]);
+//                $k->addButton(1, \$this->lang('plus'), ["tag" => "position_count_basket" , "position_id" =>$position["id"], "count" => $nextPage]);
+//                $k->addButton(1, \$this->lang('del'), ["tag" => "delete_position" , "position_in_order_id" =>$row["id"]]);
 //
-//                $k->addButton(2, str_replace("*price*", $positionAmount, \Lang::get('layerok.tgmall::lang.telegram.prise_position_basket')), "123");
+//                $k->addButton(2, str_replace("*price*", $positionAmount, \$this->lang('prise_position_basket')), "123");
 //
 //                $tg->sendPhoto($chatId, $position["cover"], "<b>" . $position["title"] . "</b>\n\n" . $position["description"], $k->printInlineKeyboard());
 //
@@ -216,15 +221,15 @@ class Functions
 //                }
 //
 //                $k = new InlineKeyboard();
-//                $k->addButton(1,  str_replace("*price*", $amountText, \Lang::get('layerok.tgmall::lang.telegram.all_amount_order')), "321");
-//                $k->addButton(2,  \Lang::get('layerok.tgmall::lang.telegram.take_order'), "take_order");
+//                $k->addButton(1,  str_replace("*price*", $amountText, \$this->lang('all_amount_order')), "321");
+//                $k->addButton(2,  \$this->lang('take_order'), "take_order");
 //                if(is_null($order["promocode"])) {
-//                    $k->addButton(3,  \Lang::get('layerok.tgmall::lang.telegram.promocode'), "enter_promocode");
+//                    $k->addButton(3,  \$this->lang('promocode'), "enter_promocode");
 //                } else {
-//                    $k->addButton(3,  \Lang::get('layerok.tgmall::lang.telegram.promocode_is_active'), "promocode_is_active");
+//                    $k->addButton(3,  \$this->lang('promocode_is_active'), "promocode_is_active");
 //                }
-//                $k->addButton(4,  \Lang::get('layerok.tgmall::lang.telegram.in_menu_main'), "in_menu_main");
-//                $dotMessage = json_decode($tg->sendMessage($chatId, \Lang::get('layerok.tgmall::lang.telegram.rasd'), $k->printInlineKeyboard()))->result->message_id;
+//                $k->addButton(4,  \$this->lang('in_menu_main'), "in_menu_main");
+//                $dotMessage = json_decode($tg->sendMessage($chatId, \$this->lang('rasd'), $k->printInlineKeyboard()))->result->message_id;
 //
 //                $upd = [
 //                    "message_id" => $dotMessage
@@ -234,15 +239,8 @@ class Functions
 //        }
 //
 //        if($sendErrorMessage) {
-//            $tg->sendMessage($chatId, \Lang::get('layerok.tgmall::lang.telegram.busket_is_empty'));
+//            $tg->sendMessage($chatId, \$this->lang('busket_is_empty'));
 //        }
 //    }
 
-    public function isCallbackQuery($responseData):bool
-    {
-        if (empty($responseData->callback_query->data)) {
-            return false;
-        }
-        return true;
-    }
 }
