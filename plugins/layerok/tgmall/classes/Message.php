@@ -51,14 +51,13 @@ class Message
             $photo = "https://emojisushi.com.ua/storage/app/media/broken.png";
 
 
-            $sf = Telegram::sendPhoto($chatId, $photo);
+            $sf = Telegram::sendPhoto($photo);
 
 
-            Telegram::sendMessage($chatId, $sf);
+            Telegram::sendMessage($sf);
         }
 
         if ($message == "/start") {
-            \Log::info('inside /start handler');
             $customer = Customer::where('tg_chat_id', '=', $chatId)->first();
             \Log::info('customer found: ' . json_encode($customer));
             if (!$customer) {
@@ -95,7 +94,6 @@ class Message
             }
 
             Telegram::sendMessage(
-                $chatId,
                 Lang::get('layerok.tgmall::telegram.ask_review'),
                 $k->printInlineKeyboard()
             );
@@ -103,12 +101,10 @@ class Message
             $this->fns->printMainMenu($chatId);
         } elseif ($message == Lang::get('layerok.tgmall::telegram.contact')) {
             Telegram::sendMessage(
-                $chatId,
                 Lang::get('layerok.tgmall::telegram.zavernuli_contact')
             );
         } elseif ($message == Lang::get('layerok.tgmall::telegram.delivery_and_pay')) {
             Telegram::sendMessage(
-                $chatId,
                 Lang::get('layerok.tgmall::telegram.delivery_and_pay_text')
             );
         } elseif ($message == Lang::get('layerok.tgmall::telegram.my_order')) {
@@ -130,7 +126,6 @@ class Message
                 $z++;
             }
             Telegram::sendMessage(
-                $chatId,
                 Lang::get('layerok.tgmall::telegram.old_order'),
                 $k->printInlineKeyboard()
             );

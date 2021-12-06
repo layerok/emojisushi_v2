@@ -8,7 +8,7 @@ use OFFLINE\Mall\Models\Category;
 use Config;
 use OFFLINE\Mall\Models\Customer;
 
-class SelectCategory implements Action
+class ShowProductsByCategory implements Action
 {
     use \Layerok\TgMall\Traits\Lang;
     public $callback;
@@ -19,6 +19,7 @@ class SelectCategory implements Action
 
     public function run()
     {
+        $this->chatId = Telegram::getChatId();
         $limit = \Config::get('layerok.tgmall::productsInPage');
         \Log::info('products in one page ' . $limit);
         $categoryId = $this->callback->category_id;
@@ -131,7 +132,6 @@ class SelectCategory implements Action
                 $caption = "<b>" . $product->name . "</b>\n\n" . \Html::strip($product->description);
                 $photoData = json_decode(
                     Telegram::sendPhoto(
-                        $this->chatId,
                         $photoIdOrUrl,
                         $caption,
                         $k->printInlineKeyboard()
@@ -161,10 +161,9 @@ class SelectCategory implements Action
                     $key->addButton(
                         3,
                         $this->lang("in_menu_main"),
-                        "in_menu_main"
+                        Constants::GO_TO_MAIN_MENU
                     );
                     Telegram::sendMessage(
-                        $this->chatId,
                         $this->lang("triple_dot"),
                         $key->printInlineKeyboard()
                     );

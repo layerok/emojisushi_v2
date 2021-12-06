@@ -14,9 +14,8 @@ class Functions
         return end($explode);
     }
 
-    public function printMainMenu($chatId)
+    public function printMainMenu()
     {
-        \Log::info('Начинаем формировать список кнопок категорий');
         $keyboard = new InlineKeyboard();
         $categories = Category::all();
         $categories->map(function ($row, $idx) use ($keyboard) {
@@ -24,21 +23,19 @@ class Functions
                 (int)$idx + 1,
                 $row->name,
                 [
-                    "tag" => "select_category",
+                    "tag" => Constants::SHOW_PRODUCTS_BY_CATEGORY,
                     "category_id" => $row->id,
                     "page" => 1
                 ]
             );
         });
-        \Log::info('Колличество категорий: ' . $categories->count());
 
         $keyboard->addButton(
             $categories->count() + 1,
             $this->lang('in_menu_main'),
-            "in_menu_main"
+            Constants::GO_TO_MAIN_MENU
         );
         Telegram::sendMessage(
-            $chatId,
             $this->lang('menu_text'),
             $keyboard->printInlineKeyboard()
         );
@@ -55,7 +52,7 @@ class Functions
 //
 //    }
 
-    public function sendMainPanel1($chatId, $firstName)
+    public function sendMainPanel1($firstName)
     {
         \Log::info('Начинаем формировать главное меню');
         if (empty($firstName)) {
@@ -75,7 +72,7 @@ class Functions
         $keyboard->addButton(3, $this->lang('review'), "review");
         $keyboard->addButton(3, $this->lang('contact'), "contact");
 
-        Telegram::sendMessage($chatId, $name, $keyboard->printInlineKeyboard());
+        Telegram::sendMessage($name, $keyboard->printInlineKeyboard());
     }
 
 //    public function sendNotifications($order)

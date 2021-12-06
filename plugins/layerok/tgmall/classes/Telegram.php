@@ -7,6 +7,7 @@ class Telegram
 {
 
     public $botToken; // Bot token
+    private $chatId;
 
 
     // Function for getting and saving the bot token
@@ -25,11 +26,15 @@ class Telegram
     // Accepts the chat ID to send to, text, keyboard (Optional)
     // Example: sendMessage (123456789, "Hello", ['inline_keyboard' => [[["text" => 'Hello', "callback_data" => "hello"]]]]);
     // Parameters: if $ markup = [0], then the keyboard will be cleared
-    public function sendMessage($chatId, $text, $markup = [])
+    public function sendMessage($text, $markup = [])
     {
+        if (!$this->chatIdIsset()) {
+            return false;
+        }
+
         \Log::info('starting sending message to telegram');
         \Log::info('markup array count ' . (count($markup)));
-        \Log::info('chatId: ' . $chatId);
+        \Log::info('chatId: ' . $this->chatId);
         \Log::info('Text to send: ' . $text);
         \Log::info('Markup: '. json_encode($markup, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES));
         if (count($markup) > 0) {
@@ -42,7 +47,7 @@ class Telegram
         }
 
         $parameters = [
-            "chat_id" => $chatId,
+            "chat_id" => $this->chatId,
             "text" => $text,
             "reply_markup" => $markup,
             "parse_mode" => "HTML",
@@ -132,12 +137,15 @@ class Telegram
     // Method for sending pictures
     // Accepts chat ID and file_id
     // Example: sendPhoto ($ chatId, $ fileId)
-    public function sendPhoto($chatId, $fileId, $caption = "", $markup = [])
+    public function sendPhoto($fileId, $caption = "", $markup = [])
     {
+        if (!$this->chatIdIsset()) {
+            return false;
+        }
         \Log::info('[Telegram sendPhoto] markup: '. json_encode($markup, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES));
 
         $parameters = array(
-            "chat_id" => $chatId,
+            "chat_id" => $this->chatId,
             "parse_mode" => "HTML",
             "caption" => $caption,
             "photo" => $fileId
@@ -184,6 +192,28 @@ class Telegram
         curl_close($ch);
 
         return $curlResult;
+    }
+
+    public function setChatId($chatId):Telegram
+    {
+        $this->chatId = $chatId;
+        return $this;
+    }
+
+    public function getChatId():string
+    {
+        return $this->chatId;
+    }
+
+    private function chatIdIsset():bool
+    {
+        if (is_null($this->chatId)) {
+            \Log::info('chatId is null on Telegram facade');
+            return false;
+        } else {
+            \Log::info('chatId: ' . $this->chatId);
+            return true;
+        }
     }
 
 }

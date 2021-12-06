@@ -32,6 +32,9 @@ class Webhook
         $isCallbackQuery = !empty($responseData->callback_query->data);
 
         if ($isCallbackQuery) {
+            $chatId = $responseData->callback_query->message->chat->id;
+            Telegram::setChatId($chatId);
+
             $callbackQueryId = $responseData->callback_query->id;
             $callbackQueryText = "";
             $cb = new CallbackQuery($responseData);
@@ -40,6 +43,8 @@ class Webhook
             Telegram::answerCallbackQuery($callbackQueryId, $callbackQueryText);
         } else {
             $chatId = $responseData->message->chat->id;
+            Telegram::setChatId($chatId);
+
             $message = $responseData->message->text;
             //$messageId = $responseData->message->message_id;
 

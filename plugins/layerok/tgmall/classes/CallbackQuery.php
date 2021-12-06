@@ -8,6 +8,7 @@ class CallbackQuery
     public $config;
     public $chatId;
     public $callback;
+    public $response;
 
 
     public function __construct($responseData)
@@ -15,6 +16,7 @@ class CallbackQuery
         $this->fns = new Functions();
         $this->chatId = $responseData->callback_query->message->chat->id;
         $this->callback = json_decode($responseData->callback_query->data);
+        $this->response = $responseData;
     }
 
     public function runCallbackAction($name)
@@ -30,6 +32,7 @@ class CallbackQuery
             $instance->chatId = $this->chatId;
             $instance->callback = $this->callback;
             $instance->fns = $this->fns;
+            $instance->response = $this->response;
 
             $instance->run();
         } else {

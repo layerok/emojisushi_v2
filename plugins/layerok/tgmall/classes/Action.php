@@ -40,7 +40,6 @@ class Action
             $contact->update(["name" => $this->message]);
 
             Telegram::sendMessage(
-                $this->chatId,
                 Lang::get("layerok.tgmall::telegram.ask_address")
             );
             $this->sys->addAction(2, $this->chatId);
@@ -52,7 +51,6 @@ class Action
                 ]);
 
             Telegram::sendMessage(
-                $this->chatId,
                 Lang::get("layerok.tgmall::telegram.ask_telephone")
             );
             $this->sys->addAction(3, $this->chatId);
@@ -77,7 +75,6 @@ class Action
             );
 
             Telegram::sendMessage(
-                $this->chatId,
                 Lang::get("layerok.tgmall::telegram.ask_pay"),
                 $k->printInlineKeyboard()
             );
@@ -98,7 +95,6 @@ class Action
                 "in_menu_main"
             );
             Telegram::sendMessage(
-                $this->chatId,
                 Lang::get("layerok.tgmall::telegram.end_review"),
                 $k->printInlineKeyboard()
             );
