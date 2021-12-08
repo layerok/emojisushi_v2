@@ -44,7 +44,8 @@
         "october/cms": "1.1.*",
         "laravel/framework": "~6.0",
         "wikimedia/composer-merge-plugin": "dev-feature/composer-v2 as 1.5.0",
-        "poster/api": "^1.0"
+        "poster/api": "^1.0",
+        "irazasyed/telegram-bot-sdk": "^3.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.4|^9.3.3",

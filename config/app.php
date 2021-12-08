@@ -81,7 +81,7 @@ return [
     |
     */
 
-    'locale' => 'en',
+    'locale' => 'ru',
 
     /*
     |--------------------------------------------------------------------------
@@ -127,7 +127,8 @@ return [
         // 'Illuminate\Html\HtmlServiceProvider', // Example
 
         'System\ServiceProvider',
-        'Layerok\TgMall\providers\TelegramServiceProvider'
+        'Telegram\Bot\Laravel\TelegramServiceProvider',
+//        'Layerok\TgMall\providers\TelegramServiceProvider'
     ]),
 
     /*
@@ -164,7 +165,8 @@ return [
     'aliases' => array_merge(include(base_path('modules/system/aliases.php')), [
 
         // 'Str' => 'Illuminate\Support\Str', // Example
-        'Telegram' => Layerok\TgMall\Facades\Telegram::class
+        // 'Telegram' => Layerok\TgMall\Facades\Telegram::class,
+        'Telegram' => Telegram\Bot\Laravel\Facades\Telegram::class
 
     ]),
 
