@@ -8,6 +8,7 @@ use Telegram\Bot\Actions;
 use Layerok\TgMall\Traits\Lang;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Keyboard\Button;
+use function MongoDB\BSON\toJSON;
 
 class StartCommand extends Command
 {
@@ -29,7 +30,6 @@ class StartCommand extends Command
         $from = $update->getMessage()->getFrom();
         $chat = $update->getChat();
 
-
         $customer = Customer::where('tg_chat_id', '=', $chat->id)->first();
 
         if (!$customer) {
@@ -49,20 +49,11 @@ class StartCommand extends Command
         } else {
             \Log::info('customer found: ' . $customer->toJson());
         }
-        // This will send a message using `sendMessage` method behind the scenes to
-        // the user/chat id who triggered this command.
-        // `replyWith<Message|Photo|Audio|Video|Voice|Document|Sticker|Location|ChatAction>()` all the available methods are dynamically
-        // handled when you replace `send<Method>` with `replyWith` and use the same parameters - except chat_id does NOT need to be included in the array.
 
         $text = sprintf(
             $this->lang('start_text'),
             $from->username
         );
-
-
-        // This will update the chat status to typing...
-        //$this->replyWithChatAction(['action' => Actions::TYPING]);
-
 
         $keyboard = new Keyboard();
         $keyboard->inline();
@@ -71,14 +62,33 @@ class StartCommand extends Command
         $row2 = [];
         $row3 = [];
 
-        $row1[] = $keyboard::inlineButton(['text' => $this->lang('menu'),'callback_data' => Constants::SHOW_MENU]);
-        $row1[] = $keyboard::inlineButton(['text' => $this->lang('busket'),'callback_data' => "busket"]);
+        $row1[] = $keyboard::inlineButton([
+            'text' => $this->lang('menu'),
+            'callback_data' => 'menu'
+        ]);
+        $row1[] = $keyboard::inlineButton([
+            'text' => $this->lang('busket'),
+            'callback_data' => "busket"
+        ]);
 
-        $row2[] = $keyboard::inlineButton(['text' => $this->lang('delivery_and_pay'), 'callback_data' => "delivery_and_pay"]);
-        $row2[] = $keyboard::inlineButton(['text' => $this->lang('my_order'), 'callback_data' => "my_order"]);
+        $row2[] = $keyboard::inlineButton([
+                'text' => $this->lang('delivery_and_pay'),
+                'callback_data' => "delivery_and_pay"
+        ]);
+        $row2[] = $keyboard::inlineButton([
+                'text' => $this->lang('my_order'),
+                'callback_data' => "my_order"
+        ]);
 
-        $row3[] = $keyboard::inlineButton(['text' => $this->lang('review'), 'callback_data' => "review"]);
-        $row3[] = $keyboard::inlineButton(['text' => $this->lang('contact'), 'callback_data' => "contact"]);
+        $row3[] = $keyboard::inlineButton([
+                'text' => $this->lang('review'),
+                'callback_data' => "review"
+        ]);
+        $row3[] = $keyboard::inlineButton([
+            'text' => $this->lang('contact'),
+            'callback_data' => "contact"
+        ]);
+
 
         $keyboard->row(...$row1);
         $keyboard->row(...$row2);
@@ -88,12 +98,5 @@ class StartCommand extends Command
             'text' => $text,
             'reply_markup' => $keyboard->toJson()
         ]);
-
-        // Trigger another command dynamically from within this command
-        // When you want to chain multiple commands within one or process the request further.
-        // The method supports second parameter arguments which you can optionally pass, By default
-        // it'll pass the same arguments that are received for this command originally.
-
-        //$this->triggerCommand('subscribe');
     }
 }

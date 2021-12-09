@@ -1,72 +1,45 @@
 <?php namespace Layerok\TgMall\Classes;
 
-use Layerok\TgMall\Facades\Telegram;
-use Layerok\TgMall\Models\Action as ActionModel;
+use League\Event\Emitter;
+use Telegram\Bot\Laravel\Facades\Telegram;
+use Telegram\Bot\Events\UpdateWasReceived;
+use Log;
+use Layerok\TgMall\Commands\StartCommand;
+use Layerok\TgMall\Commands\MenuCommand;
 
 class Webhook
 {
     public function __construct()
     {
-        /**
-         * Input file where webhook requests, sent from the bot, come.
-         **/
-
-        $testMode = false;
-        $sys = new Sys();
-        $fns = new Functions();
-
-        $responseBody = file_get_contents('php://input');
-        $responseData = json_decode($responseBody);
-        date_default_timezone_set("Europe/Kiev");
 
 
-        \Log::info('--------------------');
-        \Log::info('Пришел хук от телеги');
-        \Log::info(json_encode($responseData, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES));
+        $emitter = new Emitter();
 
+        $emitter->addListener(UpdateWasReceived::class, function ($event) {
+            $update = $event->getUpdate();
+            $telegram = $event->getTelegram();
+            Log::info('---------START-----------');
+            Log::info('Пришел хук от телеги c типом [' . $update->detectType() . ']');
+            Log::info($update->toJson());
 
-        if ($testMode) {
-            return;
-        }
+            if ($update->detectType() === 'callback_query') {
+                $callbackQuery = $update->getCallbackQuery();
 
-        $isCallbackQuery = !empty($responseData->callback_query->data);
+                Telegram::answerCallbackQuery([
+                    'callback_query_id' => $callbackQuery->id
+                ]);
 
-        if ($isCallbackQuery) {
-            $chatId = $responseData->callback_query->message->chat->id;
-            Telegram::setChatId($chatId);
-
-            $callbackQueryId = $responseData->callback_query->id;
-            $callbackQueryText = "";
-            $cb = new CallbackQuery($responseData);
-
-            $cb->handle();
-            Telegram::answerCallbackQuery($callbackQueryId, $callbackQueryText);
-        } else {
-            $chatId = $responseData->message->chat->id;
-            Telegram::setChatId($chatId);
-
-            $message = $responseData->message->text;
-            //$messageId = $responseData->message->message_id;
-
-
-            if ($message == "/start") {
-                $sys->clearActions($chatId);
+                Telegram::triggerCommand($callbackQuery->data, $update);
             }
+        });
 
-            $actions = ActionModel::select('action_id')
-                ->where('chat_id', '=', $chatId)
-                ->get();
+        Telegram::setEventEmitter($emitter);
 
+        Telegram::addCommand(StartCommand::class);
+        Telegram::addCommand(MenuCommand::class);
 
-            if ($actions->count()) {
-                $action = new Action($chatId, $actions->first()->action_id, $message);
-                if ($action->clearActions) {
-                    $sys->clearActions($chatId);
-                };
-            } else {
-                $msg = new Message();
-                $msg->handle($responseData);
-            }
-        }
+        Telegram::useWebhook();
+
+        Log::info('[---------END-----------');
     }
 }
