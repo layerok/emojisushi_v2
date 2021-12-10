@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Support\Facades\Route;
 use Layerok\TgMall\Classes\Webhook;
 
@@ -11,13 +13,5 @@ Route::post($webhookUrl, function () {
     new Webhook();
 });
 
+include('test_routes.php');
 
-Route::get('/test-tgmall', function () {
-    $response = \Telegram::getMe();
-
-    $botId = $response->getId();
-    $firstName = $response->getFirstName();
-    $username = $response->getUsername();
-
-    dd($botId, $firstName, $username);
-});

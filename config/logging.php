@@ -33,7 +33,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['daily'],
+            'channels' => ['daily', 'monolog'],
             'ignore_exceptions' => false,
         ],
 
@@ -86,6 +86,17 @@ return [
             'driver' => 'errorlog',
             'level' => 'debug',
         ],
+
+        'monolog'  => [
+            'driver' => 'monolog',
+            'level' => 'error',
+            'handler' => \Monolog\Handler\NativeMailerHandler::class,
+            'with' => [
+                'to' => env('LOG_ERROR_EMAIL_TO', 'kotopes231@gmail.com'),
+                'subject' => env('LOG_ERROR_EMAIL_SUBJECT', '[Error] emojisushi.com.ua'),
+                'from'    => env('LOG_ERROR_EMAIL_FROM', 'kotopes231@gmail.com')
+            ]
+        ]
     ],
 
 ];

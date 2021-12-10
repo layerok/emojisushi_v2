@@ -12,7 +12,6 @@ class Webhook
     public function __construct()
     {
 
-
         $emitter = new Emitter();
 
         $emitter->addListener(UpdateWasReceived::class, function ($event) {
