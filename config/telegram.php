@@ -41,11 +41,11 @@ return [
                 //Acme\Project\Commands\MyTelegramBot\BotCommand::class
             ],
         ],
+        'MyLogBot' => [
+            'token' => env('MY_LOG_BOT_TOKEN')
+        ]
 
-        //        'mySecondBot' => [
-        //            'username'  => 'AnotherTelegram_Bot',
-        //            'token' => '123456:abc',
-        //        ],
+
     ],
 
     /*

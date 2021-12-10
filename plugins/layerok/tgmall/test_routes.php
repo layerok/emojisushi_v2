@@ -1,14 +1,11 @@
 <?php
 use Illuminate\Support\Facades\Route;
-Route::get('/test-tgmall', function () {
+Route::get('/test/telegram/bot/log', function () {
 
-//    $response = \Telegram::getMe();
-//
-//    $botId = $response->getId();
-//    $firstName = $response->getFirstName();
-//    $username = $response->getUsername();
+    $response = \Telegram::bot('MyLogBot')->getUpdates();
+    \Log::channel('telegram')->debug('debug this to telegram');
 
-//    dd($botId, $firstName, $username);
+    dd($response);
 });
 
 Route::get('/test/logger/emergency', function () {
@@ -66,3 +63,4 @@ Route::get('/test/mail/mail', function() {
     $response = mail($to,$subject, $message);
     dd($response ? 'message was sent to ' . $to: 'message was not sent');
 });
+

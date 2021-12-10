@@ -33,7 +33,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['daily', 'monolog'],
+            'channels' => ['daily', 'mail', 'telegram'],
             'ignore_exceptions' => false,
         ],
 
@@ -87,7 +87,7 @@ return [
             'level' => 'debug',
         ],
 
-        'monolog'  => [
+        'mail'  => [
             'driver' => 'monolog',
             'level' => 'error',
             'handler' => \Monolog\Handler\NativeMailerHandler::class,
@@ -95,6 +95,15 @@ return [
                 'to' => env('LOG_ERROR_EMAIL_TO', 'kotopes231@gmail.com'),
                 'subject' => env('LOG_ERROR_EMAIL_SUBJECT', '[Error] emojisushi.com.ua'),
                 'from'    => env('LOG_ERROR_EMAIL_FROM', 'kotopes231@gmail.com')
+            ]
+        ],
+        'telegram' => [
+            'driver' => 'monolog',
+            'level'  => 'debug',
+            'handler' => \Monolog\Handler\TelegramBotHandler::class,
+            'with'    => [
+                'apiKey' => env('MY_LOG_BOT_TOKEN'),
+                'channel' => env('MY_LOG_BOT_CHAT_ID')
             ]
         ]
     ],
