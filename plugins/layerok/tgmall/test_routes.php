@@ -1,9 +1,13 @@
 <?php
 use Illuminate\Support\Facades\Route;
+
+if (env('APP_ENV') === 'production') {
+    return;
+}
 Route::get('/test/telegram/bot/log', function () {
 
     $response = \Telegram::bot('MyLogBot')->getUpdates();
-    \Log::channel('telegram')->debug('debug this to telegram');
+    \Log::channel('telegram')->error("an error occurred [actually It didn't]");
 
     dd($response);
 });
