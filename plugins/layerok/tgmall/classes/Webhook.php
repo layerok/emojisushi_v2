@@ -19,16 +19,29 @@ class Webhook
             $telegram = $event->getTelegram();
             Log::info('---------START-----------');
             Log::info('Пришел хук от телеги c типом [' . $update->detectType() . ']');
-            Log::info($update->toJson());
+            Log::debug($update->toJson());
 
             if ($update->detectType() === 'callback_query') {
                 $callbackQuery = $update->getCallbackQuery();
+                $data = collect(json_decode($callbackQuery->data));
 
+                $update->getMessage()->text =
+                    "/" .
+                    $data->get('command') .
+                    ' ' .
+                    collect($data->get('arguments', []))
+                        ->implode(' ');
+
+                \Log::debug([
+                    'command' => $data->get('command'),
+                    'arguments' => $data->get('arguments', [])
+                ]);
+                \Log::debug(['', $data->get('command')]);
                 Telegram::answerCallbackQuery([
                     'callback_query_id' => $callbackQuery->id
                 ]);
 
-                Telegram::triggerCommand($callbackQuery->data, $update);
+                Telegram::triggerCommand($data->get('command'), $update);
             }
         });
 

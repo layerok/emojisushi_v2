@@ -21,7 +21,7 @@ class MenuCommand extends Command
     /**
      * @var string Command Description
      */
-    protected $description = "Start Command to get you started";
+    protected $description = "Menu Command, Get a list of categories";
 
     /**
      * @inheritdoc
@@ -38,26 +38,33 @@ class MenuCommand extends Command
         $keyboard = new Keyboard();
         $keyboard->inline();
 
-        $categories = Category::all();
-        $categories->map(function ($row, $idx) use ($keyboard) {
-            $callback_data = collect([
-                "tag" => Constants::SHOW_PRODUCTS_BY_CATEGORY,
-                "category_id" => $row->id,
-                "page" => 1
-            ]);
+        $categories = Category::where('nest_depth', '=', 0)->get();
+        $categories->map(function ($row) use ($keyboard) {
             $btn = $keyboard::inlineButton(
                 [
                     'text' => $row->name,
-                    'callback_data' => $callback_data->toJson()
+                    'callback_data' => collect([
+                        "command" => Constants::SHOW_PRODUCTS_BY_CATEGORY,
+                        "arguments" => [$row->id]
+                    ])->toJson()
                 ]
             );
             $keyboard->row($btn);
         });
 
+        $keyboard->row($keyboard::inlineButton([
+            'text' => $this->lang('in_menu_main'),
+            'callback_data' => collect([
+                'command' => 'start',
+                'arguments' => []
+            ])->toJson()
+        ]));
 
-        $this->replyWithMessage([
+        $replyWith = [
             'text' => $this->lang('menu_text'),
             'reply_markup' => $keyboard->toJson()
-        ]);
+        ];
+
+        $this->replyWithMessage($replyWith);
     }
 }

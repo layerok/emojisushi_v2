@@ -8,7 +8,6 @@ use Telegram\Bot\Actions;
 use Layerok\TgMall\Traits\Lang;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Keyboard\Button;
-use function MongoDB\BSON\toJSON;
 
 class StartCommand extends Command
 {
@@ -64,7 +63,10 @@ class StartCommand extends Command
 
         $row1[] = $keyboard::inlineButton([
             'text' => $this->lang('menu'),
-            'callback_data' => 'menu'
+            'callback_data' => collect([
+                'command' => 'menu',
+                'arguments' => []
+            ])->toJson()
         ]);
         $row1[] = $keyboard::inlineButton([
             'text' => $this->lang('busket'),
