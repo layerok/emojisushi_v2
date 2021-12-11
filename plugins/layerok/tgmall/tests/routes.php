@@ -2,7 +2,6 @@
 namespace Layerok\Tests;
 
 use Illuminate\Support\Facades\Route;
-use function MongoDB\BSON\toJSON;
 
 if (env('APP_ENV') === 'production') {
     return;
@@ -141,7 +140,6 @@ Route::get('/test/laravel/collection', function() {
         $obj = collect($obj);
         $obj::make();
         $contains = $obj->contains('type', 'bot_command');
-
     }
 
     $callback_data = collect([
@@ -154,6 +152,39 @@ Route::get('/test/laravel/collection', function() {
     dd($arguments);
 
 
+});
 
+Route::get('/test/log/telegram', function() {
+    $eror = eror;
+    \Log::channel('telegram')->debug('test telegram');
+});
+
+Route::get('/test/log/processor/regex', function() {
+$msg = "[2021-12-11 23:08:26] dev.ERROR: ErrorException: Use of undefined constant eror - assumed 'eror' (this will throw an Error in a future version of PHP) in E:\OpenServer\OpenServer\domains\emojisushi_v2\plugins\layerok\tgmall\tests\routes.php:159
+Stack trace
+#0 E:\OpenServer\OpenServer\domains\emojisushi_v2\plugins\layerok\tgmall\tests\routes.php(159): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError()
+#1 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\laravel\framework\src\Illuminate\Routing\Route.php(205): System\Classes\PluginManager->Layerok\Tests\{closure}()
+#2 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\laravel\framework\src\Illuminate\Routing\Route.php(179): Illuminate\Routing\Route->runCallable()
+#3 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\laravel\framework\src\Illuminate\Routing\Router.php(681): Illuminate\Routing\Route->run()
+#4 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(130): Illuminate\Routing\Router->Illuminate\Routing\{closure}()
+#5 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(105): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}()
+#6 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\laravel\framework\src\Illuminate\Routing\Router.php(683): Illuminate\Pipeline\Pipeline->then()
+#7 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\laravel\framework\src\Illuminate\Routing\Router.php(658): Illuminate\Routing\Router->runRouteWithinStack()
+#8 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\laravel\framework\src\Illuminate\Routing\Router.php(624): Illuminate\Routing\Router->runRoute()
+#9 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\october\rain\src\Router\CoreRouter.php(20): Illuminate\Routing\Router->dispatchToRoute()
+#10 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(170): October\Rain\Router\CoreRouter->dispatch()
+#11 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(130): Illuminate\Foundation\Http\Kernel->Illuminate\Foundation\Http\{closure}()
+#12 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode.php(63): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}()
+#13 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\october\rain\src\Foundation\Http\Middleware\CheckForMaintenanceMode.php(25): Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode->handle()
+#14 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(171): October\Rain\Foundation\Http\Middleware\CheckForMaintenanceMode->handle()
+#15 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(105): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}()
+#16 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(145): Illuminate\Pipeline\Pipeline->then()
+#17 E:\OpenServer\OpenServer\domains\emojisushi_v2\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(110): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter()
+#18 E:\OpenServer\OpenServer\domains\emojisushi_v2\index.php(43): Illuminate\Foundation\Http\Kernel->handle()
+#19 {main}";
+
+$new_msg = preg_replace('/Stack trace.*$/s', '', $msg);
+
+dd($new_msg);
 });
 

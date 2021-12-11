@@ -1,5 +1,7 @@
 <?php
 
+use Monolog\Formatter\LineFormatter;
+
 return [
 
     /*
@@ -33,7 +35,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['daily', 'mail', 'telegram'],
+            'channels' => ['daily', 'telegram'],
             'ignore_exceptions' => false,
         ],
 
@@ -99,11 +101,14 @@ return [
         ],
         'telegram' => [
             'driver' => 'monolog',
-            'level'  => 'error',
+            'level'  => 'debug',
             'handler' => \Monolog\Handler\TelegramBotHandler::class,
             'with'    => [
                 'apiKey' => env('MY_LOG_BOT_TOKEN'),
                 'channel' => env('MY_LOG_BOT_CHAT_ID')
+            ],
+            'tap' => [
+                \Layerok\TgMall\Taps\CustomizeMonologTelegramHandler::class
             ]
         ]
     ],

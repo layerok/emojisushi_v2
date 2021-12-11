@@ -6,6 +6,7 @@ use Telegram\Bot\Events\UpdateWasReceived;
 use Log;
 use Layerok\TgMall\Commands\StartCommand;
 use Layerok\TgMall\Commands\MenuCommand;
+use Layerok\TgMall\Commands\SelectCategoryCommand;
 
 class Webhook
 {
@@ -49,6 +50,7 @@ class Webhook
 
         Telegram::addCommand(StartCommand::class);
         Telegram::addCommand(MenuCommand::class);
+        Telegram::addCommand(SelectCategoryCommand::class);
 
         Telegram::useWebhook();
 

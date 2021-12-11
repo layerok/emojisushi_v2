@@ -13,5 +13,5 @@ Route::post($webhookUrl, function () {
     new Webhook();
 });
 
-include('test_routes.php');
+include('tests/routes.php');
 
