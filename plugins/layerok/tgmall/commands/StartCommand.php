@@ -25,6 +25,9 @@ class StartCommand extends Command
      */
     public function handle()
     {
+        if(env('TERMINATE_TELEGRAM_COMMANDS')) {
+            return;
+        };
         $update = $this->getUpdate();
         $from = $update->getMessage()->getFrom();
         $chat = $update->getChat();
@@ -45,8 +48,6 @@ class StartCommand extends Command
                 "tg_username" => $from->username,
                 "user_id" => $user->id
             ]);
-        } else {
-            \Log::info('customer found: ' . $customer->toJson());
         }
 
         $text = sprintf(
@@ -63,10 +64,7 @@ class StartCommand extends Command
 
         $row1[] = $keyboard::inlineButton([
             'text' => $this->lang('menu'),
-            'callback_data' => collect([
-                'command' => 'menu',
-                'arguments' => []
-            ])->toJson()
+            'callback_data' => "/menu"
         ]);
         $row1[] = $keyboard::inlineButton([
             'text' => $this->lang('busket'),

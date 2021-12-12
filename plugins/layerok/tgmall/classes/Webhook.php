@@ -4,9 +4,7 @@ use League\Event\Emitter;
 use Telegram\Bot\Laravel\Facades\Telegram;
 use Telegram\Bot\Events\UpdateWasReceived;
 use Log;
-use Layerok\TgMall\Commands\StartCommand;
-use Layerok\TgMall\Commands\MenuCommand;
-use Layerok\TgMall\Commands\SelectCategoryCommand;
+
 
 class Webhook
 {
@@ -18,42 +16,41 @@ class Webhook
         $emitter->addListener(UpdateWasReceived::class, function ($event) {
             $update = $event->getUpdate();
             $telegram = $event->getTelegram();
-            Log::info('---------START-----------');
-            Log::info('Пришел хук от телеги c типом [' . $update->detectType() . ']');
+            Log::debug('---------START-----------');
+            Log::debug('Пришел хук от телеги c типом [' . $update->detectType() . ']');
             Log::debug($update->toJson());
 
             if ($update->detectType() === 'callback_query') {
-                $callbackQuery = $update->getCallbackQuery();
-                $data = collect(json_decode($callbackQuery->data));
+                $rawResponse = $update->getRawResponse();
 
-                $update->getMessage()->text =
-                    "/" .
-                    $data->get('command') .
-                    ' ' .
-                    collect($data->get('arguments', []))
-                        ->implode(' ');
+                $callbackQueryId = $rawResponse['callback_query']['id'];
 
-                \Log::debug([
-                    'command' => $data->get('command'),
-                    'arguments' => $data->get('arguments', [])
-                ]);
-                \Log::debug(['', $data->get('command')]);
+                $rawResponse['message'] = $rawResponse['callback_query']['message'];
+                $rawResponse['message']['text'] = $rawResponse['callback_query']['data'];
+                unset($rawResponse['callback_query']);
+
+                $hackedUpdate = new \Telegram\Bot\Objects\Update($rawResponse);
+
+
                 Telegram::answerCallbackQuery([
-                    'callback_query_id' => $callbackQuery->id
+                    'callback_query_id' => $callbackQueryId
                 ]);
 
-                Telegram::triggerCommand($data->get('command'), $update);
+
+                $command = ltrim(explode(' ', $rawResponse['message']['text'])[0], '/');
+
+                Log::debug(['command' => $command]);
+
+                Telegram::getCommandBus()->execute(
+                   $command, $hackedUpdate, []
+                );
             }
         });
 
         Telegram::setEventEmitter($emitter);
 
-        Telegram::addCommand(StartCommand::class);
-        Telegram::addCommand(MenuCommand::class);
-        Telegram::addCommand(SelectCategoryCommand::class);
+        Telegram::commandsHandler(true);
 
-        Telegram::useWebhook();
-
-        Log::info('[---------END-----------');
+        Log::debug('[---------END-----------');
     }
 }

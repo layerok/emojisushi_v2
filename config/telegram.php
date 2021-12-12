@@ -32,13 +32,15 @@ return [
     |             ]
     */
     'bots'                         => [
-        'mybot' => [
+        'TgMallBot' => [
             'username'            => 'TelegramBot',
             'token'               => env('TG_MALL_BOT_TOKEN', null),
             'certificate_path'    => env('TELEGRAM_CERTIFICATE_PATH', 'YOUR-CERTIFICATE-PATH'),
             'webhook_url'         => env('TELEGRAM_WEBHOOK_URL', 'YOUR-BOT-WEBHOOK-URL'),
             'commands'            => [
-                //Acme\Project\Commands\MyTelegramBot\BotCommand::class
+                \Layerok\TgMall\Commands\StartCommand::class,
+                \Layerok\TgMall\Commands\MenuCommand::class,
+                \Layerok\TgMall\Commands\CategoryCommand::class
             ],
         ],
         'MyLogBot' => [
@@ -57,7 +59,7 @@ return [
     | your default bot for regular use.
     |
     */
-    'default'                      => 'mybot',
+    'default'                      => 'TgMallBot',
 
     /*
     |--------------------------------------------------------------------------

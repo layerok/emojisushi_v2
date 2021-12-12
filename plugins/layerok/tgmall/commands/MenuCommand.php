@@ -28,13 +28,16 @@ class MenuCommand extends Command
      */
     public function handle()
     {
+        if(env('TERMINATE_TELEGRAM_COMMANDS')) {
+            return;
+        };
         $update = $this->getUpdate();
         $from = $update->getMessage()->getFrom();
         $chat = $update->getChat();
 
 
         // This will update the chat status to typing...
-        //$this->replyWithChatAction(['action' => Actions::TYPING]);
+        $this->replyWithChatAction(['action' => Actions::TYPING]);
         $keyboard = new Keyboard();
         $keyboard->inline();
 
@@ -43,10 +46,7 @@ class MenuCommand extends Command
             $btn = $keyboard::inlineButton(
                 [
                     'text' => $row->name,
-                    'callback_data' => collect([
-                        "command" => Constants::SHOW_PRODUCTS_BY_CATEGORY,
-                        "arguments" => [$row->id]
-                    ])->toJson()
+                    'callback_data' => "/category " . $row->id
                 ]
             );
             $keyboard->row($btn);
@@ -54,10 +54,7 @@ class MenuCommand extends Command
 
         $keyboard->row($keyboard::inlineButton([
             'text' => $this->lang('in_menu_main'),
-            'callback_data' => collect([
-                'command' => 'start',
-                'arguments' => []
-            ])->toJson()
+            'callback_data' => "/start"
         ]));
 
         $replyWith = [
@@ -66,5 +63,6 @@ class MenuCommand extends Command
         ];
 
         $this->replyWithMessage($replyWith);
+
     }
 }

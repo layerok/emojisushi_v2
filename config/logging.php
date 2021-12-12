@@ -101,7 +101,7 @@ return [
         ],
         'telegram' => [
             'driver' => 'monolog',
-            'level'  => 'debug',
+            'level'  => 'info',
             'handler' => \Monolog\Handler\TelegramBotHandler::class,
             'with'    => [
                 'apiKey' => env('MY_LOG_BOT_TOKEN'),

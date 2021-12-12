@@ -21,3 +21,6 @@
 1.1.8:
     - 'Add `file_id` to `system_files` table'
     - add_file_id_to_system_files_table.php
+1.1.9:
+    - 'create `delete_message` table'
+    - create_delete_message_table.php
