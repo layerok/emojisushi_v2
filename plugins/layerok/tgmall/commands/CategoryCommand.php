@@ -143,11 +143,7 @@ class CategoryCommand extends Command
 
                 $btnLeft = $k::inlineButton([
                     'text' => $this->lang('minus'),
-                    'callback_data' => collect([
-                        "tag" => "position_count",
-                        "position_id" => $product->product_id,
-                        "count" => 1
-                    ])->toJson()
+                    'callback_data' => '/update_qty 1'
                 ]);
 
                 $btnCenter = $k::inlineButton([
@@ -157,11 +153,7 @@ class CategoryCommand extends Command
 
                 $btnRight = $k::inlineButton([
                     'text' => $this->lang('plus'),
-                    'callback_data' =>  collect([
-                        "tag" => "position_count",
-                        "position_id" => $product->id,
-                        "count" => 2
-                    ])->toJson()
+                    'callback_data' =>  '/update_qty 2'
                 ]);
 
 
