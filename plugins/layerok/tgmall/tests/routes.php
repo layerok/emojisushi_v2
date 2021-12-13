@@ -2,6 +2,7 @@
 namespace Layerok\Tests;
 
 use Illuminate\Support\Facades\Route;
+use Telegram\Bot\Keyboard\Keyboard;
 
 if (env('APP_ENV') === 'production') {
     return;
@@ -186,5 +187,71 @@ Stack trace
 $new_msg = preg_replace('/Stack trace.*$/s', '', $msg);
 
 dd($new_msg);
+});
+
+Route::get('/test/telegram/edit', function() {
+    // Очень забавная вещь, если редачить replyMarkup
+    // и в какой-то кнопке забыть указать callback_data
+    // или указать пустоту, то сообщение не отредактируется
+    $quantity = 1;
+    $replyMarkup = [];
+    $replyMarkup['inline_keyboard'][0][0] = [
+        'text' => 'minus',
+        'callback_data' => '/update_qty ' . ($quantity - 1)
+    ];
+    $replyMarkup['inline_keyboard'][0][1] =[
+        'text' => $quantity . '/10',
+        'callback_data' => 'fd'
+    ];
+    $replyMarkup['inline_keyboard'][0][2] =[
+        'text' => 'plus',
+        'callback_data' => '/update_qty ' . ($quantity + 1)
+    ];
+
+
+    $replyMarkup['inline_keyboard'][1][0] =[
+        'text' => "in_basket_button_title",
+        'callback_data' => 'some'
+    ];
+
+    $k = new Keyboard();
+    $k->inline();
+    $btn1 = $k::inlineButton([
+        'text' => 'minus',
+        'callback_data' => '/update_qty ' . ($quantity - 1)
+    ]);
+    $btn2 = $k::inlineButton([
+        'text' => $quantity . '/10',
+        'callback_data' => 'fd'
+    ]);
+    $btn3 = $k::inlineButton([
+        'text' => 'plus',
+        'callback_data' => '/update_qty ' . ($quantity + 1)
+    ]);
+    $k->row($btn1, $btn2, $btn3);
+
+    $btn4 = $k::inlineButton([
+        'text' => "in_basket_button_title",
+        'callback_data' => 'some'
+    ]);
+
+    $k->row($btn4);
+
+
+    echo '<pre>';
+    echo json_encode($replyMarkup);
+    echo '</pre>';
+
+    echo '<pre>';
+    echo $k->toJson();
+    echo '</pre>';
+
+    $json = $k->toJson();
+    //$json = json_encode($replyMarkup);
+   \Telegram::editMessageReplyMarkup([
+        'chat_id' => -760193367,
+        'message_id' => 1435,
+        'reply_markup' => $json
+    ]);
 });
 

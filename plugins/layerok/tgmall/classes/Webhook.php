@@ -35,7 +35,9 @@ class Webhook
                 Telegram::answerCallbackQuery([
                     'callback_query_id' => $callbackQueryId
                 ]);
-
+                if(env('TERMINATE_TELEGRAM_COMMANDS')) {
+                    return;
+                }
 
                 $command = ltrim(explode(' ', $rawResponse['message']['text'])[0], '/');
 

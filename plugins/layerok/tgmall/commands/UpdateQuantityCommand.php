@@ -1,13 +1,9 @@
 <?php namespace Layerok\TgMall\Commands;
 
-use Layerok\TgMall\Classes\Callback\Constants;
-use OFFLINE\Mall\Models\Customer;
-use OFFLINE\Mall\Models\User;
 use Telegram\Bot\Commands\Command;
-use Telegram\Bot\Actions;
 use Layerok\TgMall\Traits\Lang;
 use Telegram\Bot\Keyboard\Keyboard;
-use Telegram\Bot\Keyboard\Button;
+
 
 class UpdateQuantityCommand extends Command
 {
@@ -44,9 +40,9 @@ class UpdateQuantityCommand extends Command
         $from = $update->getMessage()->getFrom();
         $chat = $update->getChat();
         $message = $update->getMessage();
-        $replyMarkup = $message->replyMarkup;
 
-        // здесь должна быть проверка, если товар в корзине, то ничего не делаем
+        //todo: здесь должна быть проверка, если товар в корзине, то ничего не делаем
+        //todo: кол-во не изменилось не отрпавлять новую клавиатуру
         $k = new Keyboard();
         $k->inline();
         $btn1 = $k::inlineButton([
@@ -54,7 +50,8 @@ class UpdateQuantityCommand extends Command
             'callback_data' => '/update_qty ' . ($quantity - 1)
         ]);
         $btn2 = $k::inlineButton([
-            'text' => $quantity . '/10'
+            'text' => $quantity . '/10',
+            'callback_data' => 'placeholder'
         ]);
         $btn3 = $k::inlineButton([
             'text' => $this->lang('plus'),
@@ -64,22 +61,17 @@ class UpdateQuantityCommand extends Command
 
         $btn4 = $k::inlineButton([
             'text' => str_replace("*price*", $quantity, $this->lang("in_basket_button_title")),
+            'callback_data' => '/addtobasket'
         ]);
 
         $k->row($btn4);
 
-        \Log::info('message_id');
-        \Log::info($message->message_id);
-
-        \Telegram::deleteMessage([
-            'chat_id' => $chat->id,
-            'message_id' => $message->message_id,
-        ]);
-
-   /*     \Telegram::editMessageReplyMarkup([
+        // Очень интересный момент, еслу у какой-то кнопки callback_data будет отсутствовать
+        // или будет пустой строкой, такая клавиатура не обновится
+        \Telegram::editMessageReplyMarkup([
             'chat_id' => $chat->id,
             'message_id' => $message->message_id,
             'reply_markup' => $k->toJson()
-        ]);*/
+        ]);
     }
 }
