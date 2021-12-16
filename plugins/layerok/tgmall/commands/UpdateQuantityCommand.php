@@ -1,23 +1,46 @@
 <?php namespace Layerok\TgMall\Commands;
 
+use OFFLINE\Mall\Models\Product;
 use Telegram\Bot\Commands\Command;
 use Layerok\TgMall\Traits\Lang;
+use Layerok\TgMall\Traits\Warn;
 use Telegram\Bot\Keyboard\Keyboard;
 
 
 class UpdateQuantityCommand extends Command
 {
     use Lang;
+    use Warn;
 
     protected $name = "update_qty";
 
-    protected $pattern = "{quantity}";
+    protected $pattern = "{product_id} {quantity}";
 
+    public $product;
+    public $limit = 10;
     /**
      * @var string Command Description
      */
     protected $description = "Update product quantity";
 
+    public function validate() {
+        if ($this->arguments['quantity'] > 10 || $this->arguments['quantity'] < 1) {
+            $this->warn("Quantity of product can not be more than {$this->limit}");
+            return false;
+        }
+
+        if(!isset($this->arguments['product_id'])) {
+            $this->warn("To update product quantity you need to provide product_id");
+            return false;
+        }
+
+        $this->product = Product::find($this->arguments['product_id']);
+        if(!$this->product) {
+            $this->warn("Trying to update quantity of product that does not exist with id {$this->arguments['product_id']}");
+            return false;
+        }
+        return true;
+    }
     /**
      * @inheritdoc
      */
@@ -26,15 +49,12 @@ class UpdateQuantityCommand extends Command
         if(env('TERMINATE_TELEGRAM_COMMANDS')) {
             return;
         };
+        if(!$this->validate()) {
+            return;
+        }
 
         $quantity = $this->arguments['quantity'];
         //$positionId = $callback->position_id;
-        if ($quantity <= 1) {
-            $quantity = 1;
-        }
-        if ($quantity >= 10) {
-            $quantity = 10;
-        }
 
         $update = $this->getUpdate();
         $from = $update->getMessage()->getFrom();
@@ -42,12 +62,14 @@ class UpdateQuantityCommand extends Command
         $message = $update->getMessage();
 
         //todo: здесь должна быть проверка, если товар в корзине, то ничего не делаем
-        //todo: кол-во не изменилось не отрпавлять новую клавиатуру
         $k = new Keyboard();
         $k->inline();
         $btn1 = $k::inlineButton([
             'text' => $this->lang('minus'),
-            'callback_data' => '/update_qty ' . ($quantity - 1)
+            'callback_data' => implode(
+                ' ',
+                ['/update_qty', $this->product['id'], ($quantity - 1)]
+            )
         ]);
         $btn2 = $k::inlineButton([
             'text' => $quantity . '/10',
@@ -55,12 +77,15 @@ class UpdateQuantityCommand extends Command
         ]);
         $btn3 = $k::inlineButton([
             'text' => $this->lang('plus'),
-            'callback_data' => '/update_qty ' . ($quantity + 1)
+            'callback_data' => implode(
+                ' ',
+                ['/update_qty', $this->product['id'], ($quantity + 1)]
+            )
         ]);
         $k->row($btn1, $btn2, $btn3);
 
         $btn4 = $k::inlineButton([
-            'text' => str_replace("*price*", $quantity, $this->lang("in_basket_button_title")),
+            'text' => str_replace("*price*", $this->product->price()->toArray()['price_formatted'], $this->lang("in_basket_button_title")),
             'callback_data' => '/addtobasket'
         ]);
 

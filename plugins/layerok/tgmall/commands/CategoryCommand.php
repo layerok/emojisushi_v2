@@ -8,12 +8,14 @@ use OFFLINE\Mall\Models\Category;
 use OFFLINE\Mall\Models\Customer;
 use \Telegram\Bot\Commands\Command;
 use \Layerok\TgMall\Traits\Lang;
+use \Layerok\TgMall\Traits\Warn;
 use \Layerok\TgMall\Models\DeleteMessage;
 use Telegram\Bot\Keyboard\Keyboard;
 
 class CategoryCommand extends Command
 {
     use Lang;
+    use Warn;
 
     protected $name = "category";
 
@@ -26,21 +28,13 @@ class CategoryCommand extends Command
     private $page = 1;
     private $id;
 
-    public function warn($msg)
-    {
-        \Log::warning($msg);
-        $this->replyWithMessage([
-            'parse_mode' => 'MarkdownV2',
-            'text' => $msg
-        ]);
-    }
+
 
     public function validate():bool
     {
 
-
         if (!isset($this->arguments['id'])) {
-            $msg = '\[Command Error\] Provide unique identifier of the category';
+            $msg = 'Provide unique identifier of the category';
             $this->warn($msg);
             return false;
         }
@@ -49,12 +43,12 @@ class CategoryCommand extends Command
             $this->page = $this->arguments['page'];
             if (is_numeric($this->page)) {
                 if (intval($this->page) < 1) {
-                    $msg = '\[Command Error\] Page of the category cannot be less than 1';
+                    $msg = 'Page of the category cannot be less than 1';
                     $this->warn($msg);
                     return false;
                 }
             } else {
-                $msg = '\[Command Error\] Page of the category must be number';
+                $msg = 'Page of the category must be number';
                 $this->warn($msg);
                 return false;
             }
@@ -143,7 +137,7 @@ class CategoryCommand extends Command
 
                 $btnLeft = $k::inlineButton([
                     'text' => $this->lang('minus'),
-                    'callback_data' => '/update_qty 1'
+                    'callback_data' => "/update_qty {$product->id} 1"
                 ]);
 
                 $btnCenter = $k::inlineButton([
@@ -153,7 +147,7 @@ class CategoryCommand extends Command
 
                 $btnRight = $k::inlineButton([
                     'text' => $this->lang('plus'),
-                    'callback_data' =>  '/update_qty 2'
+                    'callback_data' =>  "/update_qty {$product->id} 2"
                 ]);
 
 
@@ -171,7 +165,7 @@ class CategoryCommand extends Command
                     $k->row($k::inlineButton([
                         'text' => str_replace(
                             "*price*",
-                            $product->price()->price,
+                            $product->price()->toArray()['price_formatted'],
                             $this->lang('in_basket_button_title')
                         ),
                         'callback_data' => collect([

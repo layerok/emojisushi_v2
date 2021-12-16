@@ -2,6 +2,7 @@
 namespace Layerok\Tests;
 
 use Illuminate\Support\Facades\Route;
+use OFFLINE\Mall\Models\Product;
 use Telegram\Bot\Keyboard\Keyboard;
 
 if (env('APP_ENV') === 'production') {
@@ -255,3 +256,7 @@ Route::get('/test/telegram/edit', function() {
     ]);
 });
 
+Route::get('/test/lovata/mall/product', function() {
+    $product = Product::find(150);
+    dd($product->price()->toArray()['price_formatted']);
+});
