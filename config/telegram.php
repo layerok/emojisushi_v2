@@ -41,7 +41,8 @@ return [
                 \Layerok\TgMall\Commands\StartCommand::class,
                 \Layerok\TgMall\Commands\MenuCommand::class,
                 \Layerok\TgMall\Commands\CategoryCommand::class,
-                \Layerok\TgMall\Commands\UpdateQuantityCommand::class
+                \Layerok\TgMall\Commands\UpdateQuantityCommand::class,
+                \Layerok\TgMall\Commands\CartCommand::class,
             ],
         ],
         'MyLogBot' => [

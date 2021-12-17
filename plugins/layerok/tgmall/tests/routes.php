@@ -2,6 +2,7 @@
 namespace Layerok\Tests;
 
 use Illuminate\Support\Facades\Route;
+use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\Product;
 use Telegram\Bot\Keyboard\Keyboard;
 
@@ -256,7 +257,13 @@ Route::get('/test/telegram/edit', function() {
     ]);
 });
 
-Route::get('/test/lovata/mall/product', function() {
+Route::get('/test/lovata/mall', function() {
     $product = Product::find(150);
-    dd($product->price()->toArray()['price_formatted']);
+    //dd($product->price()->toArray()['price_formatted']);
+    $cart = new Cart();
+    $cart->addProduct($product, 1);
+
+    $cart->products->map(function($item) {
+        dd($item);
+    });
 });

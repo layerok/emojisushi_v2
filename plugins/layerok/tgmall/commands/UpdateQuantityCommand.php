@@ -1,5 +1,7 @@
 <?php namespace Layerok\TgMall\Commands;
 
+use OFFLINE\Mall\Classes\Utils\Money;
+use OFFLINE\Mall\Models\Currency;
 use OFFLINE\Mall\Models\Product;
 use Telegram\Bot\Commands\Command;
 use Layerok\TgMall\Traits\Lang;
@@ -17,25 +19,32 @@ class UpdateQuantityCommand extends Command
     protected $pattern = "{product_id} {quantity}";
 
     public $product;
+
     public $limit = 10;
     /**
      * @var string Command Description
      */
     protected $description = "Update product quantity";
 
-    public function validate() {
-        if ($this->arguments['quantity'] > 10 || $this->arguments['quantity'] < 1) {
-            $this->warn("Quantity of product can not be more than {$this->limit}");
-            return false;
-        }
-
-        if(!isset($this->arguments['product_id'])) {
+    public function validate()
+    {
+        if (!isset($this->arguments['product_id'])) {
             $this->warn("To update product quantity you need to provide product_id");
             return false;
         }
 
+        if (!isset($this->arguments['quantity'])) {
+            $this->warn("To update product quantity you need to provide quantity");
+            return false;
+        }
+
+        if ($this->arguments['quantity'] > $this->limit || $this->arguments['quantity'] < 1) {
+            $this->warn("Quantity of product can not be more than {$this->limit}");
+            return false;
+        }
+
         $this->product = Product::find($this->arguments['product_id']);
-        if(!$this->product) {
+        if (!$this->product) {
             $this->warn("Trying to update quantity of product that does not exist with id {$this->arguments['product_id']}");
             return false;
         }
@@ -46,12 +55,12 @@ class UpdateQuantityCommand extends Command
      */
     public function handle()
     {
-        if(env('TERMINATE_TELEGRAM_COMMANDS')) {
-            return;
-        };
         if(!$this->validate()) {
             return;
         }
+
+        $money = app(Money::class);
+        $defaultCurrency = Currency::$defaultCurrency;
 
         $quantity = $this->arguments['quantity'];
         //$positionId = $callback->position_id;
@@ -73,7 +82,7 @@ class UpdateQuantityCommand extends Command
         ]);
         $btn2 = $k::inlineButton([
             'text' => $quantity . '/10',
-            'callback_data' => 'placeholder'
+            'callback_data' => "do nothing"
         ]);
         $btn3 = $k::inlineButton([
             'text' => $this->lang('plus'),
@@ -84,9 +93,19 @@ class UpdateQuantityCommand extends Command
         ]);
         $k->row($btn1, $btn2, $btn3);
 
+        $totalPrice = $money->format(
+            $this->product->price()->price * $quantity,
+            null,
+            $defaultCurrency
+        );
+
         $btn4 = $k::inlineButton([
-            'text' => str_replace("*price*", $this->product->price()->toArray()['price_formatted'], $this->lang("in_basket_button_title")),
-            'callback_data' => '/addtobasket'
+            'text' => str_replace(
+                "*price*",
+                $totalPrice,
+                $this->lang("in_basket_button_title")
+            ),
+            'callback_data' => "/cart add {$this->product['id']} {$quantity}"
         ]);
 
         $k->row($btn4);

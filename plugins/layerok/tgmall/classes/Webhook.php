@@ -10,7 +10,9 @@ class Webhook
 {
     public function __construct()
     {
-
+        if(env('TERMINATE_TELEGRAM_COMMANDS')) {
+            return;
+        };
         $emitter = new Emitter();
 
         $emitter->addListener(UpdateWasReceived::class, function ($event) {
@@ -35,9 +37,6 @@ class Webhook
                 Telegram::answerCallbackQuery([
                     'callback_query_id' => $callbackQueryId
                 ]);
-                if(env('TERMINATE_TELEGRAM_COMMANDS')) {
-                    return;
-                }
 
                 $command = ltrim(explode(' ', $rawResponse['message']['text'])[0], '/');
 

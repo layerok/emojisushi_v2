@@ -1,7 +1,6 @@
 <?php namespace Layerok\TgMall\Commands;
 
 use Layerok\TgMall\Classes\Callback\Constants;
-use Layerok\TgMall\Classes\InlineKeyboard;
 use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\CartProduct;
 use OFFLINE\Mall\Models\Category;
@@ -58,9 +57,7 @@ class CategoryCommand extends Command
 
     public function handle()
     {
-        if(env('TERMINATE_TELEGRAM_COMMANDS')) {
-            return;
-        };
+
         $valid = $this->validate();
 
         if (!$valid) {
@@ -158,7 +155,7 @@ class CategoryCommand extends Command
 
                     $k->row($k::inlineButton([
                         'text' => $this->lang('position_in_basket'),
-                        'callback_data' => "position_in_basket"
+                        'callback_data' => "do nothing"
                     ]));
 
                 } else {
@@ -168,11 +165,7 @@ class CategoryCommand extends Command
                             $product->price()->toArray()['price_formatted'],
                             $this->lang('in_basket_button_title')
                         ),
-                        'callback_data' => collect([
-                            "tag" => "add_in_basket",
-                            "count" => 1,
-                            "position_id" => $product->id
-                        ])->toJson()
+                        'callback_data' => "/cart add {$product->id} 1"
                     ]));
                 }
 
@@ -219,7 +212,7 @@ class CategoryCommand extends Command
 
         $btn1 = $k::inlineButton([
             'text' => $this->lang("busket") . $countPositionInOrder,
-            'callback_data' => Constants::LOAD_BASKET
+            'callback_data' => "/cart list"
         ]);
         $btn2 = $k::inlineButton([
             'text' => $this->lang("in_menu"),
@@ -238,11 +231,6 @@ class CategoryCommand extends Command
             'text' => $this->lang("triple_dot"),
             'reply_markup' => $k->toJson()
         ]);
-
-        \Log::debug('message');
-        \Log::debug($message);
-        \Log::debug('message id');
-        \Log::debug($message->messageId);
 
         DeleteMessage::create([
             'chat_id' => $chat->id,

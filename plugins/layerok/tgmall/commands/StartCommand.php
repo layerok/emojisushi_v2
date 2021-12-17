@@ -25,9 +25,7 @@ class StartCommand extends Command
      */
     public function handle()
     {
-        if(env('TERMINATE_TELEGRAM_COMMANDS')) {
-            return;
-        };
+
         $update = $this->getUpdate();
         $from = $update->getMessage()->getFrom();
         $chat = $update->getChat();
