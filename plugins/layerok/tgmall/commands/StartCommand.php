@@ -66,7 +66,7 @@ class StartCommand extends Command
         ]);
         $row1[] = $keyboard::inlineButton([
             'text' => $this->lang('busket'),
-            'callback_data' => "busket"
+            'callback_data' => "/cart list"
         ]);
 
         $row2[] = $keyboard::inlineButton([

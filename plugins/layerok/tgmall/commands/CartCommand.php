@@ -30,8 +30,7 @@ class CartCommand extends Command {
             $this->warn('You need to provide the type of cart action: [add, remove, list]');
             return false;
         }
-        if (!in_array($this->arguments['type'], $this->types))
-        {
+        if (!in_array($this->arguments['type'], $this->types)) {
             $this->warn(
                 'Unrecognized cart command type, you can only use on of this types: ['. implode(
                     ', ',
