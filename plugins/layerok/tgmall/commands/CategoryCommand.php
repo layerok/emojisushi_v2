@@ -155,7 +155,7 @@ class CategoryCommand extends Command
 
                     $k->row($k::inlineButton([
                         'text' => $this->lang('position_in_basket'),
-                        'callback_data' => "do nothing"
+                        'callback_data' => "nope"
                     ]));
 
                 } else {

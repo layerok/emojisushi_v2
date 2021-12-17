@@ -65,10 +65,16 @@ class UpdateQuantityCommand extends Command
         $quantity = $this->arguments['quantity'];
         //$positionId = $callback->position_id;
 
+
         $update = $this->getUpdate();
         $from = $update->getMessage()->getFrom();
         $chat = $update->getChat();
         $message = $update->getMessage();
+        $replyMarkup = $message->replyMarkup;
+
+        if ($replyMarkup['inline_keyboard'][1][0]['callback_data'] == "nope") {
+            return;
+        }
 
         //todo: здесь должна быть проверка, если товар в корзине, то ничего не делаем
         $k = new Keyboard();
