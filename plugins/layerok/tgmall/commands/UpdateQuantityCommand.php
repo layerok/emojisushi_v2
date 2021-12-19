@@ -1,7 +1,7 @@
 <?php namespace Layerok\TgMall\Commands;
 
 use Layerok\TgMall\Classes\Constants;
-use Layerok\TgMall\Classes\LayerokCommand;
+use Layerok\TgMall\Commands\LayerokCommand;
 use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
 use OFFLINE\Mall\Models\Product;
 use Layerok\TgMall\Traits\Lang;

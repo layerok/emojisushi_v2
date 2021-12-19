@@ -3,7 +3,7 @@
 
 use Layerok\TgMall\Classes\InlineKeyboard;
 
-use Layerok\TgMall\Classes\LayerokCommand;
+use Layerok\TgMall\Commands\LayerokCommand;
 use OFFLINE\Mall\Models\Category;
 use OFFLINE\Mall\Models\Customer;
 use OFFLINE\Mall\Models\User;

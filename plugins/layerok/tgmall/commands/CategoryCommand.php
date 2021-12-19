@@ -1,7 +1,7 @@
 <?php namespace Layerok\TgMall\Commands;
 
 use \Layerok\TgMall\Classes\Constants;
-use Layerok\TgMall\Classes\LayerokCommand;
+use Layerok\TgMall\Commands\LayerokCommand;
 use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
 use Layerok\TgMall\Models\Message;
 use OFFLINE\Mall\Models\Cart;

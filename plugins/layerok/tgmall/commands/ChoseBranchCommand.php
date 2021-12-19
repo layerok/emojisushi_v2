@@ -4,22 +4,34 @@ use Layerok\TgMall\Traits\Warn;
 use Lovata\BaseCode\Models\Branches;
 use OFFLINE\Mall\Models\Customer;
 use Telegram\Bot\Commands\Command;
+use Telegram\Bot\Keyboard\Keyboard;
+use Telegram\Bot\Laravel\Facades\Telegram;
 
-class BranchCommand extends Command
+class ChoseBranchCommand extends Command
 {
     use Warn;
-    protected $name = "branch";
+    protected $name = "chosebranch";
     protected $description = "Use this command to chose restaurant location";
     protected $pattern = "{id}";
 
+    protected function validate(): bool
+    {
+        return true;
+    }
+
     public function handle()
+    {
+        if (!$this->validate()) {
+            return;
+        }
+
+        $this->chose();
+    }
+
+    public function chose()
     {
         $update = $this->getUpdate();
         $chat = $update->getChat();
-        if (!isset($this->arguments['id'])) {
-            $this->warn("To chose restaurant locations you need to specify its id");
-            return;
-        }
 
         $branch = Branches::where('id', '=', $this->arguments['id'])->first();
 
@@ -31,7 +43,7 @@ class BranchCommand extends Command
         $customer = Customer::where('tg_chat_id', '=', $chat->id)->first();
 
         if (!isset($customer)) {
-           // customer must be created on this stage
+            // customer must be created on this stage
             \Log::error('somehow user was not created');
             return;
         }

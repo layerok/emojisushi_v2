@@ -17,6 +17,7 @@ class MainMenuReplyMarkup
         $row1 = [];
         $row2 = [];
         $row3 = [];
+        $row4 = [];
 
         $row1[] = $keyboard::inlineButton([
             'text' => $this->lang('menu'),
@@ -45,10 +46,16 @@ class MainMenuReplyMarkup
             'callback_data' => "contact"
         ]);
 
+        $row4[] = $keyboard::inlineButton([
+            'text' => 'Изменить заведение',
+            'callback_data' => '/listbranch'
+        ]);
+
 
         $keyboard->row(...$row1);
         $keyboard->row(...$row2);
         $keyboard->row(...$row3);
+        $keyboard->row(...$row4);
 
         $this->keyboard = $keyboard;
     }

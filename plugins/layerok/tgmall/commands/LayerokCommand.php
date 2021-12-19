@@ -1,4 +1,4 @@
-<?php namespace Layerok\TgMall\Classes;
+<?php namespace Layerok\TgMall\Commands;
 
 use Lovata\BaseCode\Models\Branches;
 use OFFLINE\Mall\Models\Customer;
@@ -27,22 +27,7 @@ class LayerokCommand extends Command
     {
 
         if (!$this->isSpotChosen()) {
-            $update = $this->getUpdate();
-            $chat = $update->getChat();
-            $branches = Branches::all();
-            $k = new Keyboard();
-            $k->inline();
-            $branches->map(function ($branch) use ($k) {
-                $k->row($k::inlineButton([
-                    'text' => $branch->name,
-                    'callback_data' => '/branch ' . $branch->id
-                ]));
-            });
-            Telegram::sendMessage([
-                'chat_id' => $chat->id,
-                'text' => 'Выберите заведение',
-                'reply_markup' => $k
-            ]);
+            $this->triggerCommand('listbranch');
             exit;
         }
     }

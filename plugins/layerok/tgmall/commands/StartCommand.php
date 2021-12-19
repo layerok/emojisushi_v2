@@ -1,7 +1,7 @@
 <?php namespace Layerok\TgMall\Commands;
 
 
-use Layerok\TgMall\Classes\LayerokCommand;
+use Layerok\TgMall\Commands\LayerokCommand;
 use Layerok\TgMall\Classes\Markups\MainMenuReplyMarkup;
 use OFFLINE\Mall\Models\Customer;
 use OFFLINE\Mall\Models\User;
