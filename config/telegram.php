@@ -45,6 +45,7 @@ return [
                 \Layerok\TgMall\Commands\CartCommand::class,
                 \Layerok\TgMall\Commands\ChoseBranchCommand::class,
                 \Layerok\TgMall\Commands\ListBranchCommand::class,
+                \Layerok\TgMall\Commands\BranchCommand::class,
             ],
         ],
         'MyLogBot' => [

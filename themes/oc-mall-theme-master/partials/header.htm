@@ -4,9 +4,9 @@
 
         <div class="p-3 ">
             <div class="pr-3 flex flex-col items-end">
-                <div class="px-3">
+         {#       <div class="px-3">
                     {% component 'localePicker' %}
-                </div>
+                </div>#}
                 {% partial 'topmenu' code='top' %}
             </div>
 
@@ -35,9 +35,9 @@
 
     </div>
     <div class="w-full max-w-6xl px-4 mx-auto flex lg:justify-end">
-        <div id="toggleDarkMode" style="width:30px;height:auto">
+     {#   <div id="toggleDarkMode" style="width:30px;height:auto">
             {% partial "svg/darkMode" %}
-        </div>
+        </div>#}
     </div>
     <div class="w-full max-w-6xl px-4 mx-auto flex justify-between">
         <button type="button" class="drawer-toggle drawer-hamburger lg:hidden-important dark:bg-black bg-secondary  focus:outline-none" >
@@ -55,7 +55,7 @@
 
         <div class="hidden lg:flex items-center">
             {% partial 'topmenu' code='top' %}
-            {% component 'localePicker' %}
+{#            {% component 'localePicker' %}#}
         </div>
 
     </div>

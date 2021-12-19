@@ -28,7 +28,8 @@ class MainMenuReplyMarkup
             'callback_data' => "/cart list"
         ]);
 
-        $row2[] = $keyboard::inlineButton([
+        //todo
+/*        $row2[] = $keyboard::inlineButton([
             'text' => $this->lang('delivery_and_pay'),
             'callback_data' => "delivery_and_pay"
         ]);
@@ -40,15 +41,20 @@ class MainMenuReplyMarkup
         $row3[] = $keyboard::inlineButton([
             'text' => $this->lang('review'),
             'callback_data' => "review"
-        ]);
+        ]);*/
         $row3[] = $keyboard::inlineButton([
             'text' => $this->lang('contact'),
-            'callback_data' => "contact"
+            'callback_data' => "/branch phones"
         ]);
 
         $row4[] = $keyboard::inlineButton([
             'text' => 'Изменить заведение',
             'callback_data' => '/listbranch'
+        ]);
+
+        $row4[] = $keyboard::inlineButton([
+            'text' => 'Вебсайт',
+            'callback_data' => '/branch website'
         ]);
 
 
