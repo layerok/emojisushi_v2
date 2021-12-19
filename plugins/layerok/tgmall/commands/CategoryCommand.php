@@ -1,6 +1,8 @@
 <?php namespace Layerok\TgMall\Commands;
 
-use Layerok\TgMall\Classes\Callback\Constants;
+use \Layerok\TgMall\Classes\Constants;
+use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
+use Layerok\TgMall\Models\Message;
 use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\CartProduct;
 use OFFLINE\Mall\Models\Category;
@@ -9,6 +11,7 @@ use \Telegram\Bot\Commands\Command;
 use \Layerok\TgMall\Traits\Lang;
 use \Layerok\TgMall\Traits\Warn;
 use \Layerok\TgMall\Models\DeleteMessage;
+use \Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
 use Telegram\Bot\Keyboard\Keyboard;
 
 class CategoryCommand extends Command
@@ -26,6 +29,7 @@ class CategoryCommand extends Command
 
     private $page = 1;
     private $id;
+    public $cart;
 
 
 
@@ -82,12 +86,9 @@ class CategoryCommand extends Command
 
         $customer = Customer::where('tg_chat_id', '=', $chat->id)->first();
 
-        $cart = Cart::byUser($customer->user);
+        $this->cart = Cart::byUser($customer->user);
 
-        $countPositionInOrder = "";
-        if ($cart->products->count()) {
-            $countPositionInOrder = " (" . $cart->products->count() . ")";
-        }
+
         $offset = ($this->page - 1) * $limit;
         $countPosition = $limit;
 
@@ -103,7 +104,7 @@ class CategoryCommand extends Command
             $messages = DeleteMessage::where('chat_id', '=', $chat->id)
                 ->latest()
                 ->get();
-            if($messages->count() > 0) {
+            if ($messages->count() > 0) {
                 \Telegram::deleteMessage([
                     'chat_id' => $chat->id,
                     'message_id' => $messages->first()->msg_id
@@ -118,57 +119,17 @@ class CategoryCommand extends Command
                 $product,
                 $index
             ) use (
-                $cart,
                 $productsInCategory,
-                $countPositionInOrder,
                 $limit
             ) {
 
-                $k = new Keyboard();
-                $k->inline();
-
-                $cartProduct = CartProduct::where([
-                    ['product_id', '=', $product->id],
-                    ['cart_id', '=', $cart->id]
-                ])->first();
-
-                $btnLeft = $k::inlineButton([
-                    'text' => $this->lang('minus'),
-                    'callback_data' => "/update_qty {$product->id} 1"
-                ]);
-
-                $btnCenter = $k::inlineButton([
-                    'text' => ($cart->isInCart($product) ? $cartProduct->quantity: '1') . "/10",
-                    'callback_data' => 'count_form'
-                ]);
-
-                $btnRight = $k::inlineButton([
-                    'text' => $this->lang('plus'),
-                    'callback_data' =>  "/update_qty {$product->id} 2"
-                ]);
-
-
-                $k->row($btnLeft, $btnCenter, $btnRight);
-
-
-                if ($cart->isInCart($product)) {
-
-                    $k->row($k::inlineButton([
-                        'text' => $this->lang('position_in_basket'),
-                        'callback_data' => "nope"
-                    ]));
-
+                if ($this->cart->isInCart($product)) {
+                    $replyMarkup = new ProductInCartReplyMarkup();
                 } else {
-                    $k->row($k::inlineButton([
-                        'text' => str_replace(
-                            "*price*",
-                            $product->price()->toArray()['price_formatted'],
-                            $this->lang('in_basket_button_title')
-                        ),
-                        'callback_data' => "/cart add {$product->id} 1"
-                    ]));
+                    $replyMarkup = new CategoryProductReplyMarkup($product, 1);
                 }
 
+                $k = $replyMarkup->getKeyboard();
 
                 if (is_null($product->image)) {
                     $photoIdOrUrl = $this->brokenImageFileId;
@@ -187,8 +148,6 @@ class CategoryCommand extends Command
 
                 $photoObject = $response->getPhoto();
 
-
-
                 if ($photoObject) {
                     if (!is_null($product->image) && is_null($product->image->file_id)) {
                         $product->image->file_id = $photoObject->first()['file_id'];
@@ -198,6 +157,45 @@ class CategoryCommand extends Command
             }
         ); // end of map
 
+        $k = $this->footerButtons();
+
+
+        $message = $this->replyWithMessage([
+            'text' => $this->lang("triple_dot"),
+            'reply_markup' => $k->toJson()
+        ]);
+
+        $msg_id = $message->messageId;
+
+        DeleteMessage::create([
+            'chat_id' => $chat->id,
+            'msg_id' => $msg_id
+        ]);
+
+        Message::where('chat_id', '=', $chat->id)
+            ->where('type', '=', Constants::UPDATE_CART_TOTAL_IN_CATEGORY)
+            ->orWhere('type', '=', Constants::UPDATE_CART_TOTAL)
+            ->delete();
+
+        $message = Message::create([
+            'chat_id' => $chat->id,
+            'msg_id' => $msg_id,
+            'type' => Constants::UPDATE_CART_TOTAL_IN_CATEGORY,
+            'meta_data' => [
+                'category_id' => $this->id,
+                'page' => $this->page
+            ]
+        ]);
+    }
+
+    public function footerButtons(): Keyboard
+    {
+        $this->cart->refresh();
+        $countPositionInOrder = "";
+        if ($this->cart->products->count()) {
+            $countPositionInOrder = " (" . $this->cart->products->count() . ")";
+        }
+        $limit = \Config::get('layerok.tgmall::productsInPage');
         $all = Category::where('id', '=', $this->id)->first()->products;
         $lastPage = ceil($all->count() / $limit);
         $k = new Keyboard();
@@ -226,16 +224,6 @@ class CategoryCommand extends Command
         $k->row($btn1);
         $k->row($btn2);
         $k->row($btn3);
-
-        $message = $this->replyWithMessage([
-            'text' => $this->lang("triple_dot"),
-            'reply_markup' => $k->toJson()
-        ]);
-
-        DeleteMessage::create([
-            'chat_id' => $chat->id,
-            'msg_id' => $message->messageId
-        ]);
-
+        return $k;
     }
 }

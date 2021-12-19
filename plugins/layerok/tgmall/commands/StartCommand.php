@@ -1,6 +1,7 @@
 <?php namespace Layerok\TgMall\Commands;
 
 use Layerok\TgMall\Classes\Callback\Constants;
+use Layerok\TgMall\Classes\Markups\MainMenuReplyMarkup;
 use OFFLINE\Mall\Models\Customer;
 use OFFLINE\Mall\Models\User;
 use Telegram\Bot\Commands\Command;
@@ -53,48 +54,11 @@ class StartCommand extends Command
             $from->username
         );
 
-        $keyboard = new Keyboard();
-        $keyboard->inline();
-
-        $row1 = [];
-        $row2 = [];
-        $row3 = [];
-
-        $row1[] = $keyboard::inlineButton([
-            'text' => $this->lang('menu'),
-            'callback_data' => "/menu"
-        ]);
-        $row1[] = $keyboard::inlineButton([
-            'text' => $this->lang('busket'),
-            'callback_data' => "/cart list"
-        ]);
-
-        $row2[] = $keyboard::inlineButton([
-                'text' => $this->lang('delivery_and_pay'),
-                'callback_data' => "delivery_and_pay"
-        ]);
-        $row2[] = $keyboard::inlineButton([
-                'text' => $this->lang('my_order'),
-                'callback_data' => "my_order"
-        ]);
-
-        $row3[] = $keyboard::inlineButton([
-                'text' => $this->lang('review'),
-                'callback_data' => "review"
-        ]);
-        $row3[] = $keyboard::inlineButton([
-            'text' => $this->lang('contact'),
-            'callback_data' => "contact"
-        ]);
-
-
-        $keyboard->row(...$row1);
-        $keyboard->row(...$row2);
-        $keyboard->row(...$row3);
+        $replyMarkup = new MainMenuReplyMarkup();
 
         $this->replyWithMessage([
             'text' => $text,
-            'reply_markup' => $keyboard->toJson()
+            'reply_markup' => $replyMarkup->getKeyboard()
         ]);
     }
 }

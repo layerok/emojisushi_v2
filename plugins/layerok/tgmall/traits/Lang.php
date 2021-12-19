@@ -6,4 +6,5 @@ trait Lang
     {
         return \Illuminate\Support\Facades\Lang::get('layerok.tgmall::lang.telegram.' . $key);
     }
+
 }

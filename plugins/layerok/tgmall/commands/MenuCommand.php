@@ -60,6 +60,5 @@ class MenuCommand extends Command
         ];
 
         $this->replyWithMessage($replyWith);
-
     }
 }

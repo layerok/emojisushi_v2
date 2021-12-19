@@ -10,7 +10,7 @@ class Webhook
 {
     public function __construct()
     {
-        if(env('TERMINATE_TELEGRAM_COMMANDS')) {
+        if (env('TERMINATE_TELEGRAM_COMMANDS')) {
             return;
         };
         $emitter = new Emitter();
@@ -18,9 +18,7 @@ class Webhook
         $emitter->addListener(UpdateWasReceived::class, function ($event) {
             $update = $event->getUpdate();
             $telegram = $event->getTelegram();
-            Log::debug('---------START-----------');
-            Log::debug('Пришел хук от телеги c типом [' . $update->detectType() . ']');
-            Log::debug($update->toJson());
+
 
             if ($update->detectType() === 'callback_query') {
                 $rawResponse = $update->getRawResponse();
@@ -40,7 +38,9 @@ class Webhook
 
                 $command = ltrim(explode(' ', $rawResponse['message']['text'])[0], '/');
 
-                Log::debug(['command' => $command]);
+                if ($command === Constants::NOPE) {
+                    return;
+                }
 
                 Telegram::getCommandBus()->execute(
                    $command, $hackedUpdate, []

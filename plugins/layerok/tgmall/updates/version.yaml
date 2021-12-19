@@ -24,3 +24,9 @@
 1.1.9:
     - 'create `delete_message` table'
     - create_delete_message_table.php
+1.2.1:
+    - 'create `messages` table'
+    - create_messages_table.php
+1.2.2:
+    - 'add `meta_data` to `messages` table'
+    - add_meta_data_to_messages_table.php

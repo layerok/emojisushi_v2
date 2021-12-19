@@ -1,17 +1,24 @@
 <?php namespace Layerok\TgMall\Commands;
 
+use Layerok\TgMall\Classes\Constants;
+use Layerok\TgMall\Classes\Markups\CartProductReplyMarkup;
+use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
+use Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
+use Layerok\TgMall\Models\Message;
 use Layerok\TgMall\Traits\Lang;
 use Layerok\TgMall\Traits\Warn;
 use OFFLINE\Mall\Classes\Utils\Money;
 use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\CartProduct;
+use OFFLINE\Mall\Models\Category;
 use OFFLINE\Mall\Models\Currency;
 use OFFLINE\Mall\Models\Customer;
 use OFFLINE\Mall\Models\Product;
 use Telegram\Bot\Commands\Command;
 use Telegram\Bot\Keyboard\Keyboard;
 
-class CartCommand extends Command {
+class CartCommand extends Command
+{
 
     use Warn;
     use Lang;
@@ -24,10 +31,22 @@ class CartCommand extends Command {
     public $cart;
     public $types = ['add', 'remove', 'list'];
 
+    /**
+     * @var Money
+     */
+    public $money;
+    public $chat;
+    public $customer;
+    public $user;
+
     public function validate(): bool
     {
         if (!isset($this->arguments['type'])) {
-            $this->warn('You need to provide the type of cart action: [add, remove, list]');
+            $this->warn('You need to provide the type of cart action: ['. implode(
+                    ', ',
+                    $this->types
+                ) . ']'
+            );
             return false;
         }
         if (!in_array($this->arguments['type'], $this->types)) {
@@ -74,26 +93,133 @@ class CartCommand extends Command {
 
         $update = $this->getUpdate();
         $from = $update->getMessage()->getFrom();
-        $chat = $update->getChat();
+        $this->chat = $update->getChat();
 
         $type = $this->arguments['type'];
         //todo:: it is possible that the customer does not exist with the provided chat id
-        $customer = Customer::where('tg_chat_id', '=', $chat->id)->first();
-        $user = $customer->user;
-        $this->cart = Cart::byUser($user);
+        $this->customer = Customer::where('tg_chat_id', '=', $this->chat->id)->first();
+        $this->user = $this->customer->user;
+        $this->cart = Cart::byUser($this->user);
+        $this->money = app(Money::class);
 
 
         switch ($type) {
             case "add":
-                $this->cart->addProduct($this->product, $this->arguments['quantity']);
+                $this->addProduct();
                 break;
             case "list":
                 $this->listProducts();
                 break;
             case "remove":
-                $this->cart->removeProduct($this->product);
+                $this->removeProduct();
                 break;
         }
+    }
+
+    public function addProduct()
+    {
+        $cartProduct = CartProduct::where([
+            ['cart_id', '=', $this->cart->id],
+            ['product_id', '=', $this->arguments['product_id']]
+        ])->first();
+
+        if (isset($cartProduct) && $cartProduct->quantity + $this->arguments['quantity'] < 1) {
+            return;
+        }
+
+        $k = null;
+        $this->cart->addProduct($this->product, $this->arguments['quantity']);
+        $this->cart->refresh();
+
+        if (isset($cartProduct)) {
+            $cartProduct->refresh();
+        }
+
+        $message = Message::where('chat_id', '=', $this->chat->id)
+            ->where('type', '=', Constants::UPDATE_CART_TOTAL)
+            ->orWhere('type', '=', Constants::UPDATE_CART_TOTAL_IN_CATEGORY)
+            ->latest()
+            ->first();
+
+        if (!$message) {
+            return;
+        }
+
+        if ($message->type === Constants::UPDATE_CART_TOTAL) {
+            $k = $this->cartFooterKeyboard();
+            $totalPrice = $this->money->format(
+                $cartProduct->price()->price * $cartProduct->quantity,
+                null,
+                Currency::$defaultCurrency
+            );
+
+            $cartProductReplyMarkup = new CartProductReplyMarkup(
+                $cartProduct->product->id,
+                $cartProduct->quantity,
+                $totalPrice
+            );
+
+            \Telegram::editMessageReplyMarkup([
+                'chat_id' => $this->chat->id,
+                'message_id' => $this->getUpdate()->getMessage()->message_id,
+                'reply_markup' => $cartProductReplyMarkup->getKeyboard()
+            ]);
+
+            \Telegram::editMessageReplyMarkup([
+                'chat_id' => $this->chat->id,
+                'message_id' => $message->msg_id,
+                'reply_markup' => $k->toJson()
+            ]);
+
+        }
+        if ($message->type === Constants::UPDATE_CART_TOTAL_IN_CATEGORY) {
+            $categoryProductReplyMarkup = new ProductInCartReplyMarkup();
+            $k = $this->categoryFooterButtons($message->meta_data);
+
+            \Telegram::editMessageReplyMarkup([
+                'chat_id' => $this->chat->id,
+                'message_id' => $this->getUpdate()->getMessage()->message_id,
+                'reply_markup' => $categoryProductReplyMarkup->getKeyboard()
+            ]);
+
+            \Telegram::editMessageReplyMarkup([
+                'chat_id' => $this->chat->id,
+                'message_id' => $message->msg_id,
+                'reply_markup' => $k->toJson()
+            ]);
+        }
+    }
+
+    public function removeProduct()
+    {
+        $cartProduct = CartProduct::where([
+            ['cart_id', '=', $this->cart->id],
+            ['product_id', '=', $this->arguments['product_id']]
+        ])->first();
+
+        // todo: add check for existence
+        $this->cart->removeProduct($cartProduct);
+        $this->cart->refresh();
+
+        $message = Message::where([
+            ['chat_id', '=', $this->chat->id],
+            ['type', '=', Constants::UPDATE_CART_TOTAL]
+        ])->first();
+
+
+        \Telegram::deleteMessage([
+            'chat_id' => $this->chat->id,
+            'message_id' => $this->getUpdate()->getMessage()->message_id
+        ]);
+
+
+        \Telegram::editMessageText(array_merge(
+            $this->cartFooterMessage(),
+            [
+                'message_id' => $message->msg_id,
+                'chat_id' => $this->chat->id
+            ]
+        ));
     }
 
     public function listProducts()
@@ -102,56 +228,30 @@ class CartCommand extends Command {
             'text' => $this->lang('busket')
         ]);
 
-        $money = app(Money::class);
-        $defaultCurrency = Currency::$defaultCurrency;
-
-        $this->cart->products->map(function ($product) use ($money, $defaultCurrency) {
-            $k = new Keyboard();
-            $k->inline();
-
-            $btn1 = $k::inlineButton([
-                'text' => $this->lang('minus'),
-                'callback_data' => implode(' ', ["/cart", "add", $product->id, ($product->quantity - 1)])
-            ]);
-
-            $btn2 = $k::inlineButton([
-                'text' => $product->quantity. "/10",
-                'callback_data' => 'do nothing'
-            ]);
-
-            $btn3 = $k::inlineButton([
-                'text' => $this->lang('plus'),
-                'callback_data' =>  implode(["/cart", "add", $product->id, ($product->quantity + 1)])
-            ]);
-
-            $btn4 = $k::inlineButton([
-                'text' => $this->lang('del'),
-                'callback_data' =>  "/cart remove {$product->id}"
-            ]);
+        $this->cart->products->map(function ($cartProduct) {
 
 
-            $k->row($btn1, $btn2, $btn3, $btn4);
+            $id = $cartProduct->product->id;
+            $quantity = $cartProduct->quantity;
+            $totalPrice = $this->money->format(
+                $cartProduct->price()->price * $quantity,
+                null,
+                Currency::$defaultCurrency
+            );
 
-            $totalPrice = $money->format($product->price()->price * $product->quantity, null, $defaultCurrency);
-            $k->row($k::inlineButton([
-                'text' => str_replace(
-                    "*price*",
-                    $totalPrice,
-                    $this->lang('prise_position_basket')
-                ),
-                'callback_data' => "do nothing"
-            ]));
+            $cartProductReplyMarkup = new CartProductReplyMarkup($id, $quantity, $totalPrice);
+            $k = $cartProductReplyMarkup->getKeyboard();
 
-            if (is_null($product->product->image)) {
+            if (is_null($cartProduct->product->image)) {
                 $photoIdOrUrl = $this->brokenImageFileId;
             } else {
-                $photoIdOrUrl = is_null($product->product->image->file_id) ?
+                $photoIdOrUrl = is_null($cartProduct->product->image->file_id) ?
                     \Telegram\Bot\FileUpload\InputFile::create(
-                        $product->product->image->path
-                    ) : $product->product->image->file_id;
+                        $cartProduct->product->image->path
+                    ) : $cartProduct->product->image->file_id;
             }
 
-            $caption = "<b>" . $product->name . "</b>\n\n" . \Html::strip($product->description);
+            $caption = "<b>" . $cartProduct->name . "</b>\n\n" . \Html::strip($cartProduct->description);
             $response = $this->replyWithPhoto([
                 'photo' => $photoIdOrUrl,
                 'caption' => $caption,
@@ -160,43 +260,118 @@ class CartCommand extends Command {
             ]);
         });
 
+
+        $response = $this->replyWithMessage(
+            $this->cartFooterMessage()
+        );
+
         if ($this->cart->products->count() === 0) {
-            $this->replyWithMessage([
-                'text' => $this->lang('busket_is_empty')
-            ]);
-        } else {
-            $k = new Keyboard();
-            $k->inline();
+            return;
+        }
 
+        $msg_id = $response["message_id"];
 
+        Message::where([
+            ['chat_id', '=', $this->chat->id],
+            ['type', '=', Constants::UPDATE_CART_TOTAL]
+        ])->delete();
+
+        Message::create([
+            'chat_id' => $this->chat->id,
+            'msg_id' => $msg_id,
+            'type' => Constants::UPDATE_CART_TOTAL
+        ]);
+    }
+
+    public function cartFooterMessage()
+    {
+        $text = $this->cart->products->count() === 0 ?
+            $this->lang('busket_is_empty') :
+            $this->lang('rasd');
+        return [
+            'text' => $text,
+            'reply_markup' => $this->cartFooterKeyboard()
+        ];
+    }
+
+    public function cartFooterKeyboard(): Keyboard
+    {
+        $k = new Keyboard();
+        $k->inline();
+
+        if ($this->cart->products->count() !== 0) {
             $k->row($k::inlineButton([
                 'text' => str_replace(
                     "*price*",
-                    $money->format(
+                    $this->money->format(
                         $this->cart->totals()->totalPostTaxes(),
                         null,
-                        $defaultCurrency
+                        Currency::$defaultCurrency
                     ),
                     $this->lang('all_amount_order')
                 ),
-                'callback_data' => 'do nothing'
+                'callback_data' => "nope"
             ]));
 
             $k->row($k::inlineButton(([
                 'text' => $this->lang('take_order'),
                 'callback_data' => 'take_order'
             ])));
-
+        } else {
             $k->row($k::inlineButton([
-                'text' => $this->lang('in_menu_main'),
-                'callback_data' => '/start'
+                'text' => $this->lang('in_menu'),
+                'callback_data' => '/menu'
             ]));
-
-            $this->replyWithMessage([
-                'text' => $this->lang('rasd'),
-                'reply_markup' => $k->toJson()
-            ]);
         }
+
+
+        $k->row($k::inlineButton([
+            'text' => $this->lang('in_menu_main'),
+            'callback_data' => '/start'
+        ]));
+
+        return $k;
+    }
+
+    public function categoryFooterButtons($meta_data): Keyboard
+    {
+        $page = $meta_data['page'];
+        $category_id = $meta_data['category_id'];
+        $this->cart->refresh();
+        $countPositionInOrder = "";
+        if ($this->cart->products->count()) {
+            $countPositionInOrder = " (" . $this->cart->products->count() . ")";
+        }
+        $limit = \Config::get('layerok.tgmall::productsInPage');
+        $all = Category::where('id', '=', $category_id)->first()->products;
+        $lastPage = ceil($all->count() / $limit);
+        $k = new Keyboard();
+        $k->inline();
+        if ($lastPage !== $page) {
+            $loadBtn = $k::inlineButton([
+                'text' => 'Загрузить еще из этой категории',
+                'callback_data' => implode(' ', ['/category', $category_id, $page + 1])
+            ]);
+            $k->row($loadBtn);
+        }
+
+        $btn1 = $k::inlineButton([
+            'text' => $this->lang("busket") . $countPositionInOrder,
+            'callback_data' => "/cart list"
+        ]);
+        $btn2 = $k::inlineButton([
+            'text' => $this->lang("in_menu"),
+            'callback_data' => "/menu"
+        ]);
+        $btn3 = $k::inlineButton([
+            'text' => $this->lang("in_menu_main"),
+            'callback_data' => "/start"
+        ]);
+
+        $k->row($btn1);
+        $k->row($btn2);
+        $k->row($btn3);
+        return $k;
     }
 
 

@@ -1,5 +1,7 @@
 <?php namespace Layerok\TgMall\Commands;
 
+use Layerok\TgMall\Classes\Constants;
+use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
 use OFFLINE\Mall\Classes\Utils\Money;
 use OFFLINE\Mall\Models\Currency;
 use OFFLINE\Mall\Models\Product;
@@ -45,7 +47,7 @@ class UpdateQuantityCommand extends Command
 
         $this->product = Product::find($this->arguments['product_id']);
         if (!$this->product) {
-            $this->warn("Trying to update quantity of product that does not exist with id {$this->arguments['product_id']}");
+            $this->warn("Trying to update quantity of product that does not exist [{$this->arguments['product_id']}]");
             return false;
         }
         return true;
@@ -55,16 +57,11 @@ class UpdateQuantityCommand extends Command
      */
     public function handle()
     {
-        if(!$this->validate()) {
+        if (!$this->validate()) {
             return;
         }
 
-        $money = app(Money::class);
-        $defaultCurrency = Currency::$defaultCurrency;
-
         $quantity = $this->arguments['quantity'];
-        //$positionId = $callback->position_id;
-
 
         $update = $this->getUpdate();
         $from = $update->getMessage()->getFrom();
@@ -72,56 +69,19 @@ class UpdateQuantityCommand extends Command
         $message = $update->getMessage();
         $replyMarkup = $message->replyMarkup;
 
-        if ($replyMarkup['inline_keyboard'][1][0]['callback_data'] == "nope") {
+        if ($replyMarkup['inline_keyboard'][1][0]['callback_data'] == Constants::NOPE) {
             return;
         }
 
-        //todo: здесь должна быть проверка, если товар в корзине, то ничего не делаем
-        $k = new Keyboard();
-        $k->inline();
-        $btn1 = $k::inlineButton([
-            'text' => $this->lang('minus'),
-            'callback_data' => implode(
-                ' ',
-                ['/update_qty', $this->product['id'], ($quantity - 1)]
-            )
-        ]);
-        $btn2 = $k::inlineButton([
-            'text' => $quantity . '/10',
-            'callback_data' => "do nothing"
-        ]);
-        $btn3 = $k::inlineButton([
-            'text' => $this->lang('plus'),
-            'callback_data' => implode(
-                ' ',
-                ['/update_qty', $this->product['id'], ($quantity + 1)]
-            )
-        ]);
-        $k->row($btn1, $btn2, $btn3);
-
-        $totalPrice = $money->format(
-            $this->product->price()->price * $quantity,
-            null,
-            $defaultCurrency
-        );
-
-        $btn4 = $k::inlineButton([
-            'text' => str_replace(
-                "*price*",
-                $totalPrice,
-                $this->lang("in_basket_button_title")
-            ),
-            'callback_data' => "/cart add {$this->product['id']} {$quantity}"
-        ]);
-
-        $k->row($btn4);
+        $replyMarkup = new CategoryProductReplyMarkup($this->product, $quantity);
 
         // Очень интересный момент, еслу у какой-то кнопки callback_data будет отсутствовать
         // или будет пустой строкой, такая клавиатура не обновится
         \Telegram::editMessageReplyMarkup([
             'chat_id' => $chat->id,
             'message_id' => $message->message_id,
-            'reply_markup' => $k->toJson()
+            'reply_markup' => $replyMarkup->getKeyboard()
         ]);
     }
+
 }

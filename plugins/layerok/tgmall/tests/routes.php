@@ -2,6 +2,8 @@
 namespace Layerok\Tests;
 
 use Illuminate\Support\Facades\Route;
+use Layerok\TgMall\Classes\ReplyMarkups\CartProductReplyMarkup;
+use Layerok\TgMall\Models\Message;
 use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\Product;
 use Telegram\Bot\Keyboard\Keyboard;
@@ -263,7 +265,33 @@ Route::get('/test/lovata/mall', function() {
     $cart = new Cart();
     $cart->addProduct($product, 1);
 
-    $cart->products->map(function($item) {
+    $cartProduct = $cart->products()->where('product_id', '=', 150)->first();
+
+    /*$cart->products->map(function($item) {
         dd($item);
-    });
+    });*/
+    dd($cartProduct);
+});
+
+Route::get('/test/laravel/db/json', function() {
+    $data = ['page' => 1, 'category' => 2];
+/*    $message = Message::create([
+        'chat_id' => 4443,
+        'msg_id'  => 3434,
+        'type'   => 'some_type1',
+        'meta_data' => $data
+    ]);*/
+
+    $message = Message::where('chat_id', '=', 4443)
+        ->where('type', '=', 'some_type')
+        ->orWhere('type', '=', 'some_type1')
+        ->get();
+
+    dd($message);
+});
+
+Route::get('/test/tgmall/reply/markups', function() {
+    $cartProductMarkup = new CartProductReplyMarkup(2, 3, '200 uah');
+    $markup = $cartProductMarkup->getReplyMarkup();
+    dd($markup);
 });
