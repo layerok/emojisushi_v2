@@ -1,17 +1,13 @@
 <?php namespace Layerok\TgMall\Commands;
 
 use Layerok\TgMall\Classes\Constants;
+use Layerok\TgMall\Classes\LayerokCommand;
 use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
-use OFFLINE\Mall\Classes\Utils\Money;
-use OFFLINE\Mall\Models\Currency;
 use OFFLINE\Mall\Models\Product;
-use Telegram\Bot\Commands\Command;
 use Layerok\TgMall\Traits\Lang;
 use Layerok\TgMall\Traits\Warn;
-use Telegram\Bot\Keyboard\Keyboard;
 
-
-class UpdateQuantityCommand extends Command
+class UpdateQuantityCommand extends LayerokCommand
 {
     use Lang;
     use Warn;
@@ -57,6 +53,8 @@ class UpdateQuantityCommand extends Command
      */
     public function handle()
     {
+        parent::handle();
+
         if (!$this->validate()) {
             return;
         }

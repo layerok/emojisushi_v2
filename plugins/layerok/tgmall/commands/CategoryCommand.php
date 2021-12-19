@@ -1,6 +1,7 @@
 <?php namespace Layerok\TgMall\Commands;
 
 use \Layerok\TgMall\Classes\Constants;
+use Layerok\TgMall\Classes\LayerokCommand;
 use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
 use Layerok\TgMall\Models\Message;
 use OFFLINE\Mall\Models\Cart;
@@ -14,7 +15,7 @@ use \Layerok\TgMall\Models\DeleteMessage;
 use \Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
 use Telegram\Bot\Keyboard\Keyboard;
 
-class CategoryCommand extends Command
+class CategoryCommand extends LayerokCommand
 {
     use Lang;
     use Warn;
@@ -62,6 +63,7 @@ class CategoryCommand extends Command
     public function handle()
     {
 
+        parent::handle();
         $valid = $this->validate();
 
         if (!$valid) {

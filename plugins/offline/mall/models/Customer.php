@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use DB;
+use Lovata\BaseCode\Models\Branches;
 use Model;
 use October\Rain\Database\Traits\SoftDelete;
 use October\Rain\Database\Traits\Validation;
@@ -22,6 +23,7 @@ class Customer extends Model
         'tg_username',
         'tg_phone',
         'tg_address',
+        'branch_id',
         'user_id',
         'firstname',
         'lastname'
@@ -37,6 +39,7 @@ class Customer extends Model
     public $table = 'offline_mall_customers';
     public $belongsTo = [
         'user' => User::class,
+        'branch' => Branches::class
     ];
     public $hasMany = [
         'addresses'       => Address::class,

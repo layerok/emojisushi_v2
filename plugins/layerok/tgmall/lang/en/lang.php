@@ -28,7 +28,7 @@ return [
         "minus" => "➖",
         "warning_text_in_basket" => "Этот товар уже в корзине!",
 
-        "busket_is_empty" => "У вас ничего нет в корзине.",
+        "cart_is_empty" => "Ваша корзина пуста.",
 
         "prise" => "Цена",
 

@@ -1,8 +1,9 @@
 <?php namespace Layerok\TgMall\Commands;
 
-use Layerok\TgMall\Classes\Callback\Constants;
+
 use Layerok\TgMall\Classes\InlineKeyboard;
 
+use Layerok\TgMall\Classes\LayerokCommand;
 use OFFLINE\Mall\Models\Category;
 use OFFLINE\Mall\Models\Customer;
 use OFFLINE\Mall\Models\User;
@@ -12,7 +13,7 @@ use Layerok\TgMall\Traits\Lang;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Keyboard\Button;
 
-class MenuCommand extends Command
+class MenuCommand extends LayerokCommand
 {
     use Lang;
 
@@ -28,6 +29,7 @@ class MenuCommand extends Command
      */
     public function handle()
     {
+        parent::handle();
         $update = $this->getUpdate();
         $from = $update->getMessage()->getFrom();
         $chat = $update->getChat();

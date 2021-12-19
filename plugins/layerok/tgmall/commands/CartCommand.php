@@ -1,8 +1,8 @@
 <?php namespace Layerok\TgMall\Commands;
 
 use Layerok\TgMall\Classes\Constants;
+use Layerok\TgMall\Classes\LayerokCommand;
 use Layerok\TgMall\Classes\Markups\CartProductReplyMarkup;
-use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
 use Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
 use Layerok\TgMall\Models\Message;
 use Layerok\TgMall\Traits\Lang;
@@ -17,7 +17,7 @@ use OFFLINE\Mall\Models\Product;
 use Telegram\Bot\Commands\Command;
 use Telegram\Bot\Keyboard\Keyboard;
 
-class CartCommand extends Command
+class CartCommand extends LayerokCommand
 {
 
     use Warn;
@@ -87,6 +87,7 @@ class CartCommand extends Command
 
     public function handle()
     {
+        parent::handle();
         if (!$this->validate()) {
             return;
         }
@@ -286,7 +287,7 @@ class CartCommand extends Command
     public function cartFooterMessage()
     {
         $text = $this->cart->products->count() === 0 ?
-            $this->lang('busket_is_empty') :
+            $this->lang('cart_is_empty') :
             $this->lang('rasd');
         return [
             'text' => $text,

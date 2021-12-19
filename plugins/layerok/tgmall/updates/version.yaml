@@ -30,3 +30,6 @@
 1.2.2:
     - 'add `meta_data` to `messages` table'
     - add_meta_data_to_messages_table.php
+1.2.6:
+    - 'add `branch_id` field to `offline_mall_customers` table'
+    - add_branch_id_to_offline_mall_customers_table.php
