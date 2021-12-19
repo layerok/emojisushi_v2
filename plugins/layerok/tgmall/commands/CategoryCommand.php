@@ -1,6 +1,7 @@
 <?php namespace Layerok\TgMall\Commands;
 
 use \Layerok\TgMall\Classes\Constants;
+use Layerok\TgMall\Classes\Markups\CategoryFooterReplyMarkup;
 use Layerok\TgMall\Commands\LayerokCommand;
 use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
 use Layerok\TgMall\Models\Message;
@@ -192,40 +193,7 @@ class CategoryCommand extends LayerokCommand
 
     public function footerButtons(): Keyboard
     {
-        $this->cart->refresh();
-        $countPositionInOrder = "";
-        if ($this->cart->products->count()) {
-            $countPositionInOrder = " (" . $this->cart->products->count() . ")";
-        }
-        $limit = \Config::get('layerok.tgmall::productsInPage');
-        $all = Category::where('id', '=', $this->id)->first()->products;
-        $lastPage = ceil($all->count() / $limit);
-        $k = new Keyboard();
-        $k->inline();
-        if ($lastPage !== $this->page) {
-            $loadBtn = $k::inlineButton([
-                'text' => 'Загрузить еще из этой категории',
-                'callback_data' => implode(' ', ['/category', $this->id, $this->page + 1])
-            ]);
-            $k->row($loadBtn);
-        }
-
-        $btn1 = $k::inlineButton([
-            'text' => $this->lang("busket") . $countPositionInOrder,
-            'callback_data' => "/cart list"
-        ]);
-        $btn2 = $k::inlineButton([
-            'text' => $this->lang("in_menu"),
-            'callback_data' => "/menu"
-        ]);
-        $btn3 = $k::inlineButton([
-            'text' => $this->lang("in_menu_main"),
-            'callback_data' => "/start"
-        ]);
-
-        $k->row($btn1);
-        $k->row($btn2);
-        $k->row($btn3);
-        return $k;
+        $replyMarkup = new CategoryFooterReplyMarkup($this->cart, $this->id, $this->page);
+        return $replyMarkup->getKeyboard();
     }
 }

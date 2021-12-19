@@ -29,7 +29,7 @@ class StartCommand extends LayerokCommand
     {
         parent::handle();
         $update = $this->getUpdate();
-        $from = $update->getMessage()->getFrom();
+        $from = $update->getMessage()->getChat();
         $chat = $update->getChat();
 
         $text = sprintf(

@@ -1,6 +1,8 @@
 <?php namespace Layerok\TgMall\Commands;
 
 use Layerok\TgMall\Classes\Constants;
+use Layerok\Tgmall\Classes\Markups\CartFooterReplyMarkup;
+use Layerok\TgMall\Classes\Markups\CategoryFooterReplyMarkup;
 use Layerok\TgMall\Commands\LayerokCommand;
 use Layerok\TgMall\Classes\Markups\CartProductReplyMarkup;
 use Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
@@ -297,83 +299,17 @@ class CartCommand extends LayerokCommand
 
     public function cartFooterKeyboard(): Keyboard
     {
-        $k = new Keyboard();
-        $k->inline();
+        $replyMarkup = new CartFooterReplyMarkup($this->cart);
 
-        if ($this->cart->products->count() !== 0) {
-            $k->row($k::inlineButton([
-                'text' => str_replace(
-                    "*price*",
-                    $this->money->format(
-                        $this->cart->totals()->totalPostTaxes(),
-                        null,
-                        Currency::$defaultCurrency
-                    ),
-                    $this->lang('all_amount_order')
-                ),
-                'callback_data' => "nope"
-            ]));
-
-            $k->row($k::inlineButton(([
-                'text' => $this->lang('take_order'),
-                'callback_data' => 'take_order'
-            ])));
-        } else {
-            $k->row($k::inlineButton([
-                'text' => $this->lang('in_menu'),
-                'callback_data' => '/menu'
-            ]));
-        }
-
-
-        $k->row($k::inlineButton([
-            'text' => $this->lang('in_menu_main'),
-            'callback_data' => '/start'
-        ]));
-
-        return $k;
+        return $replyMarkup->getKeyboard();
     }
 
     public function categoryFooterButtons($meta_data): Keyboard
     {
         $page = $meta_data['page'];
         $category_id = $meta_data['category_id'];
-        $this->cart->refresh();
-        $countPositionInOrder = "";
-        if ($this->cart->products->count()) {
-            $countPositionInOrder = " (" . $this->cart->products->count() . ")";
-        }
-        $limit = \Config::get('layerok.tgmall::productsInPage');
-        $all = Category::where('id', '=', $category_id)->first()->products;
-        $lastPage = ceil($all->count() / $limit);
-        $k = new Keyboard();
-        $k->inline();
-        if ($lastPage !== $page) {
-            $loadBtn = $k::inlineButton([
-                'text' => 'Загрузить еще из этой категории',
-                'callback_data' => implode(' ', ['/category', $category_id, $page + 1])
-            ]);
-            $k->row($loadBtn);
-        }
-
-        $btn1 = $k::inlineButton([
-            'text' => $this->lang("busket") . $countPositionInOrder,
-            'callback_data' => "/cart list"
-        ]);
-        $btn2 = $k::inlineButton([
-            'text' => $this->lang("in_menu"),
-            'callback_data' => "/menu"
-        ]);
-        $btn3 = $k::inlineButton([
-            'text' => $this->lang("in_menu_main"),
-            'callback_data' => "/start"
-        ]);
-
-        $k->row($btn1);
-        $k->row($btn2);
-        $k->row($btn3);
-        return $k;
+        $replyMarkup = new CategoryFooterReplyMarkup($this->cart, $category_id, $page);
+        return $replyMarkup->getKeyboard();
     }
-
 
 }
