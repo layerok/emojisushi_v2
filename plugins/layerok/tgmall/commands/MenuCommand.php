@@ -38,7 +38,10 @@ class MenuCommand extends Command
         $keyboard = new Keyboard();
         $keyboard->inline();
 
-        $categories = Category::where('nest_depth', '=', 0)->get();
+        $categories = Category::where([
+            ['nest_depth', '=', 0],
+            ['published', '=', 1]
+        ])->get();
         $categories->map(function ($row) use ($keyboard) {
             $btn = $keyboard::inlineButton(
                 [
