@@ -29,7 +29,7 @@ class MenuCommand extends LayerokCommand
      */
     public function handle()
     {
-        parent::handle();
+        parent::before();
         $update = $this->getUpdate();
         $from = $update->getMessage()->getFrom();
         $chat = $update->getChat();

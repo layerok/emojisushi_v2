@@ -3,6 +3,7 @@
 
 use Layerok\TgMall\Commands\LayerokCommand;
 use Layerok\TgMall\Classes\Markups\MainMenuReplyMarkup;
+use Layerok\TgMall\Models\State;
 use OFFLINE\Mall\Models\Customer;
 use OFFLINE\Mall\Models\User;
 use Telegram\Bot\Commands\Command;
@@ -27,10 +28,11 @@ class StartCommand extends LayerokCommand
      */
     public function handle()
     {
-        parent::handle();
+        parent::before();
         $update = $this->getUpdate();
         $from = $update->getMessage()->getChat();
-        $chat = $update->getChat();
+
+        \Log::info($this->state);
 
         $text = sprintf(
             $this->lang('start_text'),

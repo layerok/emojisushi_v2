@@ -21,27 +21,6 @@ class Webhook
 
         $emitter->addListener(UpdateWasReceived::class, function ($event) {
             $update = $event->getUpdate();
-            $telegram = $event->getTelegram();
-            $chat = $update->getChat();
-            $from = $update->getMessage()->getFrom();
-
-            $customer = Customer::where('tg_chat_id', '=', $chat->id)->first();
-
-            if (!$customer) {
-                $pass = "qweasdqweasd";
-                $user = User::create([
-                    'name' => "jonh",
-                    'password' => $pass,
-                    'password_confirmation' => $pass
-                ]);
-                Customer::create([
-                    "tg_chat_id" => $chat->id,
-                    "firstname" => $from->firstName,
-                    "lastname"  => $from->lastName,
-                    "tg_username" => $from->username,
-                    "user_id" => $user->id
-                ]);
-            }
 
             if ($update->detectType() === 'callback_query') {
                 $rawResponse = $update->getRawResponse();

@@ -7,7 +7,7 @@ use Telegram\Bot\Commands\Command;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
-class ChoseBranchCommand extends Command
+class ChoseBranchCommand extends LayerokCommand
 {
     use Warn;
     protected $name = "chosebranch";
@@ -24,6 +24,7 @@ class ChoseBranchCommand extends Command
         if (!$this->validate()) {
             return;
         }
+        parent::before(false);
 
         $this->chose();
     }
@@ -40,16 +41,15 @@ class ChoseBranchCommand extends Command
             return;
         }
 
-        $customer = Customer::where('tg_chat_id', '=', $chat->id)->first();
 
-        if (!isset($customer)) {
+        if (!isset($this->customer)) {
             // customer must be created on this stage
             \Log::error('somehow user was not created');
             return;
         }
 
-        $customer->branch_id = $branch->id;
-        $customer->save();
+        $this->customer->branch_id = $branch->id;
+        $this->customer->save();
 
         $response = $this->replyWithMessage([
             'chat_id' => $chat->id,

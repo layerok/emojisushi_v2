@@ -7,7 +7,7 @@ use Telegram\Bot\Commands\Command;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
-class ListBranchCommand extends Command
+class ListBranchCommand extends LayerokCommand
 {
     use Warn;
     protected $name = "listbranch";
@@ -23,6 +23,7 @@ class ListBranchCommand extends Command
         if (!$this->validate()) {
             return;
         }
+        parent::before(false);
 
         $this->listBranches();
     }

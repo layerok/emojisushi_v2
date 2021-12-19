@@ -29,6 +29,7 @@ class BranchCommand extends LayerokCommand
         if (!$this->validate()) {
             return;
         }
+        parent::before();
 
         $method = $this->arguments['type'];
         if (method_exists($this, $method)) {
@@ -38,12 +39,7 @@ class BranchCommand extends LayerokCommand
 
     protected function phones()
     {
-        $update = $this->getUpdate();
-        $chat = $update->getChat();
-
-        $customer = Customer::where('tg_chat_id', '=', $chat->id)->first();
-
-        $branch = $customer->branch;
+        $branch = $this->customer->branch;
 
         $phones = explode(',', $branch->phones);
         foreach ($phones as $phone) {

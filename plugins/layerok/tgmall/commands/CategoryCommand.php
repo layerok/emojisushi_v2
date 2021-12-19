@@ -64,13 +64,13 @@ class CategoryCommand extends LayerokCommand
     public function handle()
     {
 
-        parent::handle();
+
         $valid = $this->validate();
 
         if (!$valid) {
             return;
         }
-
+        parent::before();
         $this->id = $this->arguments['id'];
 
         $category = Category::where('id', '=', $this->id)
@@ -87,9 +87,9 @@ class CategoryCommand extends LayerokCommand
 
         $limit = \Config::get('layerok.tgmall::productsInPage');
 
-        $customer = Customer::where('tg_chat_id', '=', $chat->id)->first();
+;
 
-        $this->cart = Cart::byUser($customer->user);
+        $this->cart = Cart::byUser($this->customer->user);
 
 
         $offset = ($this->page - 1) * $limit;

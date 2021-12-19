@@ -38,7 +38,6 @@ class CartCommand extends LayerokCommand
      */
     public $money;
     public $chat;
-    public $customer;
     public $user;
 
     public function validate(): bool
@@ -89,11 +88,11 @@ class CartCommand extends LayerokCommand
 
     public function handle()
     {
-        parent::handle();
+
         if (!$this->validate()) {
             return;
         }
-
+        parent::before();
         $update = $this->getUpdate();
         $from = $update->getMessage()->getFrom();
         $this->chat = $update->getChat();

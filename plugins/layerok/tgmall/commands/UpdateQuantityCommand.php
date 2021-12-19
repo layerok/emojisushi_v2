@@ -53,12 +53,10 @@ class UpdateQuantityCommand extends LayerokCommand
      */
     public function handle()
     {
-        parent::handle();
-
         if (!$this->validate()) {
             return;
         }
-
+        parent::before();
         $quantity = $this->arguments['quantity'];
 
         $update = $this->getUpdate();
