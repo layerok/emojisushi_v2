@@ -1,5 +1,6 @@
 <?php namespace Layerok\TgMall\Classes;
 
+use Layerok\TgMall\Models\State;
 use League\Event\Emitter;
 use Lovata\BaseCode\Models\Branches;
 use OFFLINE\Mall\Models\Customer;
@@ -21,6 +22,7 @@ class Webhook
 
         $emitter->addListener(UpdateWasReceived::class, function ($event) {
             $update = $event->getUpdate();
+            $chat = $update->getChat();
 
             if ($update->detectType() === 'callback_query') {
                 $rawResponse = $update->getRawResponse();
@@ -45,9 +47,37 @@ class Webhook
                 }
 
                 Telegram::getCommandBus()->execute(
-                   $command, $hackedUpdate, []
+                    $command,
+                    $hackedUpdate,
+                    []
                 );
+            } else {
+                $text = $update->getMessage()->getText();
+                $isCheckoutCommand = preg_match('/^\/checkout/', $text);
+                if ($isCheckoutCommand) {
+                    return;
+                }
+
+                $state = State::where('chat_id', '=', $chat->id);
+
+                if (!$state->exists()) {
+                    return;
+                }
+
+                $first = $state->first();
+
+                \Log::info($first);
+
+                if (!isset($first->state['command'])) {
+                    return;
+                }
+
+                if ($first->state['command'] == 'checkout') {
+                   \Telegram::triggerCommand('checkout', $update);
+                }
             }
+
+
         });
 
         Telegram::setEventEmitter($emitter);

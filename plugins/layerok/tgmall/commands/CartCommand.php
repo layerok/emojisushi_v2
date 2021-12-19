@@ -121,7 +121,7 @@ class CartCommand extends LayerokCommand
             ['product_id', '=', $this->arguments['product_id']]
         ])->exists();
 
-        if($hidden) {
+        if ($hidden) {
             return;
         }
 

@@ -313,3 +313,21 @@ Route::get('/test/laravel/db/upserts', function() {
 
     dd($record->first());
 });
+
+Route::get('/test/php/array/merge', function() {
+    $arr1 = [
+        'state' => [
+            'command' => 'checkout',
+        ]
+    ];
+
+    $arr2 = [
+        'state' => [
+            'step' => 2
+        ]
+    ];
+
+    $merged = array_merge_recursive($arr1, $arr2);
+
+    dd($merged);
+});
