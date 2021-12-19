@@ -9,6 +9,7 @@ use Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
 use Layerok\TgMall\Models\Message;
 use Layerok\TgMall\Traits\Lang;
 use Layerok\TgMall\Traits\Warn;
+use Lovata\BaseCode\Models\HideProduct;
 use OFFLINE\Mall\Classes\Utils\Money;
 use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\CartProduct;
@@ -94,14 +95,9 @@ class CartCommand extends LayerokCommand
         }
         parent::before();
         $update = $this->getUpdate();
-        $from = $update->getMessage()->getFrom();
         $this->chat = $update->getChat();
 
         $type = $this->arguments['type'];
-        //todo:: it is possible that the customer does not exist with the provided chat id
-        $this->customer = Customer::where('tg_chat_id', '=', $this->chat->id)->first();
-        $this->user = $this->customer->user;
-        $this->cart = Cart::byUser($this->user);
         $this->money = app(Money::class);
 
 
@@ -120,6 +116,15 @@ class CartCommand extends LayerokCommand
 
     public function addProduct()
     {
+        $hidden = HideProduct::where([
+            ['branch_id', '=', $this->customer->branch->id],
+            ['product_id', '=', $this->arguments['product_id']]
+        ])->exists();
+
+        if($hidden) {
+            return;
+        }
+
         $cartProduct = CartProduct::where([
             ['cart_id', '=', $this->cart->id],
             ['product_id', '=', $this->arguments['product_id']]

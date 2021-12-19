@@ -4,6 +4,7 @@
 use Layerok\TgMall\Classes\InlineKeyboard;
 
 use Layerok\TgMall\Commands\LayerokCommand;
+use Lovata\BaseCode\Models\HideCategory;
 use OFFLINE\Mall\Models\Category;
 use OFFLINE\Mall\Models\Customer;
 use OFFLINE\Mall\Models\User;
@@ -45,6 +46,15 @@ class MenuCommand extends LayerokCommand
             ['published', '=', 1]
         ])->get();
         $categories->map(function ($row) use ($keyboard) {
+
+            $hidden = HideCategory::where([
+                    ['branch_id', '=', $this->customer->branch->id],
+                    ['category_id', '=', $row->id]
+                ])->exists();
+            if ($hidden) {
+                return;
+            }
+
             $btn = $keyboard::inlineButton(
                 [
                     'text' => $row->name,

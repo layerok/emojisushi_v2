@@ -61,6 +61,8 @@ class ChoseBranchCommand extends LayerokCommand
             'message_id' => $response['message_id']
         ]);
 
+        $this->cart->products()->delete();
+
         $this->triggerCommand('start');
     }
 }

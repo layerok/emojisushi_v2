@@ -2,6 +2,7 @@
 
 use Layerok\TgMall\Models\State;
 use Lovata\BaseCode\Models\Branches;
+use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\Customer;
 use OFFLINE\Mall\Models\User;
 use Telegram\Bot\Commands\Command;
@@ -19,10 +20,16 @@ abstract class LayerokCommand extends Command
      * @var State
      */
     public $state;
+
+    /**
+     * @var Cart
+     */
+    public $cart;
+
+
     public function isSpotChosen(): bool
     {
-        $branch = $this->customer->branch;
-        if (!isset($branch)) {
+        if (!isset($this->customer->branch)) {
             return false;
         }
         return true;
@@ -52,16 +59,29 @@ abstract class LayerokCommand extends Command
             ]);
         }
 
-        $this->state = State::updateOrCreate(
-            [
-                'chat_id' => $chat->id,
-            ],
-            [
-                'state' => [
-                    'command' => $this->getName()
+        $this->cart = Cart::byUser($this->customer->user);
+
+        $this->state = State::where('chat_id', '=', $chat->id);
+        $state = [
+            'command' => $this->getName()
+        ];
+
+        if (!$this->state->exists()) {
+            $this->state = State::create([
+                [
+                    'chat_id' => $chat->id,
+                    'state' => $state
                 ]
-            ]
-        )->first();
+            ]);
+        } else {
+            $this->state->update([
+                'state' => array_merge(
+                    $this->state->first()->state,
+                    $state
+                )
+            ]);
+        }
+        $this->state = $this->state->first();
 
         if ($checkBranch && !$this->isSpotChosen()) {
             $this->triggerCommand('listbranch');

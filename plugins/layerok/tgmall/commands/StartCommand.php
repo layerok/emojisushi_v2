@@ -32,8 +32,6 @@ class StartCommand extends LayerokCommand
         $update = $this->getUpdate();
         $from = $update->getMessage()->getChat();
 
-        \Log::info($this->state);
-
         $text = sprintf(
             $this->lang('start_text'),
             $from->username

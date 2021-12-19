@@ -5,6 +5,8 @@ use Layerok\TgMall\Classes\Markups\CategoryFooterReplyMarkup;
 use Layerok\TgMall\Commands\LayerokCommand;
 use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
 use Layerok\TgMall\Models\Message;
+use Lovata\BaseCode\Models\HideCategory;
+use Lovata\BaseCode\Models\HideProduct;
 use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\CartProduct;
 use OFFLINE\Mall\Models\Category;
@@ -81,22 +83,24 @@ class CategoryCommand extends LayerokCommand
         }
 
         $update = $this->getUpdate();
-        $from = $update->getMessage()->getFrom();
         $chat = $update->getChat();
 
 
         $limit = \Config::get('layerok.tgmall::productsInPage');
-
-;
-
-        $this->cart = Cart::byUser($this->customer->user);
 
 
         $offset = ($this->page - 1) * $limit;
         $countPosition = $limit;
 
 
+        $hidden = HideCategory::where([
+            ['branch_id', '=', $this->customer->branch->id],
+            ['category_id', '=', $category->id]
+        ])->exists();
 
+        if ($hidden) {
+            return;
+        }
         $productsInCategory = $category
             ->products()
             ->offset($offset)
@@ -125,6 +129,15 @@ class CategoryCommand extends LayerokCommand
                 $productsInCategory,
                 $limit
             ) {
+
+                $hidden = HideProduct::where([
+                    ['branch_id', '=', $this->customer->branch->id],
+                    ['product_id', '=', $product->id]
+                ])->exists();
+
+                if ($hidden) {
+                    return;
+                }
 
                 if ($this->cart->isInCart($product)) {
                     $replyMarkup = new ProductInCartReplyMarkup();
