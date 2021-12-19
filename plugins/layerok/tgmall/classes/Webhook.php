@@ -66,7 +66,7 @@ class Webhook
 
                 $first = $state->first();
 
-                \Log::info($first);
+                //\Log::info($first);
 
                 if (!isset($first->state['command'])) {
                     return;

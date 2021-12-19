@@ -61,11 +61,11 @@ abstract class LayerokCommand extends Command
 
         $this->cart = Cart::byUser($this->customer->user);
 
-        $this->state = State::where('chat_id', '=', $chat->id);
+        $this->state = State::where('chat_id', '=', $chat->id)->first();
         //State::truncate();
         \Log::info(State::all());
 
-        if (!$this->state->exists()) {
+        if (!isset($this->state)) {
             $this->state = State::create([
                 [
                     'chat_id' => $chat->id,
@@ -75,12 +75,18 @@ abstract class LayerokCommand extends Command
                 ]
             ])->first();
         } else {
-            $this->state = $this->state->first();
-            $this->state = $this->updateState([
-                'command' => $this->getName()
+            $upd = ['command' => $this->getName()];
+            if ($this->getName() !== 'checkout') {
+                $upd['step'] = null;
+            }
+            $this->state->update([
+                'state' => array_merge(
+                    $this->state->state,
+                    $upd
+                )
             ]);
+            \Log::info($this->state);
         }
-
 
         if ($checkBranch && !$this->isSpotChosen()) {
             $this->triggerCommand('listbranch');
@@ -93,19 +99,4 @@ abstract class LayerokCommand extends Command
      */
     abstract public function handle();
 
-    public function updateState($state): State
-    {
-        $newState = array_merge(
-            $this->state->state ?? [],
-            $state
-
-        );
-
-        $this->state->update([
-            'state' => $newState,
-            'chat_id' => $this->getUpdate()->getChat()->id
-        ]);
-
-        return $this->state;
-    }
 }

@@ -12,22 +12,28 @@ class CheckoutCommand extends LayerokCommand
     {
         parent::before();
         if (!isset($this->state->state['step'])) {
-            $this->updateState(
-                [
-                    'step' => self::PHONE
-                ]
-            );
+            $upd = ['step' => self::PHONE];
+
+            $this->state->update([
+                'state' => array_merge(
+                    $this->state->state,
+                    $upd
+                )
+            ]);
         }
         switch ($this->state->state['step']) {
             case self::PHONE:
                 $this->replyWithMessage([
                     'text' => 'Введите Ваш телефон'
                 ]);
-                $this->updateState(
-                    [
-                        'step' => self::COMMENT
-                    ]
-                );
+                $upd = ['step' => self::COMMENT];
+
+                $this->state->update([
+                    'state' => array_merge(
+                        $this->state->state,
+                        $upd
+                    )
+                ]);
                 break;
             case self::COMMENT:
                 $this->replyWithMessage([
@@ -35,7 +41,6 @@ class CheckoutCommand extends LayerokCommand
                 ]);
                 break;
         }
-
     }
 
 
