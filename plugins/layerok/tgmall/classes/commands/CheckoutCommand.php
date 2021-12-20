@@ -1,4 +1,4 @@
-<?php namespace Layerok\TgMall\Commands;
+<?php namespace Layerok\TgMall\Classes\Commands;
 
 class CheckoutCommand extends LayerokCommand
 {

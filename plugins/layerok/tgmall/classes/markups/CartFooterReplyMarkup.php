@@ -1,6 +1,7 @@
 <?php namespace Layerok\Tgmall\Classes\Markups;
 
-use Layerok\TgMall\Traits\Lang;
+use Layerok\TgMall\Classes\Constants;
+use Layerok\TgMall\Classes\Traits\Lang;
 use OFFLINE\Mall\Classes\Utils\Money;
 use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\Currency;
@@ -32,24 +33,32 @@ class CartFooterReplyMarkup
                     ),
                     $this->lang('all_amount_order')
                 ),
-                'callback_data' => "nope"
+                'callback_data' => json_encode([
+                    'name' => Constants::NOOP
+                ])
             ]));
 
             $k->row($k::inlineButton(([
                 'text' => $this->lang('take_order'),
-                'callback_data' => '/checkout'
+                'callback_data' => json_encode([
+                    'name' => 'checkout'
+                ])
             ])));
         } else {
             $k->row($k::inlineButton([
                 'text' => $this->lang('in_menu'),
-                'callback_data' => '/menu'
+                'callback_data' => json_encode([
+                    'name' => 'menu'
+                ])
             ]));
         }
 
 
         $k->row($k::inlineButton([
             'text' => $this->lang('in_menu_main'),
-            'callback_data' => '/start'
+            'callback_data' => json_encode([
+                'name' => 'start'
+            ])
         ]));
 
         $this->keyboard = $k;

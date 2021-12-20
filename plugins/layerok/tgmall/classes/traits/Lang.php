@@ -1,4 +1,4 @@
-<?php namespace Layerok\TgMall\Traits;
+<?php namespace Layerok\TgMall\Classes\Traits;
 
 trait Lang
 {

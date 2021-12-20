@@ -1,17 +1,13 @@
-<?php namespace Layerok\TgMall\Commands;
+<?php namespace Layerok\TgMall\Classes\Traits;
 
 use Layerok\TgMall\Models\State;
-use Lovata\BaseCode\Models\Branches;
 use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\Customer;
 use OFFLINE\Mall\Models\User;
-use Telegram\Bot\Commands\Command;
-use Telegram\Bot\Keyboard\Keyboard;
-use Telegram\Bot\Laravel\Facades\Telegram;
+use Telegram\Bot\Answers\Answerable;
 
-abstract class LayerokCommand extends Command
-{
-
+trait Before {
+    use Answerable;
     /**
      * @var Customer
      */
@@ -63,9 +59,9 @@ abstract class LayerokCommand extends Command
 
         $this->state = State::where('chat_id', '=', $chat->id)->first();
         //State::truncate();
-        \Log::info(State::all());
+        //\Log::info(State::all());
 
-        if (!isset($this->state)) {
+       /* if (!isset($this->state)) {
             $this->state = State::create([
                 [
                     'chat_id' => $chat->id,
@@ -85,18 +81,11 @@ abstract class LayerokCommand extends Command
                     $upd
                 )
             ]);
-            \Log::info($this->state);
-        }
+        }*/
 
         if ($checkBranch && !$this->isSpotChosen()) {
             $this->triggerCommand('listbranch');
             exit;
         }
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    abstract public function handle();
-
 }

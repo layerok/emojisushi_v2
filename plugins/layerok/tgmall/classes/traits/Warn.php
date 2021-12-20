@@ -1,5 +1,5 @@
 <?php
-namespace Layerok\TgMall\Traits;
+namespace Layerok\TgMall\Classes\Traits;
 
 trait Warn {
     public function warn($msg)

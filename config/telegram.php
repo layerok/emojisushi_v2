@@ -38,15 +38,11 @@ return [
             'certificate_path'    => env('TELEGRAM_CERTIFICATE_PATH', 'YOUR-CERTIFICATE-PATH'),
             'webhook_url'         => env('TELEGRAM_WEBHOOK_URL', 'YOUR-BOT-WEBHOOK-URL'),
             'commands'            => [
-                \Layerok\TgMall\Commands\StartCommand::class,
-                \Layerok\TgMall\Commands\MenuCommand::class,
-                \Layerok\TgMall\Commands\CategoryCommand::class,
-                \Layerok\TgMall\Commands\UpdateQuantityCommand::class,
-                \Layerok\TgMall\Commands\CartCommand::class,
-                \Layerok\TgMall\Commands\ChoseBranchCommand::class,
-                \Layerok\TgMall\Commands\ListBranchCommand::class,
-                \Layerok\TgMall\Commands\BranchCommand::class,
-                \Layerok\TgMall\Commands\CheckoutCommand::class,
+                \Layerok\TgMall\Classes\Commands\StartCommand::class,
+      /*          \Layerok\TgMall\Classes\Commands\MenuCommand::class,
+                \Layerok\TgMall\Classes\Commands\CategoryCommand::class,
+                \Layerok\TgMall\Classes\Commands\CartCommand::class,
+                \Layerok\TgMall\Classes\Commands\CheckoutCommand::class,*/
             ],
         ],
         'MyLogBot' => [

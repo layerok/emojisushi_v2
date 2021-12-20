@@ -1,6 +1,6 @@
 <?php namespace Layerok\TgMall\Classes\Markups;
 
-use Layerok\TgMall\Traits\Lang;
+use Layerok\TgMall\Classes\Traits\Lang;
 use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\Category;
 use Telegram\Bot\Keyboard\Keyboard;
@@ -26,22 +26,37 @@ class CategoryFooterReplyMarkup
         if ($lastPage !== $page) {
             $loadBtn = $k::inlineButton([
                 'text' => 'Загрузить еще из этой категории',
-                'callback_data' => implode(' ', ['/category', $category_id, $page + 1])
+                'callback_data' => json_encode([
+                    'name' => 'category',
+                    'arguments' => [
+                        'id' => $category_id,
+                        'page' => $page + 1
+                    ]
+                ])
             ]);
             $k->row($loadBtn);
         }
 
         $btn1 = $k::inlineButton([
             'text' => $this->lang("busket") . $countPositionInOrder,
-            'callback_data' => "/cart list"
+            'callback_data' => json_encode([
+                'name' => 'cart',
+                'arguments' => [
+                    'type' => 'list'
+                ]
+            ])
         ]);
         $btn2 = $k::inlineButton([
             'text' => $this->lang("in_menu"),
-            'callback_data' => "/menu"
+            'callback_data' => json_encode([
+                'name' => 'menu'
+            ])
         ]);
         $btn3 = $k::inlineButton([
             'text' => $this->lang("in_menu_main"),
-            'callback_data' => "/start"
+            'callback_data' => json_encode([
+                'name' => 'start'
+            ])
         ]);
 
         $k->row($btn1);

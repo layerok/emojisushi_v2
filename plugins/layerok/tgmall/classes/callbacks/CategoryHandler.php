@@ -1,40 +1,33 @@
-<?php namespace Layerok\TgMall\Commands;
+<?php
 
-use \Layerok\TgMall\Classes\Constants;
+namespace Layerok\TgMall\Classes\Callbacks;
+
+
+use Layerok\TgMall\Classes\Constants;
 use Layerok\TgMall\Classes\Markups\CategoryFooterReplyMarkup;
-use Layerok\TgMall\Commands\LayerokCommand;
 use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
+use Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
+use Layerok\TgMall\Models\DeleteMessage;
 use Layerok\TgMall\Models\Message;
+use Layerok\TgMall\Classes\Traits\Lang;
+use Layerok\TgMall\Classes\Traits\Warn;
+use Layerok\TgMall\Classes\Traits\Before;
 use Lovata\BaseCode\Models\HideCategory;
 use Lovata\BaseCode\Models\HideProduct;
-use OFFLINE\Mall\Models\Cart;
-use OFFLINE\Mall\Models\CartProduct;
-use OFFLINE\Mall\Models\Category;
-use OFFLINE\Mall\Models\Customer;
-use \Telegram\Bot\Commands\Command;
-use \Layerok\TgMall\Traits\Lang;
-use \Layerok\TgMall\Traits\Warn;
-use \Layerok\TgMall\Models\DeleteMessage;
-use \Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
+use OFFLINE\Mall\Models\Category as CategoryModel;
 use Telegram\Bot\Keyboard\Keyboard;
 
-class CategoryCommand extends LayerokCommand
+class CategoryHandler extends CallbackQueryHandler
 {
     use Lang;
     use Warn;
-
-    protected $name = "category";
-
-    protected $description = "Select products by category id";
-
-    protected $pattern = "{id} {page?}";
+    use Before;
 
     private $brokenImageFileId = "AgACAgQAAxkDAAIBGGGtGjcxSQraUNasYICGA2UkTLeOAAJyrTEbmQABbVHg3HGg2xXRvQEAAwIAA3gAAyIE";
 
     private $page = 1;
     private $id;
     public $cart;
-
 
 
     public function validate():bool
@@ -72,10 +65,10 @@ class CategoryCommand extends LayerokCommand
         if (!$valid) {
             return;
         }
-        parent::before();
+        $this->before();
         $this->id = $this->arguments['id'];
 
-        $category = Category::where('id', '=', $this->id)
+        $category = CategoryModel::where('id', '=', $this->id)
             ->first();
 
         if (!$category->exists()) {

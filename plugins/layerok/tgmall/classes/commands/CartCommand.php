@@ -1,23 +1,18 @@
-<?php namespace Layerok\TgMall\Commands;
+<?php namespace Layerok\TgMall\Classes\Commands;
 
 use Layerok\TgMall\Classes\Constants;
 use Layerok\Tgmall\Classes\Markups\CartFooterReplyMarkup;
 use Layerok\TgMall\Classes\Markups\CategoryFooterReplyMarkup;
-use Layerok\TgMall\Commands\LayerokCommand;
 use Layerok\TgMall\Classes\Markups\CartProductReplyMarkup;
 use Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
 use Layerok\TgMall\Models\Message;
-use Layerok\TgMall\Traits\Lang;
-use Layerok\TgMall\Traits\Warn;
+use Layerok\TgMall\Classes\Traits\Lang;
+use Layerok\TgMall\Classes\Traits\Warn;
 use Lovata\BaseCode\Models\HideProduct;
 use OFFLINE\Mall\Classes\Utils\Money;
-use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\CartProduct;
-use OFFLINE\Mall\Models\Category;
 use OFFLINE\Mall\Models\Currency;
-use OFFLINE\Mall\Models\Customer;
 use OFFLINE\Mall\Models\Product;
-use Telegram\Bot\Commands\Command;
 use Telegram\Bot\Keyboard\Keyboard;
 
 class CartCommand extends LayerokCommand

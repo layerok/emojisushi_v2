@@ -1,6 +1,6 @@
 <?php namespace Layerok\TgMall\Classes\Markups;
 
-use Layerok\TgMall\Traits\Lang;
+use Layerok\TgMall\Classes\Traits\Lang;
 use Telegram\Bot\Keyboard\Keyboard;
 
 class MainMenuReplyMarkup
@@ -21,12 +21,13 @@ class MainMenuReplyMarkup
 
         $row1[] = $keyboard::inlineButton([
             'text' => $this->lang('menu'),
-            'callback_data' => "/menu"
+            'callback_data' => json_encode([
+                'name' => 'menu',
+                'arguments' => []
+            ])
         ]);
-        $row1[] = $keyboard::inlineButton([
-            'text' => $this->lang('busket'),
-            'callback_data' => "/cart list"
-        ]);
+
+
 
         //todo
 /*        $row2[] = $keyboard::inlineButton([
@@ -42,20 +43,49 @@ class MainMenuReplyMarkup
             'text' => $this->lang('review'),
             'callback_data' => "review"
         ]);*/
-        $row3[] = $keyboard::inlineButton([
+
+
+        $row1[] = $keyboard::inlineButton([
+            'text' => $this->lang('busket'),
+            'callback_data' => json_encode([
+                'name' => 'cart',
+                'arguments' => [
+                    'type' => 'list'
+                ]
+            ])
+        ]);
+
+        $row2[] = $keyboard::inlineButton([
             'text' => $this->lang('contact'),
-            'callback_data' => "/branch phones"
+            'callback_data' => json_encode([
+                'name' => 'branch',
+                'arguments' => [
+                    'type' => 'phones'
+                ]
+            ])
         ]);
 
-        $row4[] = $keyboard::inlineButton([
-            'text' => 'Изменить заведение',
-            'callback_data' => '/listbranch'
+        $row2[] = $keyboard::inlineButton([
+            'text' => '🌐 Вебсайт',
+            'callback_data' => json_encode([
+                'name' => 'branch',
+                'arguments' => [
+                    'type' => 'website'
+                ]
+            ])
         ]);
 
-        $row4[] = $keyboard::inlineButton([
-            'text' => 'Вебсайт',
-            'callback_data' => '/branch website'
+        $row3[] =$keyboard::inlineButton([
+            'text' => '👋 Сменить заведение',
+            'callback_data' => json_encode([
+                'name' => 'branch',
+                'arguments' => [
+                    'type' => 'all'
+                ]
+            ])
         ]);
+
+
 
 
         $keyboard->row(...$row1);

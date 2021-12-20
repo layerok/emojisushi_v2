@@ -1,7 +1,7 @@
 <?php namespace Layerok\TgMall\Classes\Markups;
 
 use Layerok\TgMall\Classes\Constants;
-use Layerok\TgMall\Traits\Lang;
+use Layerok\TgMall\Classes\Traits\Lang;
 use Telegram\Bot\Keyboard\Keyboard;
 
 class ProductInCartReplyMarkup
@@ -16,7 +16,9 @@ class ProductInCartReplyMarkup
         $k->inline();
         $k->row($k::inlineButton([
             'text' => $this->lang('position_in_basket'),
-            'callback_data' => Constants::NOPE
+            'callback_data' => json_encode([
+                'name' => Constants::NOOP
+            ])
         ]));
         $this->keyboard = $k;
     }

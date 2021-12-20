@@ -1,5 +1,5 @@
 <?php
-namespace Layerok\TgMall\Taps;
+namespace Layerok\TgMall\Classes\Taps;
 
 class CustomizeMonologTelegramHandler
 {

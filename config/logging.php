@@ -1,7 +1,5 @@
 <?php
 
-use Monolog\Formatter\LineFormatter;
-
 return [
 
     /*
@@ -108,7 +106,7 @@ return [
                 'channel' => env('MY_LOG_BOT_CHAT_ID')
             ],
             'tap' => [
-                \Layerok\TgMall\Taps\CustomizeMonologTelegramHandler::class
+                \Layerok\TgMall\Classes\Taps\CustomizeMonologTelegramHandler::class
             ]
         ]
     ],

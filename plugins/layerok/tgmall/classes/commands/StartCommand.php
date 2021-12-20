@@ -1,16 +1,8 @@
-<?php namespace Layerok\TgMall\Commands;
+<?php namespace Layerok\TgMall\Classes\Commands;
 
-
-use Layerok\TgMall\Commands\LayerokCommand;
+use Layerok\TgMall\Classes\Commands\LayerokCommand;
 use Layerok\TgMall\Classes\Markups\MainMenuReplyMarkup;
-use Layerok\TgMall\Models\State;
-use OFFLINE\Mall\Models\Customer;
-use OFFLINE\Mall\Models\User;
-use Telegram\Bot\Commands\Command;
-use Telegram\Bot\Actions;
-use Layerok\TgMall\Traits\Lang;
-use Telegram\Bot\Keyboard\Keyboard;
-use Telegram\Bot\Keyboard\Button;
+use Layerok\TgMall\Classes\Traits\Lang;
 
 class StartCommand extends LayerokCommand
 {

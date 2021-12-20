@@ -1,7 +1,7 @@
 <?php namespace Layerok\TgMall\Classes\Markups;
 
 use Layerok\TgMall\Classes\Constants;
-use Layerok\TgMall\Traits\Lang;
+use Layerok\TgMall\Classes\Traits\Lang;
 use OFFLINE\Mall\Classes\Utils\Money;
 use OFFLINE\Mall\Models\Currency;
 use OFFLINE\Mall\Models\Product;
@@ -18,7 +18,7 @@ class CategoryProductReplyMarkup
 
     /**
      * @param $product null | Product
-     * @param $quantity\
+     * @param $quantity
      */
     public function __construct(Product $product, $quantity)
     {
@@ -36,26 +36,41 @@ class CategoryProductReplyMarkup
 
         $btn1 = $k::inlineButton([
             'text' => $this->lang('minus'),
-            'callback_data' => implode(
-                ' ',
-                ['/update_qty', $product['id'], ($quantity - 1)]
-            )
+            'callback_data' => json_encode([
+                'name' => ($quantity - 1) < 1 ? 'noop': 'update_qty',
+                'arguments' => [
+                    'id' => $product['id'],
+                    'qty'   => $quantity - 1
+                ]
+            ])
         ]);
         $btn2 = $k::inlineButton([
             'text' => $quantity,
-            'callback_data' => "nope"
+            'callback_data' => json_encode([
+                'name' => 'noop'
+            ])
         ]);
         $btn3 = $k::inlineButton([
             'text' => $this->lang('plus'),
-            'callback_data' => implode(
-                ' ',
-                ['/update_qty', $product['id'], ($quantity + 1)]
-            )
+            'callback_data' => json_encode([
+                'name' =>  'update_qty',
+                'arguments' => [
+                    'id' => $product['id'],
+                    'qty'   => $quantity + 1
+                ]
+            ])
         ]);
         $k->row($btn1, $btn2, $btn3);
         $k->row($k::inlineButton([
             'text' => $this->lang('price') . ": " . $totalPrice . ' ' . $this->lang('add_to_cart'),
-            'callback_data' => "/cart add {$product['id']} {$quantity}"
+            'callback_data' => json_encode([
+                'name' => 'cart',
+                'arguments' => [
+                    'type' => 'add',
+                    'id' => $product['id'],
+                    'qty' =>  $quantity
+                ]
+            ])
         ]));
 
 
