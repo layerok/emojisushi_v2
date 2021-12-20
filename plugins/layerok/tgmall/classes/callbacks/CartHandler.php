@@ -135,6 +135,11 @@ class CartHandler extends CallbackQueryHandler
 
         if (isset($cartProduct)) {
             $cartProduct->refresh();
+        } else {
+            $cartProduct = CartProduct::where([
+                ['cart_id', '=', $this->cart->id],
+                ['product_id', '=', $this->arguments['id']]
+            ])->first();
         }
 
         $message = Message::where('chat_id', '=', $this->chat->id)
