@@ -110,6 +110,6 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
         }
         $this->state->setCallbackHandler(get_class($this));
 
-        \Log::info(State::all());
+        //\Log::info(State::all());
     }
 }
