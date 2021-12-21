@@ -7,4 +7,6 @@ class Constants
     public const ADD_PRODUCT_IN_CATEGORY = 'add_product_in_category';
 
     public const NOOP = "noop";
+
+    public const STEP_PHONE = 1;
 }

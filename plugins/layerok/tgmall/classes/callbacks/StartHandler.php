@@ -3,17 +3,18 @@
 namespace Layerok\TgMall\Classes\Callbacks;
 
 use Layerok\TgMall\Classes\Markups\MainMenuReplyMarkup;
-use Layerok\TgMall\Classes\Traits\Before;
 use Layerok\TgMall\Classes\Traits\Lang;
 
 
 class StartHandler extends CallbackQueryHandler
 {
     use Lang;
-    use Before;
+
+    protected $middlewares = [
+        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
+    ];
     public function handle()
     {
-        $this->before();
         $update = $this->getUpdate();
         $from = $update->getMessage()->getChat();
 

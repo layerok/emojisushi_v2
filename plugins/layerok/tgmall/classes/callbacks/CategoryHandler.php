@@ -11,7 +11,6 @@ use Layerok\TgMall\Models\DeleteMessage;
 use Layerok\TgMall\Models\Message;
 use Layerok\TgMall\Classes\Traits\Lang;
 use Layerok\TgMall\Classes\Traits\Warn;
-use Layerok\TgMall\Classes\Traits\Before;
 use Lovata\BaseCode\Models\HideCategory;
 use Lovata\BaseCode\Models\HideProduct;
 use OFFLINE\Mall\Models\Category as CategoryModel;
@@ -21,7 +20,10 @@ class CategoryHandler extends CallbackQueryHandler
 {
     use Lang;
     use Warn;
-    use Before;
+
+    protected $middlewares = [
+        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
+    ];
 
     private $brokenImageFileId = "AgACAgQAAxkDAAIBGGGtGjcxSQraUNasYICGA2UkTLeOAAJyrTEbmQABbVHg3HGg2xXRvQEAAwIAA3gAAyIE";
 
@@ -65,7 +67,6 @@ class CategoryHandler extends CallbackQueryHandler
         if (!$valid) {
             return;
         }
-        $this->before();
         $this->id = $this->arguments['id'];
 
         $category = CategoryModel::where('id', '=', $this->id)

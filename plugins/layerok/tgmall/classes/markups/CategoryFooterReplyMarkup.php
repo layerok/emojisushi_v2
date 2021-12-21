@@ -55,7 +55,8 @@ class CategoryFooterReplyMarkup
         $btn3 = $k::inlineButton([
             'text' => $this->lang("in_menu_main"),
             'callback_data' => json_encode([
-                'name' => 'start'
+                'name' => 'start',
+                'arguments' => []
             ])
         ]);
 

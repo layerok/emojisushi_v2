@@ -58,7 +58,7 @@ class MainMenuReplyMarkup
         $row2[] = $keyboard::inlineButton([
             'text' => $this->lang('contact'),
             'callback_data' => json_encode([
-                'name' => 'branch',
+                'name' => 'branch_info',
                 'arguments' => [
                     'type' => 'phones'
                 ]
@@ -68,7 +68,7 @@ class MainMenuReplyMarkup
         $row2[] = $keyboard::inlineButton([
             'text' => '🌐 Вебсайт',
             'callback_data' => json_encode([
-                'name' => 'branch',
+                'name' => 'branch_info',
                 'arguments' => [
                     'type' => 'website'
                 ]
@@ -78,10 +78,7 @@ class MainMenuReplyMarkup
         $row3[] =$keyboard::inlineButton([
             'text' => '👋 Сменить заведение',
             'callback_data' => json_encode([
-                'name' => 'branch',
-                'arguments' => [
-                    'type' => 'all'
-                ]
+                'name' => 'list_branches'
             ])
         ]);
 

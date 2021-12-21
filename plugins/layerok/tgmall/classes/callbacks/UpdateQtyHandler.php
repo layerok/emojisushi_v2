@@ -4,7 +4,6 @@ namespace Layerok\TgMall\Classes\Callbacks;
 
 use Layerok\TgMall\Classes\Constants;
 use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
-use Layerok\TgMall\Classes\Traits\Before;
 use Layerok\TgMall\Classes\Traits\Lang;
 use Layerok\TgMall\Classes\Traits\Warn;
 use OFFLINE\Mall\Models\Product;
@@ -13,7 +12,10 @@ class UpdateQtyHandler extends CallbackQueryHandler
 {
     use Lang;
     use Warn;
-    use Before;
+
+    protected $middlewares = [
+        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
+    ];
 
     public $product;
 
@@ -50,7 +52,6 @@ class UpdateQtyHandler extends CallbackQueryHandler
         if (!$this->validate()) {
             return;
         }
-        $this->before();
         $quantity = $this->arguments['qty'];
 
         $update = $this->getUpdate();

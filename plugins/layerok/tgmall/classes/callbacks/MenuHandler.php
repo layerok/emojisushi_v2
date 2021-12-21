@@ -1,6 +1,5 @@
 <?php namespace Layerok\TgMall\Classes\Callbacks;
 
-use Layerok\TgMall\Classes\Traits\Before;
 use Layerok\TgMall\Classes\Traits\Lang;
 use Lovata\BaseCode\Models\HideCategory;
 use OFFLINE\Mall\Models\Category;
@@ -9,11 +8,14 @@ use Telegram\Bot\Keyboard\Keyboard;
 
 class MenuHandler extends CallbackQueryHandler
 {
-    use Before;
     use Lang;
+
+    protected $middlewares = [
+        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
+    ];
+
     public function handle()
     {
-        $this->before();
 
         $update = $this->getUpdate();
         $from = $update->getMessage()->getFrom();
@@ -56,7 +58,10 @@ class MenuHandler extends CallbackQueryHandler
 
         $keyboard->row($keyboard::inlineButton([
             'text' => $this->lang('in_menu_main'),
-            'callback_data' => "/start"
+            'callback_data' => json_encode([
+                'name' => 'start',
+                'arguments' => []
+            ])
         ]));
 
         $replyWith = [

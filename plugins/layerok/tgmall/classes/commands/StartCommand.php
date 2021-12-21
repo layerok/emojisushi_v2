@@ -1,10 +1,10 @@
 <?php namespace Layerok\TgMall\Classes\Commands;
 
-use Layerok\TgMall\Classes\Commands\LayerokCommand;
 use Layerok\TgMall\Classes\Markups\MainMenuReplyMarkup;
 use Layerok\TgMall\Classes\Traits\Lang;
+use Telegram\Bot\Commands\Command;
 
-class StartCommand extends LayerokCommand
+class StartCommand extends Command
 {
     use Lang;
 
@@ -20,7 +20,6 @@ class StartCommand extends LayerokCommand
      */
     public function handle()
     {
-        parent::before();
         $update = $this->getUpdate();
         $from = $update->getMessage()->getChat();
 

@@ -21,7 +21,7 @@ class Webhook
             $telegram = $event->getTelegram();
 
 
-            if ($update->detectType() === 'callback_query') {
+            if ($update->isType('callback_query')) {
                 $data = json_decode($update->getCallbackQuery()->getData(), true);
 
                 //\Log::info(['d' => $data]);
@@ -37,7 +37,6 @@ class Webhook
                     'callback_query_id' => $update->getCallbackQuery()->id,
                 ]);
             }
-
         });
 
         Telegram::setEventEmitter($emitter);

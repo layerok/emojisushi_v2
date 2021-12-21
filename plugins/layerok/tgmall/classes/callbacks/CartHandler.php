@@ -7,7 +7,7 @@ use Layerok\TgMall\Classes\Markups\CartProductReplyMarkup;
 use Layerok\TgMall\Classes\Markups\CategoryFooterReplyMarkup;
 use Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
 use Layerok\TgMall\Models\Message;
-use Layerok\TgMall\Classes\Traits\Before;
+
 use Layerok\TgMall\Classes\Traits\Lang;
 use Layerok\TgMall\Classes\Traits\Warn;
 use Lovata\BaseCode\Models\HideProduct;
@@ -21,7 +21,10 @@ class CartHandler extends CallbackQueryHandler
 {
     use Warn;
     use Lang;
-    use Before;
+
+    protected $middlewares = [
+        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
+    ];
 
     private $brokenImageFileId = "AgACAgQAAxkDAAIBGGGtGjcxSQraUNasYICGA2UkTLeOAAJyrTEbmQABbVHg3HGg2xXRvQEAAwIAA3gAAyIE";
 
@@ -88,7 +91,6 @@ class CartHandler extends CallbackQueryHandler
         if (!$this->validate()) {
             return;
         }
-        $this->before();
         $update = $this->getUpdate();
         $this->chat = $update->getChat();
 
