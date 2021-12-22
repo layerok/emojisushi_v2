@@ -3,6 +3,8 @@
 namespace Layerok\TgMall\Classes\Callbacks;
 
 use Layerok\TgMall\Classes\Constants;
+use Layerok\TgMall\Classes\Messages\OrderCommentHandler;
+use Layerok\TgMall\Classes\Messages\OrderDeliveryAddressHandler;
 use Layerok\TgMall\Classes\Traits\Lang;
 use OFFLINE\Mall\Models\ShippingMethod;
 use Telegram\Bot\Keyboard\Keyboard;
@@ -17,6 +19,9 @@ class ChoseDeliveryMethodHandler extends CallbackQueryHandler
     public function handle()
     {
         $id = $this->arguments['id'];
+        $this->state->mergeOrderInfo([
+            'delivery_method_id' => $id
+        ]);
 
         if ($id == 3) {
             // доставка курьером
@@ -24,7 +29,8 @@ class ChoseDeliveryMethodHandler extends CallbackQueryHandler
                 'text' => 'Введите адрес доставки',
                 'chat_id' => $this->update->getChat()->id,
             ]);
-            $this->state->setStep(Constants::STEP_DELIVERY_COURIER);
+            $this->state->setMessageHandler(OrderDeliveryAddressHandler::class);
+
             return;
         }
 
@@ -33,6 +39,7 @@ class ChoseDeliveryMethodHandler extends CallbackQueryHandler
             'text' => 'Комментарий к заказу',
             'chat_id' => $this->update->getChat()->id,
         ]);
-        $this->state->setStep(Constants::STEP_COMMENT);
+        $this->state->setMessageHandler(OrderCommentHandler::class);
+
     }
 }

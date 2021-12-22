@@ -3,6 +3,7 @@
 namespace Layerok\TgMall\Classes\Callbacks;
 
 use Layerok\TgMall\Classes\Constants;
+use Layerok\TgMall\Classes\Messages\OrderPhoneHandler;
 use Layerok\TgMall\Classes\Traits\Lang;
 use OFFLINE\Mall\Models\PaymentMethod;
 use Telegram\Bot\Keyboard\Keyboard;
@@ -18,6 +19,8 @@ class CheckoutHandler extends CallbackQueryHandler
 
     public function handle()
     {
+        // Очищаем инфу о заказе при каждом начатии оформления заказа
+        $this->state->setOrderInfo([]);
         $use_another_phone = $this->arguments['use_another_phone'] ?? false;
         $use_saved_phone = $this->arguments['use_saved_phone'] ?? false;
 
@@ -45,7 +48,11 @@ class CheckoutHandler extends CallbackQueryHandler
                 'reply_markup' => $k
             ]);
 
-            $this->state->setStep(Constants::STEP_PAYMENT);
+            $this->state->setOrderInfo([
+                'phone' => $this->customer->tg_phone
+            ]);
+
+
             return;
         }
 
@@ -81,7 +88,6 @@ class CheckoutHandler extends CallbackQueryHandler
         $this->replyWithMessage([
             'text' => 'Введите Ваш телефон. (Обязательно)'
         ]);
-        $this->state->setStep(Constants::STEP_PHONE);
-
+        $this->state->setMessageHandler(OrderPhoneHandler::class);
     }
 }

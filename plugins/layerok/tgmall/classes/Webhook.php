@@ -5,7 +5,7 @@ use Layerok\TgMall\Classes\Callbacks\CallbackQueryBus;
 use Layerok\TgMall\Classes\Callbacks\CheckoutHandler;
 use Layerok\TgMall\Classes\Callbacks\ChoseDeliveryMethodHandler;
 use Layerok\TgMall\Classes\Callbacks\ChosePaymentMethodHandler;
-use Layerok\TgMall\Classes\Messages\CheckoutMessageHandler;
+use Layerok\TgMall\Classes\Messages\AbstractMessageHandler;
 use Layerok\TgMall\Models\State;
 use League\Event\Emitter;
 use OFFLINE\Mall\Models\Cart;
@@ -23,52 +23,55 @@ class Webhook
         };
         $emitter = new Emitter();
 
-        $emitter->addListener(UpdateWasReceived::class, function ($event) {
-            $update = $event->getUpdate();
-            $chat = $update->getChat();
-            $telegram = $event->getTelegram();
+        $emitter->addListener(UpdateWasReceived::class,
+            function ($event) {
+                $update = $event->getUpdate();
+                $chat = $update->getChat();
+                $telegram = $event->getTelegram();
+                /*\Log::info($update);*/
 
 
-            if ($update->isType('callback_query')) {
-                $data = json_decode($update->getCallbackQuery()->getData(), true);
+                if ($update->isType('callback_query')) {
+                    $data = json_decode($update->getCallbackQuery()->getData(), true);
 
-                $arguments = $data['arguments'] ?? [];
-                $name = $data['name'];
+                    $arguments = $data['arguments'] ?? [];
+                    $name = $data['name'];
 
-                $bus = new CallbackQueryBus($telegram, $update);
-                $bus->process($name, $arguments);
+                    $bus = new CallbackQueryBus($telegram, $update);
+                    $bus->process($name, $arguments);
 
-                Telegram::answerCallbackQuery([
-                    'callback_query_id' => $update->getCallbackQuery()->id,
-                ]);
-            }
-
-            if ($update->isType('message')) {
-                if ($update->hasCommand()) {
-                    return;
+                    Telegram::answerCallbackQuery([
+                        'callback_query_id' => $update->getCallbackQuery()->id,
+                    ]);
                 }
 
-                $state = State::where([
-                    'chat_id' => $chat->id
-                ]);
+                if ($update->isType('message')) {
+                    if ($update->hasCommand()) {
+                        return;
+                    }
 
-                if (!isset($state)) {
-                    return;
+                    $state = State::where([
+                        'chat_id' => $chat->id
+                    ]);
+
+                    if (!isset($state)) {
+                        return;
+                    }
+
+                    $first = $state->first();
+
+                    if (isset($first->state['message_handler'])) {
+                        $message_handler = $first->state['message_handler'];
+                        if (class_exists($message_handler)) {
+                            $handler = new $message_handler();
+                            $handler->make($telegram, $update, $first);
+                            $handler->handle();
+                        } else {
+                            \Log::error('message handler with [' . $message_handler . '] does not exist');
+                        }
+                    }
                 }
-
-                $first = $state->first();
-                $stateData = $first->state;
-
-                if ($stateData['callback_handler'] === CheckoutHandler::class ||
-                    $stateData['callback_handler'] === ChosePaymentMethodHandler::class ||
-                    $stateData['callback_handler'] === ChoseDeliveryMethodHandler::class
-                ) {
-                    $handler = new CheckoutMessageHandler($telegram, $update);
-                    $handler->handle($first);
-                }
-
-            }
-        });
+            });
 
         Telegram::setEventEmitter($emitter);
 

@@ -3,6 +3,7 @@
 namespace Layerok\TgMall\Classes\Callbacks;
 
 use Layerok\TgMall\Classes\Constants;
+use Layerok\TgMall\Classes\Messages\OrderPrepareChange;
 use Layerok\TgMall\Classes\Traits\Lang;
 use OFFLINE\Mall\Models\ShippingMethod;
 use Telegram\Bot\Keyboard\Keyboard;
@@ -17,7 +18,9 @@ class ChosePaymentMethodHandler extends CallbackQueryHandler
 
     public function handle()
     {
-
+        $this->state->mergeOrderInfo([
+            'payment_method_id' => $this->arguments['id']
+        ]);
         $k = new Keyboard();
         $k->inline();
 
@@ -41,7 +44,8 @@ class ChosePaymentMethodHandler extends CallbackQueryHandler
                 'text' => $this->lang('payment_change'),
                 'chat_id' => $this->update->getChat()->id
             ]);
-            $this->state->setStep(Constants::STEP_PAYMENT_CASH);
+            $this->state->setMessageHandler(OrderPrepareChange::class);
+
             return;
         }
 
@@ -51,7 +55,7 @@ class ChosePaymentMethodHandler extends CallbackQueryHandler
             'chat_id' => $this->update->getChat()->id,
             'reply_markup' => $k
         ]);
-        $this->state->setStep(Constants::STEP_DELIVERY);
+
 
 
 

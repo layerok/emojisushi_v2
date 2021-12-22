@@ -16,11 +16,34 @@ class State extends Model
 
     public $timestamps = true;
 
-    public function setCommand($command)
+    public function setMessageHandler($handler)
     {
         $newState = array_merge(
             $this->state,
-            ['command' => $command]
+            ['message_handler' => $handler]
+        );
+        $this->state = $newState;
+        $this->save();
+    }
+
+    public function setOrderInfo($info)
+    {
+        $newState = array_merge(
+            $this->state,
+            ['order_info' => $info]
+        );
+        $this->state = $newState;
+        $this->save();
+    }
+
+    public function mergeOrderInfo($info)
+    {
+        $newState = array_merge(
+            $this->state,
+            ['order_info' => array_merge(
+                $this->state['order_info'],
+                $info
+            )]
         );
         $this->state = $newState;
         $this->save();
@@ -36,13 +59,4 @@ class State extends Model
         $this->save();
     }
 
-    public function setStep($step)
-    {
-        $newState = array_merge(
-            $this->state,
-            ['step' => $step]
-        );
-        $this->state = $newState;
-        $this->save();
-    }
 }
