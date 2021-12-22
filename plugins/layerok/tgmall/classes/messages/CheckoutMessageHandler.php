@@ -1,16 +1,22 @@
 <?php namespace Layerok\TgMall\Classes\Messages;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Layerok\TgMall\Classes\Constants;
+use Layerok\TgMall\Classes\Traits\Lang;
 use Layerok\TgMall\Models\State;
 use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\Customer;
+use OFFLINE\Mall\Models\PaymentMethod;
+use OFFLINE\Mall\Models\ShippingMethod;
 use Telegram\Bot\Api;
+use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
 use Telegram\Bot\Objects\Update;
 
 class CheckoutMessageHandler
 {
+    use Lang;
     /** @var Update */
     protected $update;
     /** @var Api */
@@ -26,21 +32,37 @@ class CheckoutMessageHandler
     /** @var Cart */
     protected $cart;
 
+    protected $chat;
+
+    protected $products;
+
+    protected $text;
+
+    protected $errors;
+
     public function __construct(Api $telegram, Update $update)
     {
         $this->update = $update;
         $this->telegram = $telegram;
 
+        $this->chat = $this->update->getChat();
+        $this->text = $this->update->getMessage()->text;
     }
 
     public function validate(): bool
     {
-        $chat = $this->update->getChat();
+        if (!isset($this->step)) {
+            \Log::error('step is not set for checkout');
+            $this->state
+                ->first()
+                ->setStep(Constants::STEP_PHONE);
+        }
+
         if ($this->step == Constants::STEP_PHONE) {
-            $text = $this->update->getMessage()->text;
             $data = [
-                'phone' => $text
+                'phone' => $this->text
             ];
+
             $rules = [
                 'phone' => 'required|phoneUa',
             ];
@@ -51,34 +73,13 @@ class CheckoutMessageHandler
             ];
 
             $validation = Validator::make($data, $rules, $messages);
-            if ($validation->fails()) {
-                $errors = $validation->errors()->get('phone');
-                foreach ($errors as $error) {
-                    Telegram::sendMessage([
-                        'text' => $error . '. Попробуйте снова.',
-                        'chat_id' => $chat->id
-                    ]);
-                }
-                return false;
-            }
-            $this->customer = Customer::where('tg_chat_id', '=', $chat->id)->first();
-            if (!isset($this->customer)) {
-                \Telegram::sendMessage([
-                    'text' => 'Ваш заказ пустой. Пожалуйста добавьте товар в корзину.',
-                    'chat_id' => $chat->id
-                ]);
-                return false;
-            }
-            $this->cart = Cart::byUser($this->customer->user);
-            $products = $this->cart->products()->get();
 
-            if (!count($products) > 0) {
-                \Telegram::sendMessage([
-                    'text' => 'Ваш заказ пустой. Пожалуйста добавьте товар в корзину.',
-                    'chat_id' => $chat->id
-                ]);
+            if ($validation->fails()) {
+                $this->errors = $validation->errors()->get('phone');
                 return false;
             }
+
+
         }
         return true;
     }
@@ -87,79 +88,114 @@ class CheckoutMessageHandler
     {
 
         $this->state = $state;
-        $update = $this->update;
-        $chat = $update->getChat();
-        $telegram = $this->telegram;
 
         $stateData = $this->state->state;
-        $step = $stateData['step'] ?? null;
-        $this->step = $step;
 
-        if (!isset($step)) {
-            \Log::error('step is not set for checkout');
-            $this->state->first()->setStep(Constants::STEP_PHONE);
-        }
+        $this->step = $stateData['step'] ?? null;
 
         $isValid = $this->validate();
+
         if (!$isValid) {
+            $this->handleErrors();
             return;
         }
 
-        if ($step == Constants::STEP_PHONE) {
-            $text = $update->getMessage()->text;
-            $data = [
-                'phone' => $text
-            ];
+        $this->customer = Customer::where('tg_chat_id', '=', $this->chat->id)->first();
 
-            $products = $this->cart->products()->get();
+        if ($this->step == Constants::STEP_PHONE) {
+            $this->customer->tg_phone = $this->text;
+            $this->customer->save();
 
-            foreach ($products as $p) {
-                $productData = [];
-                if (isset($p['variant_id'])) {
-                    $product = $p->product()->first();
-                    $variant = $p->getItemDataAttribute();
-                    $productData['modificator_id'] = $variant['poster_id'];
-                } else {
-                    $product = $p->getItemDataAttribute();
-                }
-                $productData['name'] = $product['name'];
-                $productData['product_id'] = $product['poster_id'];
-                $productData['count'] = $p['quantity'];
+            $k = new Keyboard();
+            $k->inline();
 
-                $poster_data['products'][] = $productData;
-            }
+            $methods = PaymentMethod::orderBy('sort_order', 'ASC')->get();
 
-
-            $data['products'] = $poster_data['products'];
-
-
-            $telegram_data = $data;
-            $telegramHelper = new \Lovata\BaseCode\Classes\Telegram();
-            $message = $telegramHelper->getFormattedMessage('Новый заказ', $telegram_data);
-
-
-
-            /*         \Telegram::sendMessage([
-                         'text' => $message,
-                         'parse_mode' => "html",
-                         'chat_id' => '-668888331'//$customer->branch['telegram_chat_id']
-                     ]);*/
-
-            \Log::info($message);
+            $methods->map(function ($item) use ($k) {
+                $k->row($k::inlineButton([
+                    'text' => $item->name,
+                    'callback_data' => json_encode([
+                        'name' => 'chose_payment_method',
+                        'arguments' => [
+                            'id' => $item->id
+                        ]
+                    ])
+                ]));
+            });
 
             \Telegram::sendMessage([
-                'text' => 'Спасибо, Ваш заказ принят в работу.' .
-                    ' Наш менеджер скоро с Вами свяжется.',
-                'chat_id' => $chat->id
+                'text' => $this->lang('chose_payment_method'),
+                'chat_id' => $this->chat->id,
+                'reply_markup' => $k
             ]);
 
+            $this->state->setStep(Constants::STEP_PAYMENT);
+        }
+        elseif ($this->step == Constants::STEP_PAYMENT_CASH) {
+            $k = new Keyboard();
+            $k->inline();
 
-            if (isset($this->cart)) {
-                $this->cart->products()->delete();
-            }
+            $methods = ShippingMethod::orderBy('sort_order', 'ASC')->get();
+
+            $methods->map(function ($item) use ($k) {
+                $k->row($k::inlineButton([
+                    'text' => $item->name,
+                    'callback_data' => json_encode([
+                        'name' => 'chose_delivery_method',
+                        'arguments' => [
+                            'id' => $item->id
+                        ]
+                    ])
+                ]));
+            });
+            \Telegram::sendMessage([
+                'text' => 'Выберите тип доставки',
+                'chat_id' => $this->update->getChat()->id,
+                'reply_markup' => $k
+            ]);
+            $this->state->setStep(Constants::STEP_DELIVERY);
+        }
+        elseif ($this->step == Constants::STEP_DELIVERY_COURIER) {
+            // самовывоз
+            \Telegram::sendMessage([
+                'text' => 'Комментарий к заказу',
+                'chat_id' => $this->update->getChat()->id,
+            ]);
+            $this->state->setStep(Constants::STEP_COMMENT);
+        } elseif ($this->step == Constants::STEP_COMMENT) {
+            $k = new Keyboard();
+            $k->inline();
+            $yes = $k::inlineButton([
+                'text' => 'Да',
+                'callback_data' => json_encode([
+                    'name' => 'confirm_order'
+                ])
+            ]);
+            $no = $k::inlineButton([
+                'text' => 'Нет',
+                'callback_data' => json_encode([
+                    'name' => 'start'
+                ])
+            ]);
+            $k->row($yes, $no);
 
 
-            $telegram->triggerCommand('start', $update);
+            \Telegram::sendMessage([
+                'chat_id' => $this->chat->id,
+                'text' => 'Подтвердить заказ?',
+                'reply_markup' => $k
+            ]);
         }
     }
+
+    public function handleErrors()
+    {
+        foreach ($this->errors as $error) {
+            Telegram::sendMessage([
+                'text' => $error . '. Попробуйте снова.',
+                'chat_id' => $this->chat->id
+            ]);
+        }
+    }
+
 }

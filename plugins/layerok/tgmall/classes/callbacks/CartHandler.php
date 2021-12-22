@@ -2,6 +2,7 @@
 
 
 use Layerok\TgMall\Classes\Constants;
+use Layerok\Tgmall\Classes\Markups\CartEmptyReplyMarkup;
 use Layerok\Tgmall\Classes\Markups\CartFooterReplyMarkup;
 use Layerok\TgMall\Classes\Markups\CartProductReplyMarkup;
 use Layerok\TgMall\Classes\Markups\CategoryFooterReplyMarkup;
@@ -305,7 +306,11 @@ class CartHandler extends CallbackQueryHandler
 
     public function cartFooterKeyboard(): Keyboard
     {
-        $replyMarkup = new CartFooterReplyMarkup($this->cart);
+        if ($this->cart->products->count() === 0) {
+            $replyMarkup = new CartEmptyReplyMarkup();
+        } else {
+            $replyMarkup = new CartFooterReplyMarkup($this->cart);
+        }
 
         return $replyMarkup->getKeyboard();
     }

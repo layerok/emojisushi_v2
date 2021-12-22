@@ -63,7 +63,8 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
         $this->before($update);
 
         foreach ($this->middlewares as $middleware) {
-            $m = new $middleware($this->telegram, $this->update);
+            $m = new $middleware();
+            $m->make($this->telegram, $this->update);
             $isPassed = $m->run();
             if (!$isPassed) {
                 //\Log::info([get_class($m), ' middleware failed']);

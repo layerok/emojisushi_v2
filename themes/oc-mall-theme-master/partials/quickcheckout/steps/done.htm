@@ -1,0 +1,21 @@
+{#<div class="mall-checkout-result mall-checkout-result--successful">#}
+{#    {% if __SELF__.order.is_paid %}#}
+{#        <h3 class="mall-checkout-result__heading">{{ 'offline.mall::frontend.checkout.payment.successful.heading' | trans }}</h3>#}
+{#        <p>{{ 'offline.mall::frontend.checkout.payment.successful.line_1' | trans }}</p>#}
+{#    {% else %}#}
+{#        <h3 class="mall-checkout-result__heading">{{ 'offline.mall::frontend.checkout.order.successful.heading' | trans }}</h3>#}
+{#        <p>{{ 'offline.mall::frontend.checkout.order.successful.line_1' | trans }}</p>#}
+{#    {% endif %}#}
+{#    {% partial __SELF__ ~ '::resultactions' %}#}
+{#</div>#}
+
+<div class="flex justify-center px-4">
+    <div class=" w-100 flex justify-center">
+        <div class="flex flex-col items-center max-w-lg">
+            <h3 class="text-4xl dark:text-white font-normal my-8 text-center">Благодарим Вас за заказ!</h3>
+            <img src="/themes/oc-mall-theme-master/assets/images/check-mark.png" alt="Благодарим">
+            <p class="text-2xl mt-16 mb-8 text-center">"Ваш заказ успешно принят и отправлен в работу!"</p>
+            <p class=" text-center">В ближайшее время Вам перезвонит менеджер для подтверждения заказа. Затем заказ будет подготовлен и отправлен на указанный Вами адрес</p>
+        </div>
+    </div>
+</div>

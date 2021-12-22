@@ -1,0 +1,14 @@
+{{ __SELF__.cart.shipping_address.one_liner }}
+
+
+
+
+{#{% if __SELF__.user %}#}
+{#    {{ 'offline.mall::frontend.billing_address' | trans }}#}
+{#    {% component 'billingAddressSelector' %}#}
+{#          {{ 'offline.mall::frontend.shipping_address' | trans }}#}
+{#    {% component 'shippingAddressSelector' %}#}
+
+{#{% else %}#}
+    {% partial __SELF__ ~ '::signup' %}
+{#{% endif %}#}

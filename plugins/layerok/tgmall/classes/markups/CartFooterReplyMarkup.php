@@ -44,15 +44,14 @@ class CartFooterReplyMarkup
                     'name' => 'checkout'
                 ])
             ])));
-        } else {
-            $k->row($k::inlineButton([
-                'text' => $this->lang('in_menu'),
-                'callback_data' => json_encode([
-                    'name' => 'menu'
-                ])
-            ]));
         }
 
+        $k->row($k::inlineButton([
+            'text' => $this->lang('in_menu'),
+            'callback_data' => json_encode([
+                'name' => 'menu'
+            ])
+        ]));
 
         $k->row($k::inlineButton([
             'text' => $this->lang('in_menu_main'),

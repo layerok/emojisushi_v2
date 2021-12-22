@@ -17,7 +17,8 @@ class ListBranchesHandler extends CallbackQueryHandler
         $k = new Keyboard();
         $k->inline();
         $branches->map(function ($branch) use ($k) {
-            $k->row(new ChoseBranchButton($branch));
+            $btn = new ChoseBranchButton($branch);
+            $k->row($k::inlineButton($btn->getData()));
         });
 
         Telegram::sendMessage([

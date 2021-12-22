@@ -1,0 +1,17 @@
+<!-- products container -->
+<div class="flex flex-col ">
+    <h3 class="sm:hidden text-xl text-bold mt-0 pl-2">Мой заказ:</h3>
+    <!-- product container -->
+    <div>
+        {% for product in __SELF__.cart.products %}
+            {% partial __SELF__ ~ '::carttable/entry' product=product %}
+        {% endfor %}
+    </div>
+</div>
+
+{#{% partial __SELF__ ~ '::carttable/total'      totals=__SELF__.cart.totals %}#}
+{#{% partial __SELF__ ~ '::carttable/discounts'  discounts=__SELF__.cart.totals.appliedDiscounts %}#}
+{#{% partial __SELF__ ~ '::carttable/shipping'   shipping=__SELF__.cart.totals.shippingTotal %}#}
+{#{% partial __SELF__ ~ '::carttable/payment'    payment=__SELF__.cart.totals.paymentTotal %}#}
+{#{% partial __SELF__ ~ '::carttable/grandtotal' totals=__SELF__.cart.totals %}#}
+{#{% partial __SELF__ ~ '::carttable/taxes'      taxes=__SELF__.cart.totals.taxes %}#}

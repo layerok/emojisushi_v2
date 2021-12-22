@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Validator;
 use Layerok\TgMall\Classes\Callbacks\CallbackQueryBus;
 use Layerok\TgMall\Classes\Callbacks\CheckoutHandler;
+use Layerok\TgMall\Classes\Callbacks\ChoseDeliveryMethodHandler;
+use Layerok\TgMall\Classes\Callbacks\ChosePaymentMethodHandler;
 use Layerok\TgMall\Classes\Messages\CheckoutMessageHandler;
 use Layerok\TgMall\Models\State;
 use League\Event\Emitter;
@@ -57,10 +59,14 @@ class Webhook
                 $first = $state->first();
                 $stateData = $first->state;
 
-                if ($stateData['callback_handler'] === CheckoutHandler::class) {
+                if ($stateData['callback_handler'] === CheckoutHandler::class ||
+                    $stateData['callback_handler'] === ChosePaymentMethodHandler::class ||
+                    $stateData['callback_handler'] === ChoseDeliveryMethodHandler::class
+                ) {
                     $handler = new CheckoutMessageHandler($telegram, $update);
                     $handler->handle($first);
                 }
+
             }
         });
 
