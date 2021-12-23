@@ -101,7 +101,7 @@ class CategoryHandler extends CallbackQueryHandler
             ->limit($countPosition)
             ->get();
 
-        if (isset($this->arguments['page'])) {
+        if (isset($this->arguments['page']) && $this->arguments['page'] !== 1) {
             $messages = DeleteMessage::where('chat_id', '=', $chat->id)
                 ->latest()
                 ->get();
