@@ -7,6 +7,7 @@ use Layerok\Tgmall\Classes\Markups\CartFooterReplyMarkup;
 use Layerok\TgMall\Classes\Markups\CartProductReplyMarkup;
 use Layerok\TgMall\Classes\Markups\CategoryFooterReplyMarkup;
 use Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
+use Layerok\TgMall\Classes\Utils\Utils;
 use Layerok\TgMall\Models\Message;
 
 use Layerok\TgMall\Classes\Traits\Lang;
@@ -239,8 +240,6 @@ class CartHandler extends CallbackQueryHandler
         ]);
 
         $this->cart->products->map(function ($cartProduct) {
-
-
             $id = $cartProduct->product->id;
             $quantity = $cartProduct->quantity;
             $totalPrice = $this->money->format(
@@ -252,22 +251,25 @@ class CartHandler extends CallbackQueryHandler
             $cartProductReplyMarkup = new CartProductReplyMarkup($id, $quantity, $totalPrice);
             $k = $cartProductReplyMarkup->getKeyboard();
 
-            if (is_null($cartProduct->product->image)) {
-                $photoIdOrUrl = $this->brokenImageFileId;
-            } else {
-                $photoIdOrUrl = is_null($cartProduct->product->image->file_id) ?
-                    \Telegram\Bot\FileUpload\InputFile::create(
-                        $cartProduct->product->image->path
-                    ) : $cartProduct->product->image->file_id;
-            }
+            $caption = Utils::getCaption($cartProduct->product);
 
-            $caption = "<b>" . $cartProduct->name . "</b>\n\n" . \Html::strip($cartProduct->description);
-            $response = $this->replyWithPhoto([
-                'photo' => $photoIdOrUrl,
-                'caption' => $caption,
-                'reply_markup' => $k->toJson(),
-                'parse_mode' => 'html'
-            ]);
+            if (!is_null($cartProduct->product->image)) {
+                $photoIdOrUrl = Utils::getPhotoIdOrUrl($cartProduct->product);
+                $response = $this->replyWithPhoto([
+                    'photo' => $photoIdOrUrl,
+                    'caption' => $caption,
+                    'reply_markup' => $k->toJson(),
+                    'parse_mode' => 'html',
+                ]);
+
+                Utils::setFileIdFromResponse($response, $cartProduct->product);
+            } else {
+                $this->replyWithMessage([
+                    'text' => $caption,
+                    'reply_markup' => $k->toJson(),
+                    'parse_mode' => 'html',
+                ]);
+            }
         });
 
 

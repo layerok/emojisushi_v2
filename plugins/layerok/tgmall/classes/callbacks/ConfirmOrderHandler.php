@@ -35,14 +35,22 @@ class ConfirmOrderHandler extends CallbackQueryHandler
                 return false;
             }*/
 
+        $k = new Keyboard();
+        $k->inline();
+        $k->row($k::inlineButton([
+            'text' => $this->lang('in_menu_main'),
+            'callback_data' => json_encode([
+                'name' => 'start'
+            ])
+        ]));
 
         $this->cart->products()->delete();
         \Telegram::sendMessage([
             'text' => 'Спасибо. Ваш заказ принят в обработку. ' .
              'В ближайшее время наш менеджер свяжеться с Вами.',
             'chat_id' => $this->update->getChat()->id,
+            'reply_markup' => $k
         ]);
-        \Telegram::triggerCommand('start', $this->update);
     }
 
     public function prepareData()

@@ -7,6 +7,8 @@ use Layerok\TgMall\Classes\Constants;
 use Layerok\TgMall\Classes\Markups\CategoryFooterReplyMarkup;
 use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
 use Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
+use Layerok\TgMall\Classes\Utils\Utils;
+use Telegram\Bot\FileUpload\InputFile;
 use Layerok\TgMall\Models\DeleteMessage;
 use Layerok\TgMall\Models\Message;
 use Layerok\TgMall\Classes\Traits\Lang;
@@ -25,7 +27,8 @@ class CategoryHandler extends CallbackQueryHandler
         \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
     ];
 
-    private $brokenImageFileId = "AgACAgQAAxkDAAIBGGGtGjcxSQraUNasYICGA2UkTLeOAAJyrTEbmQABbVHg3HGg2xXRvQEAAwIAA3gAAyIE";
+    private $brokenImagePath = "https://emojisushi.com.ua/storage/app/media/broken.png";
+    private $brokenFileID = "AgACAgIAAxkDAAP1YcT047ZwFnSayz5O4z8qaMp8GIEAApa5MRurUChKRFXDoi0uwMoBAAMCAANzAAMjBA";
 
     private $page = 1;
     private $id;
@@ -97,6 +100,7 @@ class CategoryHandler extends CallbackQueryHandler
         }
         $productsInCategory = $category
             ->products()
+            ->where('published', '=', '1')
             ->offset($offset)
             ->limit($countPosition)
             ->get();
@@ -141,29 +145,26 @@ class CategoryHandler extends CallbackQueryHandler
 
                 $k = $replyMarkup->getKeyboard();
 
-                if (is_null($product->image)) {
-                    $photoIdOrUrl = $this->brokenImageFileId;
+                $caption = Utils::getCaption($product);
+
+                if (!is_null($product->image)) {
+                    $photoIdOrUrl = Utils::getPhotoIdOrUrl($product);
+                    $response = $this->replyWithPhoto([
+                        'photo' => $photoIdOrUrl,
+                        'caption' => $caption,
+                        'reply_markup' => $k->toJson(),
+                        'parse_mode' => 'html',
+                    ]);
+
+                    Utils::setFileIdFromResponse($response, $product);
                 } else {
-                    $photoIdOrUrl = is_null($product->image->file_id) ?
-                        \Telegram\Bot\FileUpload\InputFile::create($product->image->path) : $product->image->file_id;
+                    $this->replyWithMessage([
+                        'text' => $caption,
+                        'reply_markup' => $k->toJson(),
+                        'parse_mode' => 'html',
+                    ]);
                 }
 
-                $caption = "<b>" . $product->name . "</b>\n\n" . \Html::strip($product->description);
-                $response = $this->replyWithPhoto([
-                    'photo' => $photoIdOrUrl,
-                    'caption' => $caption,
-                    'reply_markup' => $k->toJson(),
-                    'parse_mode' => 'html'
-                ]);
-
-                $photoObject = $response->getPhoto();
-
-                if ($photoObject) {
-                    if (!is_null($product->image) && is_null($product->image->file_id)) {
-                        $product->image->file_id = $photoObject->first()['file_id'];
-                        $product->image->save();
-                    }
-                }
             }
         ); // end of map
 
