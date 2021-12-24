@@ -47,7 +47,7 @@ class ChoseBranchHandler extends CallbackQueryHandler
 
         $text = sprintf(
             $this->lang('start_text'),
-            $from->username
+            $from->firstName
         );
 
         $replyMarkup = new MainMenuReplyMarkup();

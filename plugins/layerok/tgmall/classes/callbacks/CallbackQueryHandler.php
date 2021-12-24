@@ -83,12 +83,12 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
         $from = $update->getCallbackQuery()->getFrom();
 
         $this->customer = Customer::where('tg_chat_id', '=', $chat->id)->first();
-
+        \Log::info(['customer' => $from->getFirstName()]);
         if (!$this->customer) {
             // Аккуратно, если какой-то поле не прошло валидацую бот бесшумно
             // не пустить дальше пользователя
-            $firstName = empty($from->firstName) ? 'Не указано': $from->firstName;
-            $lastName = empty($from->lastName) ? 'Не указано': $from->lastName;
+            $firstName = empty($from->getFirstName()) ? 'Не указано': $from->firstName;
+            $lastName = empty($from->getLastName()) ? 'Не указано': $from->lastName;
             $pass = "qweasdqweasd";
             $user = User::create([
                 'name' => $firstName,
@@ -102,7 +102,7 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
                 "firstname" => $from->firstName,
                 "lastname"  => $lastName,
                 "tg_username" => $from->username,
-                "user_id" => $user->first()->id
+                "user_id" => $user->id
             ]);
         }
 

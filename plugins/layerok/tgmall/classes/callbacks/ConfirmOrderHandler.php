@@ -62,12 +62,23 @@ class ConfirmOrderHandler extends CallbackQueryHandler
     public function sendTelegram($data)
     {
         $message = ReceiptUtils::makeReceipt('Новый заказ', $data);
+        $api = new \Telegram\Bot\Api(env('TELEGRAM_BOT_ID'));
 
-        \Telegram::sendMessage([
-            'text' => $message,
-            'parse_mode' => "html",
-            'chat_id' => env('TEST_CHAT_ID')//$customer->branch['telegram_chat_id']
-        ]);
+        if (env('TG_MALL_TEST_MODE')) {
+            $test_chat_id = env('TG_MALL_TEST_CHAT_ID');
+
+            $api->sendMessage([
+                'text' => $message,
+                'parse_mode' => "html",
+                'chat_id' => $test_chat_id
+            ]);
+        } else {
+            $api->sendMessage([
+                'text' => $message,
+                'parse_mode' => "html",
+                'chat_id' => $this->customer->branch['telegram_chat_id']
+            ]);
+        }
     }
 
     public function onPosterError($result)

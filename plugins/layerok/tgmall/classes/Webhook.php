@@ -18,7 +18,7 @@ class Webhook
 {
     public function __construct()
     {
-        if (env('TERMINATE_TELEGRAM_COMMANDS')) {
+        if (env('TG_MALL_TERMINATE_COMMANDS')) {
             return;
         };
         $emitter = new Emitter();

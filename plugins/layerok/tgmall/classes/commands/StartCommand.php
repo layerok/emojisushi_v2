@@ -25,7 +25,7 @@ class StartCommand extends Command
 
         $text = sprintf(
             $this->lang('start_text'),
-            $from->username
+            $from->firstName
         );
 
         $replyMarkup = new MainMenuReplyMarkup();

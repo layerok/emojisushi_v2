@@ -19,7 +19,7 @@ class State extends Model
     public function setMessageHandler($handler)
     {
         $newState = array_merge(
-            $this->state,
+            $this->state ?? [],
             ['message_handler' => $handler]
         );
         $this->state = $newState;
@@ -29,7 +29,7 @@ class State extends Model
     public function setOrderInfo($info)
     {
         $newState = array_merge(
-            $this->state,
+            $this->state ?? [],
             ['order_info' => $info]
         );
         $this->state = $newState;
@@ -39,9 +39,9 @@ class State extends Model
     public function mergeOrderInfo($info)
     {
         $newState = array_merge(
-            $this->state,
+            $this->state ?? [],
             ['order_info' => array_merge(
-                $this->state['order_info'],
+                $this->state['order_info'] ?? [],
                 $info
             )]
         );
@@ -52,7 +52,7 @@ class State extends Model
     public function setCallbackHandler($handler)
     {
         $newState = array_merge(
-            $this->state,
+            $this->state ?? [],
             ['callback_handler' => $handler]
         );
         $this->state = $newState;
