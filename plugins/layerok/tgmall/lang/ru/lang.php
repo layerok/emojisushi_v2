@@ -102,6 +102,9 @@ return [
         "chose_branch" => "Выберите заведение",
         "payment_change" =>  "Приготовить сдачу с",
         "chose_delivery_method" => "Выберите тип доставки",
-        "chose_payment_method" => "Выберите тип оплаты"
+        "chose_payment_method" => "Выберите тип оплаты",
+        "right_phone_number" => "Верный номер телефона",
+        "prepare_change_question" => "Желаете, чтобы мы подготовили сдачу?",
+        "leave_comment_question" => "Желаете оставить комментарий?"
     ]
 ];

@@ -2,6 +2,7 @@
 
 use Layerok\TgMall\Classes\Constants;
 use Layerok\TgMall\Classes\Traits\Lang;
+use Layerok\TgMall\Classes\Utils\PriceUtils;
 use OFFLINE\Mall\Classes\Utils\Money;
 use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\Currency;
@@ -11,14 +12,11 @@ class CartFooterReplyMarkup
 {
     use Lang;
     protected $keyboard;
-    /**
-     * @var Money
-     */
-    protected $money;
+
 
     public function __construct(Cart $cart)
     {
-        $this->money = app(Money::class);
+
         $k = new Keyboard();
         $k->inline();
 
@@ -26,11 +24,7 @@ class CartFooterReplyMarkup
             $k->row($k::inlineButton([
                 'text' => str_replace(
                     "*price*",
-                    $this->money->format(
-                        $cart->totals()->totalPostTaxes(),
-                        null,
-                        Currency::$defaultCurrency
-                    ),
+                    PriceUtils::cartTotal($cart),
                     $this->lang('all_amount_order')
                 ),
                 'callback_data' => json_encode([

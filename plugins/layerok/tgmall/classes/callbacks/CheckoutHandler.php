@@ -79,14 +79,14 @@ class CheckoutHandler extends CallbackQueryHandler
             ]);
             $k->row($yes, $no);
             $this->replyWithMessage([
-                'text' => 'Верный телефон ' . $this->customer->tg_phone . '?',
+                'text' => $this->lang('right_phone_number') . ' ' . $this->customer->tg_phone . '?',
                 'reply_markup' => $k
             ]);
             return;
         }
 
         $this->replyWithMessage([
-            'text' => 'Введите Ваш телефон. (Обязательно)'
+            'text' => 'Введите Ваш телефон'
         ]);
         $this->state->setMessageHandler(OrderPhoneHandler::class);
     }

@@ -67,7 +67,7 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
             $m->make($this->telegram, $this->update);
             $isPassed = $m->run();
             if (!$isPassed) {
-                //\Log::info([get_class($m), ' middleware failed']);
+                /*\Log::info([get_class($m), ' middleware failed']);*/
                 $m->onFailed();
                 return null;
             }
@@ -80,23 +80,29 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
     {
 
         $chat = $update->getChat();
-        $from = $update->getMessage()->getFrom();
+        $from = $update->getCallbackQuery()->getFrom();
 
         $this->customer = Customer::where('tg_chat_id', '=', $chat->id)->first();
 
         if (!$this->customer) {
+            // Аккуратно, если какой-то поле не прошло валидацую бот бесшумно
+            // не пустить дальше пользователя
+            $firstName = empty($from->firstName) ? 'Не указано': $from->firstName;
+            $lastName = empty($from->lastName) ? 'Не указано': $from->lastName;
             $pass = "qweasdqweasd";
             $user = User::create([
-                'name' => "jonh",
+                'name' => $firstName,
+                'surname' => $lastName,
+                'username' => $from->username,
                 'password' => $pass,
                 'password_confirmation' => $pass
             ]);
             $this->customer = Customer::create([
                 "tg_chat_id" => $chat->id,
                 "firstname" => $from->firstName,
-                "lastname"  => $from->lastName,
+                "lastname"  => $lastName,
                 "tg_username" => $from->username,
-                "user_id" => $user->id
+                "user_id" => $user->first()->id
             ]);
         }
 

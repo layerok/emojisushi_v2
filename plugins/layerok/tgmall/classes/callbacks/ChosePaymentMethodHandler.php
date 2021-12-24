@@ -2,11 +2,9 @@
 
 namespace Layerok\TgMall\Classes\Callbacks;
 
-use Layerok\TgMall\Classes\Constants;
-use Layerok\TgMall\Classes\Messages\OrderPrepareChange;
+use Layerok\TgMall\Classes\Markups\DeliveryMethodsReplyMarkup;
+use Layerok\TgMall\Classes\Markups\PreparePaymentChangeReplyMarkup;
 use Layerok\TgMall\Classes\Traits\Lang;
-use OFFLINE\Mall\Models\ShippingMethod;
-use Telegram\Bot\Keyboard\Keyboard;
 
 class ChosePaymentMethodHandler extends CallbackQueryHandler
 {
@@ -21,31 +19,16 @@ class ChosePaymentMethodHandler extends CallbackQueryHandler
         $this->state->mergeOrderInfo([
             'payment_method_id' => $this->arguments['id']
         ]);
-        $k = new Keyboard();
-        $k->inline();
 
-        $methods = ShippingMethod::orderBy('sort_order', 'ASC')->get();
-
-        $methods->map(function ($item) use ($k) {
-            $k->row($k::inlineButton([
-                'text' => $item->name,
-                'callback_data' => json_encode([
-                    'name' => 'chose_delivery_method',
-                    'arguments' => [
-                        'id' => $item->id
-                    ]
-                ])
-            ]));
-        });
 
         if ($this->arguments['id'] == 4) {
             // наличными
             \Telegram::sendMessage([
-                'text' => $this->lang('payment_change'),
-                'chat_id' => $this->update->getChat()->id
+                'text' => $this->lang('prepare_change_question'),
+                'chat_id' => $this->update->getChat()->id,
+                'reply_markup' => PreparePaymentChangeReplyMarkup::getKeyboard()
             ]);
-            $this->state->setMessageHandler(OrderPrepareChange::class);
-
+            $this->state->setMessageHandler(null);
             return;
         }
 
@@ -53,7 +36,7 @@ class ChosePaymentMethodHandler extends CallbackQueryHandler
         \Telegram::sendMessage([
             'text' => $this->lang('chose_delivery_method'),
             'chat_id' => $this->update->getChat()->id,
-            'reply_markup' => $k
+            'reply_markup' => DeliveryMethodsReplyMarkup::getKeyboard()
         ]);
 
 

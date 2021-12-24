@@ -4,6 +4,8 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Support\Facades\Route;
 use Layerok\TgMall\Classes\Webhook;
+use OFFLINE\Mall\Models\Customer;
+use OFFLINE\Mall\Models\User;
 
 
 $botToken = Config::get('layerok.tgmall::botToken');
@@ -39,6 +41,25 @@ Route::post($webhookUrl, function () {
 
         dd($response);
     }
+});*/
+
+/*Route::get('create', function() {
+    $user = User::create([
+        'name' => "f",
+        'surname' => "",
+        'username' => "",
+        'password' => "12345678",
+        'password_confirmation' => "12345678"
+    ]);
+    $this->customer = Customer::create([
+        "tg_chat_id" => '4343',
+        "firstname" => 'f',
+        "lastname"  => 'f',
+        "tg_username" => '',
+        "user_id" => $user->first()->id
+    ]);
+
+    dd($this->customer);
 });*/
 
 include('tests/routes.php');

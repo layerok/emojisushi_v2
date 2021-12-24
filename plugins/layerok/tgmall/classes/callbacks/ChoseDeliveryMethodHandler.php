@@ -3,6 +3,8 @@
 namespace Layerok\TgMall\Classes\Callbacks;
 
 use Layerok\TgMall\Classes\Constants;
+use Layerok\TgMall\Classes\Markups\LeaveCommentReplyMarkup;
+use Layerok\TgMall\Classes\Markups\YesNoReplyMarkup;
 use Layerok\TgMall\Classes\Messages\OrderCommentHandler;
 use Layerok\TgMall\Classes\Messages\OrderDeliveryAddressHandler;
 use Layerok\TgMall\Classes\Traits\Lang;
@@ -11,6 +13,7 @@ use Telegram\Bot\Keyboard\Keyboard;
 
 class ChoseDeliveryMethodHandler extends CallbackQueryHandler
 {
+    use Lang;
     protected $middlewares = [
         \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class,
         \Layerok\TgMall\Classes\Middleware\CheckCartMiddleware::class
@@ -34,12 +37,13 @@ class ChoseDeliveryMethodHandler extends CallbackQueryHandler
             return;
         }
 
-        // самовывоз
+        // был выбран самовывоз
         \Telegram::sendMessage([
-            'text' => 'Комментарий к заказу',
+            'text' => $this->lang('leave_comment_question'),
             'chat_id' => $this->update->getChat()->id,
+            'reply_markup' => LeaveCommentReplyMarkup::getKeyboard()
         ]);
-        $this->state->setMessageHandler(OrderCommentHandler::class);
 
+        $this->state->setMessageHandler(null);
     }
 }

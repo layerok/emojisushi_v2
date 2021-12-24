@@ -5,6 +5,9 @@ namespace Layerok\TgMall\Classes\Callbacks;
 use Illuminate\Support\Facades\Log;
 use Layerok\TgMall\Classes\Constants;
 use Layerok\TgMall\Classes\Traits\Lang;
+use Layerok\TgMall\Classes\Utils\CheckoutUtils;
+use Layerok\TgMall\Classes\Utils\PosterUtils;
+use Lovata\BaseCode\Classes\Helper\ReceiptUtils;
 use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\PaymentMethod;
 use OFFLINE\Mall\Models\ShippingMethod;
@@ -23,8 +26,9 @@ class ConfirmOrderHandler extends CallbackQueryHandler
 
     public function handle()
     {
+        $cart = Cart::byUser($this->customer->user);
 
-        $this->prepareData();
+        $this->data = CheckoutUtils::prepareData($this->state, $this->customer, $cart);
 
         $this->sendTelegram($this->data);
 
@@ -44,7 +48,7 @@ class ConfirmOrderHandler extends CallbackQueryHandler
             ])
         ]));
 
-        $this->cart->products()->delete();
+        $cart->products()->delete();
         \Telegram::sendMessage([
             'text' => 'Спасибо. Ваш заказ принят в обработку. ' .
              'В ближайшее время наш менеджер свяжеться с Вами.',
@@ -53,60 +57,11 @@ class ConfirmOrderHandler extends CallbackQueryHandler
         ]);
     }
 
-    public function prepareData()
-    {
-        $stateData = $this->state->state['order_info'];
-        \Log::info($stateData);
-        if (isset($stateData['payment_method_id'])) {
-            $payment = PaymentMethod::find($stateData['payment_method_id'])->first();
-            if (isset($payment)) {
-                $this->data['payment'] = $payment->name;
-            }
-        }
 
-        if (isset($stateData['delivery_method_id'])) {
-            $delivery = ShippingMethod::find($stateData['delivery_method_id'])->first();
-            if (isset($delivery)) {
-                $this->data['delivery'] = $delivery->name;
-            }
-        }
-
-        if (isset($stateData['comment'])) {
-            $this->data['comment'] = $stateData['comment'];
-        }
-
-        if (isset($stateData['phone'])) {
-            $this->data['phone'] = $stateData['phone'];
-        } else {
-            $this->data['phone'] = $this->customer->tg_phone;
-        }
-
-        if (isset($stateData['change'])) {
-            $this->data['change'] = $stateData['change'];
-        }
-
-        $this->data['spot'] = $this->customer->branch->name;
-
-        $this->cart = Cart::byUser($this->customer->user);
-        $this->products = $this->cart->products()->get();
-
-
-        if (!empty($this->customer->firstname)) {
-            $this->data['first_name'] = $this->customer->firstname;
-        }
-
-        if (!empty($this->customer->lastname)) {
-            $this->data['last_name'] = $this->customer->lastname;
-        }
-
-
-        $this->data['products'] = $this->posterProducts($this->products);
-    }
 
     public function sendTelegram($data)
     {
-        $telegramHelper = new \Lovata\BaseCode\Classes\Telegram();
-        $message = $telegramHelper->getFormattedMessage('Новый заказ', $data);
+        $message = ReceiptUtils::makeReceipt('Новый заказ', $data);
 
         \Telegram::sendMessage([
             'text' => $message,
@@ -127,25 +82,4 @@ class ConfirmOrderHandler extends CallbackQueryHandler
             ->createIncomingOrder($data);
     }
 
-
-    public function posterProducts($products): array
-    {
-        $poster_products = [];
-        foreach ($products as $p) {
-            $productData = [];
-            if (isset($p['variant_id'])) {
-                $product = $p->product()->first();
-                $variant = $p->getItemDataAttribute();
-                $productData['modificator_id'] = $variant['poster_id'];
-            } else {
-                $product = $p->getItemDataAttribute();
-            }
-            $productData['name'] = $product['name'];
-            $productData['product_id'] = $product['poster_id'];
-            $productData['count'] = $p['quantity'];
-
-            $poster_products[] = $productData;
-        }
-        return $poster_products;
-    }
 }
