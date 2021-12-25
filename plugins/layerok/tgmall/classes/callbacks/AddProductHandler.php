@@ -112,7 +112,6 @@ class AddProductHandler extends CallbackQueryHandler
 
     public function categoryFooterButtons($page, $category_id): Keyboard
     {
-        $replyMarkup = CategoryFooterReplyMarkup::getKeyboard($this->cart, $category_id, $page);
-        return $replyMarkup->getKeyboard();
+        return CategoryFooterReplyMarkup::getKeyboard($this->cart, $category_id, $page);
     }
 }

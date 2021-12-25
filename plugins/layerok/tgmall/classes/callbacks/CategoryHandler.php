@@ -180,7 +180,10 @@ class CategoryHandler extends CallbackQueryHandler
 
     public function footerButtons(): Keyboard
     {
-        $replyMarkup = CategoryFooterReplyMarkup::getKeyboard($this->cart, $this->id, $this->page);
-        return $replyMarkup->getKeyboard();
+        return CategoryFooterReplyMarkup::getKeyboard(
+            $this->cart,
+            $this->id,
+            $this->page
+        );
     }
 }

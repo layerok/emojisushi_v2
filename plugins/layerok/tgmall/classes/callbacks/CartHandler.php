@@ -296,12 +296,10 @@ class CartHandler extends CallbackQueryHandler
     public function cartFooterKeyboard(): Keyboard
     {
         if ($this->cart->products->count() === 0) {
-            $replyMarkup = CartEmptyReplyMarkup::getKeyboard();
+            return CartEmptyReplyMarkup::getKeyboard();
         } else {
-            $replyMarkup = CartFooterReplyMarkup::getKeyboard($this->cart);
+            return CartFooterReplyMarkup::getKeyboard($this->cart);
         }
-
-        return $replyMarkup->getKeyboard();
     }
 
 
