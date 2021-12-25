@@ -7,6 +7,7 @@ use Layerok\Tgmall\Classes\Markups\CartFooterReplyMarkup;
 use Layerok\TgMall\Classes\Markups\CartProductReplyMarkup;
 use Layerok\TgMall\Classes\Markups\CategoryFooterReplyMarkup;
 use Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
+use Layerok\TgMall\Classes\Utils\PriceUtils;
 use Layerok\TgMall\Classes\Utils\Utils;
 
 use Layerok\TgMall\Classes\Traits\Lang;
@@ -171,6 +172,11 @@ class CartHandler extends CallbackQueryHandler
                 \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
             }
 
+            if ($cartTotalMsg['total'] == $this->cart->totals()->totalPostTaxes()) {
+                // Общая стоимость товаров в корзине совпадает с тем что написано в сообщении
+                return;
+            }
+
             try {
                 \Telegram::editMessageReplyMarkup([
                     'chat_id' => $this->chat->id,
@@ -180,7 +186,6 @@ class CartHandler extends CallbackQueryHandler
             } catch (\Exception $e) {
                 \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
             }
-
         }
     }
 
@@ -207,6 +212,10 @@ class CartHandler extends CallbackQueryHandler
         $cartTotalMsg = $this->state->getCartTotalMsg();
 
         if (isset($cartTotalMsg)) {
+            if ($cartTotalMsg['total'] == $this->cart->totals()->totalPostTaxes()) {
+                // Общая стоимость товаров в корзине совпадает с тем что написано в сообщении
+                return;
+            }
             try {
                 \Telegram::editMessageText(array_merge(
                     $this->cartFooterMessage(),
@@ -219,7 +228,6 @@ class CartHandler extends CallbackQueryHandler
                 \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
             }
         }
-
     }
 
     public function listProducts()
@@ -272,7 +280,12 @@ class CartHandler extends CallbackQueryHandler
 
         $msg_id = $response["message_id"];
 
-        $this->state->setCartTotalMsg(['id' => $msg_id]);
+        $this->state->setCartTotalMsg(
+            [
+                'id' => $msg_id,
+                'total' => $this->cart->totals()->totalPostTaxes()
+            ]
+        );
     }
 
     public function cartFooterMessage()

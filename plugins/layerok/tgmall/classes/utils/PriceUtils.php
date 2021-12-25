@@ -8,7 +8,7 @@ use OFFLINE\Mall\Models\Currency;
 
 class PriceUtils
 {
-    public static function cartTotal(Cart $cart)
+    public static function formattedCartTotal(Cart $cart)
     {
         $money = app(Money::class);
         return $money->format(

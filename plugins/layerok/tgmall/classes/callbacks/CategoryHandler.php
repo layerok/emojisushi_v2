@@ -181,10 +181,10 @@ class CategoryHandler extends CallbackQueryHandler
 
         $this->state->setCartCountMsg([
             'id' => $msg_id,
-            'meta_data' => [
-                'category_id' => $this->id,
-                'page' => $this->page
-            ]
+            'category_id' => $this->id,
+            'page' => $this->page,
+            'count' => $this->cart->products->count()
+
         ]);
     }
 

@@ -24,7 +24,7 @@ class CartFooterReplyMarkup
             $k->row($k::inlineButton([
                 'text' => str_replace(
                     "*price*",
-                    PriceUtils::cartTotal($cart),
+                    PriceUtils::formattedCartTotal($cart),
                     $this->lang('all_amount_order')
                 ),
                 'callback_data' => json_encode([

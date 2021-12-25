@@ -62,7 +62,7 @@ class CheckoutUtils
 
         $data['products'] = PosterUtils::parseProducts($products);
 
-        $data['total'] = PriceUtils::cartTotal($cart);
+        $data['total'] = PriceUtils::formattedCartTotal($cart);
         return $data;
     }
 

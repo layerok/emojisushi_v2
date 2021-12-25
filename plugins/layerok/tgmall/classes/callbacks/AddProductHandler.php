@@ -74,9 +74,11 @@ class AddProductHandler extends CallbackQueryHandler
         $cartCountMsg = $this->state->getCartCountMsg();
 
 
+
+
         if ($cartCountMsg) {
             $categoryProductReplyMarkup = new ProductInCartReplyMarkup();
-            $k = $this->categoryFooterButtons($cartCountMsg['meta_data']);
+
 
             try {
                 \Telegram::editMessageReplyMarkup([
@@ -88,6 +90,17 @@ class AddProductHandler extends CallbackQueryHandler
                 \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
             }
 
+
+            if ($cartCountMsg['count'] == $this->cart->products->count()) {
+                // Кол-во товаров в корзине совпадает с тем, что написано в сообщении
+                return;
+            }
+
+            $k = $this->categoryFooterButtons(
+                $cartCountMsg['page'],
+                $cartCountMsg['category_id']
+            );
+
             try {
                 \Telegram::editMessageReplyMarkup([
                     'chat_id' => $this->chat->id,
@@ -97,14 +110,11 @@ class AddProductHandler extends CallbackQueryHandler
             } catch (\Exception $e) {
                 \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
             }
-
         }
     }
 
-    public function categoryFooterButtons($meta_data): Keyboard
+    public function categoryFooterButtons($page, $category_id): Keyboard
     {
-        $page = $meta_data['page'];
-        $category_id = $meta_data['category_id'];
         $replyMarkup = new CategoryFooterReplyMarkup($this->cart, $category_id, $page);
         return $replyMarkup->getKeyboard();
     }
