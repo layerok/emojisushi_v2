@@ -8,7 +8,6 @@ use Layerok\TgMall\Classes\Markups\CartProductReplyMarkup;
 use Layerok\TgMall\Classes\Markups\CategoryFooterReplyMarkup;
 use Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
 use Layerok\TgMall\Classes\Utils\Utils;
-use Layerok\TgMall\Models\Message;
 
 use Layerok\TgMall\Classes\Traits\Lang;
 use Layerok\TgMall\Classes\Traits\Warn;
@@ -146,17 +145,9 @@ class CartHandler extends CallbackQueryHandler
             ])->first();
         }
 
-        $message = Message::where('chat_id', '=', $this->chat->id)
-            ->where('type', '=', Constants::UPDATE_CART_TOTAL)
-            ->orWhere('type', '=', Constants::UPDATE_CART_TOTAL_IN_CATEGORY)
-            ->latest()
-            ->first();
+        $cartTotalMsg = $this->state->getCartTotalMsg();
 
-        if (!$message) {
-            return;
-        }
-
-        if ($message->type === Constants::UPDATE_CART_TOTAL) {
+        if (isset($cartTotalMsg)) {
             $k = $this->cartFooterKeyboard();
             $totalPrice = $this->money->format(
                 $cartProduct->price()->price * $cartProduct->quantity,
@@ -170,34 +161,26 @@ class CartHandler extends CallbackQueryHandler
                 $totalPrice
             );
 
-            \Telegram::editMessageReplyMarkup([
-                'chat_id' => $this->chat->id,
-                'message_id' => $this->getUpdate()->getMessage()->message_id,
-                'reply_markup' => $cartProductReplyMarkup->getKeyboard()
-            ]);
+            try {
+                \Telegram::editMessageReplyMarkup([
+                    'chat_id' => $this->chat->id,
+                    'message_id' => $this->getUpdate()->getMessage()->message_id,
+                    'reply_markup' => $cartProductReplyMarkup->getKeyboard()
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
+            }
 
-            \Telegram::editMessageReplyMarkup([
-                'chat_id' => $this->chat->id,
-                'message_id' => $message->msg_id,
-                'reply_markup' => $k->toJson()
-            ]);
+            try {
+                \Telegram::editMessageReplyMarkup([
+                    'chat_id' => $this->chat->id,
+                    'message_id' => $cartTotalMsg['id'],
+                    'reply_markup' => $k->toJson()
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
+            }
 
-        }
-        if ($message->type === Constants::UPDATE_CART_TOTAL_IN_CATEGORY) {
-            $categoryProductReplyMarkup = new ProductInCartReplyMarkup();
-            $k = $this->categoryFooterButtons($message->meta_data);
-
-            \Telegram::editMessageReplyMarkup([
-                'chat_id' => $this->chat->id,
-                'message_id' => $this->getUpdate()->getMessage()->message_id,
-                'reply_markup' => $categoryProductReplyMarkup->getKeyboard()
-            ]);
-
-            \Telegram::editMessageReplyMarkup([
-                'chat_id' => $this->chat->id,
-                'message_id' => $message->msg_id,
-                'reply_markup' => $k->toJson()
-            ]);
         }
     }
 
@@ -212,26 +195,29 @@ class CartHandler extends CallbackQueryHandler
         $this->cart->removeProduct($cartProduct);
         $this->cart->refresh();
 
-        \Telegram::deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->getUpdate()->getMessage()->message_id
-        ]);
+        try {
+            \Telegram::deleteMessage([
+                'chat_id' => $this->chat->id,
+                'message_id' => $this->getUpdate()->getMessage()->message_id
+            ]);
+        } catch (\Exception $e) {
+            \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
+        }
 
-        $message = Message::where([
-            ['chat_id', '=', $this->chat->id],
-            ['type', '=', Constants::UPDATE_CART_TOTAL]
-        ])->first();
+        $cartTotalMsg = $this->state->getCartTotalMsg();
 
-
-        if(isset($message)) {
-
-            \Telegram::editMessageText(array_merge(
-                $this->cartFooterMessage(),
-                [
-                    'message_id' => $message->msg_id,
-                    'chat_id' => $this->chat->id
-                ]
-            ));
+        if (isset($cartTotalMsg)) {
+            try {
+                \Telegram::editMessageText(array_merge(
+                    $this->cartFooterMessage(),
+                    [
+                        'message_id' => $cartTotalMsg['id'],
+                        'chat_id' => $this->chat->id
+                    ]
+                ));
+            } catch (\Exception $e) {
+                \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
+            }
         }
 
     }
@@ -286,16 +272,7 @@ class CartHandler extends CallbackQueryHandler
 
         $msg_id = $response["message_id"];
 
-        Message::where([
-            ['chat_id', '=', $this->chat->id],
-            ['type', '=', Constants::UPDATE_CART_TOTAL]
-        ])->delete();
-
-        Message::create([
-            'chat_id' => $this->chat->id,
-            'msg_id' => $msg_id,
-            'type' => Constants::UPDATE_CART_TOTAL
-        ]);
+        $this->state->setCartTotalMsg(['id' => $msg_id]);
     }
 
     public function cartFooterMessage()
@@ -320,11 +297,5 @@ class CartHandler extends CallbackQueryHandler
         return $replyMarkup->getKeyboard();
     }
 
-    public function categoryFooterButtons($meta_data): Keyboard
-    {
-        $page = $meta_data['page'];
-        $category_id = $meta_data['category_id'];
-        $replyMarkup = new CategoryFooterReplyMarkup($this->cart, $category_id, $page);
-        return $replyMarkup->getKeyboard();
-    }
+
 }

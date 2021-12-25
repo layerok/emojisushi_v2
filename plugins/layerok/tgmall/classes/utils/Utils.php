@@ -5,16 +5,30 @@ namespace Layerok\TgMall\Classes\Utils;
 use OFFLINE\Mall\Models\Product;
 use Telegram\Bot\FileUpload\InputFile;
 
-class Utils {
+class Utils
+{
+
     public static function setFileIdFromResponse($response, Product $product)
     {
         $photoObject = $response->getPhoto();
 
         if ($photoObject) {
-            if (!is_null($product->image) && is_null($product->image->file_id)) {
-                $product->image->file_id = $photoObject->first()['file_id'];
-                $product->image->save();
+            if (is_null($product->image)) {
+                return;
             }
+
+            if (!is_null($product->image->file_id)) {
+                return;
+            }
+
+            $first = $photoObject->first();
+
+            if (!isset($first)) {
+                return;
+            }
+
+            $product->image->file_id = $first['file_id'];
+            $product->image->save();
         }
     }
 

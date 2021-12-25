@@ -9,8 +9,6 @@ use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
 use Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
 use Layerok\TgMall\Classes\Utils\Utils;
 use Telegram\Bot\FileUpload\InputFile;
-use Layerok\TgMall\Models\DeleteMessage;
-use Layerok\TgMall\Models\Message;
 use Layerok\TgMall\Classes\Traits\Lang;
 use Layerok\TgMall\Classes\Traits\Warn;
 use Lovata\BaseCode\Models\HideCategory;
@@ -106,16 +104,17 @@ class CategoryHandler extends CallbackQueryHandler
             ->get();
 
         if (isset($this->arguments['page']) && $this->arguments['page'] !== 1) {
-            $messages = DeleteMessage::where('chat_id', '=', $chat->id)
-                ->latest()
-                ->get();
-            if ($messages->count() > 0) {
-                \Telegram::deleteMessage([
-                    'chat_id' => $chat->id,
-                    'message_id' => $messages->first()->msg_id
-                ]);
-
-                DeleteMessage::truncate();
+            $deleteMsg = $this->state->getDeleteMsgInCategory();
+            if ($deleteMsg) {
+                try {
+                    \Telegram::deleteMessage([
+                        'chat_id' => $chat->id,
+                        'message_id' => $deleteMsg['id']
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
+                }
+                $this->state->setDeleteMsgInCategory(null);
             }
         }
 
@@ -178,20 +177,10 @@ class CategoryHandler extends CallbackQueryHandler
 
         $msg_id = $message->messageId;
 
-        DeleteMessage::create([
-            'chat_id' => $chat->id,
-            'msg_id' => $msg_id
-        ]);
+        $this->state->setDeleteMsgInCategory(['id' => $msg_id]);
 
-        Message::where('chat_id', '=', $chat->id)
-            ->where('type', '=', Constants::UPDATE_CART_TOTAL_IN_CATEGORY)
-            ->orWhere('type', '=', Constants::UPDATE_CART_TOTAL)
-            ->delete();
-
-        $message = Message::create([
-            'chat_id' => $chat->id,
-            'msg_id' => $msg_id,
-            'type' => Constants::UPDATE_CART_TOTAL_IN_CATEGORY,
+        $this->state->setCartCountMsg([
+            'id' => $msg_id,
             'meta_data' => [
                 'category_id' => $this->id,
                 'page' => $this->page

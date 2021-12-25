@@ -34,7 +34,7 @@ class CategoryProductReplyMarkup
             $defaultCurrency
         );
 
-        $btn1 = $k::inlineButton([
+/*        $btn1 = $k::inlineButton([
             'text' => $this->lang('minus'),
             'callback_data' => json_encode([
                 'name' => ($quantity - 1) < 1 ? 'noop': 'update_qty',
@@ -60,13 +60,19 @@ class CategoryProductReplyMarkup
                 ]
             ])
         ]);
-        $k->row($btn1, $btn2, $btn3);
+        $k->row($btn1, $btn2, $btn3);*/
+
         $k->row($k::inlineButton([
-            'text' => $this->lang('price') . ": " . $totalPrice . ' ' . $this->lang('add_to_cart'),
+            'text' => $this->lang('price') . ": " . $totalPrice,
             'callback_data' => json_encode([
-                'name' => 'cart',
+                'name' => 'noop'
+            ])
+        ]));
+        $k->row($k::inlineButton([
+            'text' => $this->lang('add_to_cart'),
+            'callback_data' => json_encode([
+                'name' => 'add_product',
                 'arguments' => [
-                    'type' => 'add',
                     'id' => $product['id'],
                     'qty' =>  $quantity
                 ]
