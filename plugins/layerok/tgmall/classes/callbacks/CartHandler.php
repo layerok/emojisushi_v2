@@ -24,7 +24,7 @@ class CartHandler extends CallbackQueryHandler
     use Warn;
     use Lang;
 
-    protected $middlewares = [
+    protected $extendMiddlewares = [
         \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
     ];
 
@@ -212,25 +212,28 @@ class CartHandler extends CallbackQueryHandler
         $this->cart->removeProduct($cartProduct);
         $this->cart->refresh();
 
+        \Telegram::deleteMessage([
+            'chat_id' => $this->chat->id,
+            'message_id' => $this->getUpdate()->getMessage()->message_id
+        ]);
+
         $message = Message::where([
             ['chat_id', '=', $this->chat->id],
             ['type', '=', Constants::UPDATE_CART_TOTAL]
         ])->first();
 
 
-        \Telegram::deleteMessage([
-            'chat_id' => $this->chat->id,
-            'message_id' => $this->getUpdate()->getMessage()->message_id
-        ]);
+        if(isset($message)) {
 
+            \Telegram::editMessageText(array_merge(
+                $this->cartFooterMessage(),
+                [
+                    'message_id' => $message->msg_id,
+                    'chat_id' => $this->chat->id
+                ]
+            ));
+        }
 
-        \Telegram::editMessageText(array_merge(
-            $this->cartFooterMessage(),
-            [
-                'message_id' => $message->msg_id,
-                'chat_id' => $this->chat->id
-            ]
-        ));
     }
 
     public function listProducts()

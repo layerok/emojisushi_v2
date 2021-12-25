@@ -9,6 +9,10 @@ use Telegram\Bot\Keyboard\Keyboard;
 class ListDeliveryMethodsHandler extends CallbackQueryHandler
 {
     use Lang;
+
+    protected $extendMiddlewares = [
+        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
+    ];
     public function handle()
     {
         \Telegram::sendMessage([

@@ -10,7 +10,7 @@ class StartHandler extends CallbackQueryHandler
 {
     use Lang;
 
-    protected $middlewares = [
+    protected $extendMiddlewares = [
         \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
     ];
     public function handle()
@@ -20,7 +20,7 @@ class StartHandler extends CallbackQueryHandler
 
         $text = sprintf(
             $this->lang('start_text'),
-            $from->username
+            $from->getFirstName()
         );
 
         $replyMarkup = new MainMenuReplyMarkup();

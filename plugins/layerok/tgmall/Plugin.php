@@ -14,5 +14,20 @@ class Plugin extends PluginBase
     {
     }
 
+    public function registerSettings()
+    {
+        return [
+            'settings' => [
+                'label' => 'EmojiSushiBot settings',
+                'description' => 'Manage bot settings.',
+                'category' => 'Telegram',
+                'icon' => 'icon-cog',
+                'class' => \Layerok\TgMall\Models\Settings::class,
+                'order' => 500,
+                'keywords' => 'telegram bot',
+            ]
+        ];
+    }
+
 
 }

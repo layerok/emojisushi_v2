@@ -10,6 +10,7 @@ use OFFLINE\Mall\Models\User;
 use Telegram\Bot\Answers\Answerable;
 use Telegram\Bot\Api;
 use Telegram\Bot\Objects\Update;
+use Layerok\TgMall\Models\Settings;
 
 abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
 {
@@ -32,7 +33,11 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
      */
     protected $telegram;
 
-    protected $middlewares = [];
+    protected $middlewares = [
+        \Layerok\TgMall\Classes\Middleware\CheckMaintenanceModeMiddleware::class,
+    ];
+
+    protected $extendMiddlewares = [];
 
     /**
      * @var Update
@@ -59,9 +64,8 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
     {
         $this->telegram = $telegram;
         $this->update = $update;
-
-        $this->before($update);
-
+        $chat = $this->update->getChat();
+        $this->extendMiddlewares();
         foreach ($this->middlewares as $middleware) {
             $m = new $middleware();
             $m->make($this->telegram, $this->update);
@@ -73,7 +77,17 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
             }
         }
 
+        $this->before($update);
+
         return call_user_func_array([$this, 'handle'], array_values($this->getArguments()));
+    }
+
+    protected function extendMiddlewares()
+    {
+        $this->middlewares = array_merge(
+            $this->middlewares,
+            $this->extendMiddlewares
+        );
     }
 
     public function before(Update $update)
@@ -82,8 +96,8 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
         $chat = $update->getChat();
         $from = $update->getCallbackQuery()->getFrom();
 
+
         $this->customer = Customer::where('tg_chat_id', '=', $chat->id)->first();
-        \Log::info(['customer' => $from->getFirstName()]);
         if (!$this->customer) {
             // Аккуратно, если какой-то поле не прошло валидацую бот бесшумно
             // не пустить дальше пользователя

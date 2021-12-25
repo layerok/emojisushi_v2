@@ -14,7 +14,7 @@ use Telegram\Bot\Keyboard\Keyboard;
 class ChoseDeliveryMethodHandler extends CallbackQueryHandler
 {
     use Lang;
-    protected $middlewares = [
+    protected $extendMiddlewares = [
         \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class,
         \Layerok\TgMall\Classes\Middleware\CheckCartMiddleware::class
     ];

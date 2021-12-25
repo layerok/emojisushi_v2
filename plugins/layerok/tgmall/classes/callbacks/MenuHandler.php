@@ -10,13 +10,11 @@ class MenuHandler extends CallbackQueryHandler
 {
     use Lang;
 
-    protected $middlewares = [
+    protected $extendMiddlewares = [
         \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
     ];
-
     public function handle()
     {
-
         $update = $this->getUpdate();
         $from = $update->getMessage()->getFrom();
         $chat = $update->getChat();

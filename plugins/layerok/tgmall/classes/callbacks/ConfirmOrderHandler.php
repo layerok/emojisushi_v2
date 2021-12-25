@@ -19,7 +19,7 @@ class ConfirmOrderHandler extends CallbackQueryHandler
     use Lang;
     protected $products;
     protected $data;
-    protected $middlewares = [
+    protected $extendMiddlewares = [
         \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class,
         \Layerok\TgMall\Classes\Middleware\CheckCartMiddleware::class
     ];

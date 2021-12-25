@@ -13,12 +13,13 @@ use OFFLINE\Mall\Models\Customer;
 use Telegram\Bot\Laravel\Facades\Telegram;
 use Telegram\Bot\Events\UpdateWasReceived;
 use Log;
+use Layerok\TgMall\Models\Settings;
 
 class Webhook
 {
     public function __construct()
     {
-        if (env('TG_MALL_TERMINATE_COMMANDS')) {
+        if (Settings::get('turn_off', false)) {
             return;
         };
         $emitter = new Emitter();

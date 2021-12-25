@@ -23,7 +23,7 @@ class CategoryHandler extends CallbackQueryHandler
     use Lang;
     use Warn;
 
-    protected $middlewares = [
+    protected $extendMiddlewares = [
         \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
     ];
 

@@ -9,7 +9,7 @@ use Layerok\TgMall\Classes\Traits\Lang;
 class ChosePaymentMethodHandler extends CallbackQueryHandler
 {
     use Lang;
-    protected $middlewares = [
+    protected $extendMiddlewares = [
         \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class,
         \Layerok\TgMall\Classes\Middleware\CheckCartMiddleware::class
     ];
