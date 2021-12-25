@@ -10,8 +10,8 @@ class ChosePaymentMethodHandler extends CallbackQueryHandler
 {
     use Lang;
     protected $extendMiddlewares = [
-        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class,
-        \Layerok\TgMall\Classes\Middleware\CheckCartMiddleware::class
+        \Layerok\TgMall\Classes\Middleware\CheckNotChosenBranchMiddleware::class,
+        \Layerok\TgMall\Classes\Middleware\CheckEmptyCartMiddleware::class
     ];
 
     public function handle()
@@ -24,7 +24,7 @@ class ChosePaymentMethodHandler extends CallbackQueryHandler
         if ($this->arguments['id'] == 4) {
             // наличными
             \Telegram::sendMessage([
-                'text' => $this->lang('prepare_change_question'),
+                'text' => self::lang('prepare_change_question'),
                 'chat_id' => $this->update->getChat()->id,
                 'reply_markup' => PreparePaymentChangeReplyMarkup::getKeyboard()
             ]);
@@ -34,7 +34,7 @@ class ChosePaymentMethodHandler extends CallbackQueryHandler
 
         // картой
         \Telegram::sendMessage([
-            'text' => $this->lang('chose_delivery_method'),
+            'text' => self::lang('chose_delivery_method'),
             'chat_id' => $this->update->getChat()->id,
             'reply_markup' => DeliveryMethodsReplyMarkup::getKeyboard()
         ]);

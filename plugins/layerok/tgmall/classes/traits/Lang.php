@@ -2,7 +2,7 @@
 
 trait Lang
 {
-    private function lang($key)
+    private static function lang($key)
     {
         return \Illuminate\Support\Facades\Lang::get('layerok.tgmall::lang.telegram.' . $key);
     }

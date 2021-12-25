@@ -13,8 +13,8 @@ class CheckoutHandler extends CallbackQueryHandler
     use Lang;
 
     protected $extendMiddlewares = [
-        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class,
-        \Layerok\TgMall\Classes\Middleware\CheckCartMiddleware::class
+        \Layerok\TgMall\Classes\Middleware\CheckNotChosenBranchMiddleware::class,
+        \Layerok\TgMall\Classes\Middleware\CheckEmptyCartMiddleware::class
     ];
 
     public function handle()
@@ -43,7 +43,7 @@ class CheckoutHandler extends CallbackQueryHandler
             });
 
             \Telegram::sendMessage([
-                'text' => $this->lang('chose_payment_method'),
+                'text' => self::lang('chose_payment_method'),
                 'chat_id' => $this->update->getChat()->id,
                 'reply_markup' => $k
             ]);
@@ -79,7 +79,7 @@ class CheckoutHandler extends CallbackQueryHandler
             ]);
             $k->row($yes, $no);
             $this->replyWithMessage([
-                'text' => $this->lang('right_phone_number') . ' ' . $this->customer->tg_phone . '?',
+                'text' => self::lang('right_phone_number') . ' ' . $this->customer->tg_phone . '?',
                 'reply_markup' => $k
             ]);
             return;

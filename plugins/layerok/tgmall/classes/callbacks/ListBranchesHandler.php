@@ -23,7 +23,7 @@ class ListBranchesHandler extends CallbackQueryHandler
 
         Telegram::sendMessage([
             'chat_id' =>  $this->getUpdate()->getChat()->id,
-            'text' => $this->lang('chose_branch'),
+            'text' => self::lang('chose_branch'),
             'reply_markup' => $k
         ]);
     }

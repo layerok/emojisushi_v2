@@ -8,18 +8,14 @@ class CartProductReplyMarkup
 {
     use Lang;
 
-    /**
-     * @var Keyboard
-     */
-    public $replyMarkup;
 
-    public function __construct($id, $quantity, $totalPrice)
+    public static function getKeyboard($id, $quantity, $totalPrice)
     {
         $k = new Keyboard();
         $k->inline();
 
         $btn1 = $k::inlineButton([
-            'text' => $this->lang('minus'),
+            'text' => self::lang('minus'),
             'callback_data' => json_encode([
                 'name' => 'cart',
                 'arguments' => [
@@ -38,7 +34,7 @@ class CartProductReplyMarkup
         ]);
 
         $btn3 = $k::inlineButton([
-            'text' => $this->lang('plus'),
+            'text' => self::lang('plus'),
             'callback_data' => json_encode([
                 'name' => 'cart',
                 'arguments' => [
@@ -50,7 +46,7 @@ class CartProductReplyMarkup
         ]);
 
         $btn4 = $k::inlineButton([
-            'text' => $this->lang('del'),
+            'text' => self::lang('del'),
             'callback_data' => json_encode([
                 'name' => 'cart',
                 'arguments' => [
@@ -63,17 +59,13 @@ class CartProductReplyMarkup
         $k->row($btn1, $btn2, $btn3, $btn4);
 
         $k->row($k::inlineButton([
-            'text' => $this->lang('price') . ': ' . $totalPrice,
+            'text' => self::lang('price') . ': ' . $totalPrice,
             'callback_data' => json_encode([
                 'name' => Constants::NOOP
             ])
         ]));
 
-        $this->replyMarkup = $k;
+        return $k;
     }
 
-    public function getKeyboard(): Keyboard
-    {
-        return $this->replyMarkup;
-    }
 }

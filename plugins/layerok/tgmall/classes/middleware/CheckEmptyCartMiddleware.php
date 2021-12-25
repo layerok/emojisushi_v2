@@ -5,7 +5,7 @@ namespace Layerok\TgMall\Classes\Middleware;
 use Layerok\Tgmall\Classes\Markups\CartEmptyReplyMarkup;
 use OFFLINE\Mall\Models\Cart;
 
-class CheckCartMiddleware extends AbstractMiddleware
+class CheckEmptyCartMiddleware extends AbstractMiddleware
 {
     public function run():bool
     {
@@ -29,11 +29,10 @@ class CheckCartMiddleware extends AbstractMiddleware
 
     public function onFailed():void
     {
-        $replyMarkup = new CartEmptyReplyMarkup();
         \Telegram::sendMessage([
             'text' => 'Ваш корзина пуста. Пожалуйста добавьте товар в корзину.',
             'chat_id' => $this->update->getChat()->id,
-            'reply_markup' => $replyMarkup->getKeyboard()
+            'reply_markup' => CartEmptyReplyMarkup::getKeyboard()
         ]);
     }
 }

@@ -24,8 +24,7 @@ class CallbackQueryBus
 
         if (class_exists($namespacedClass)) {
             $inst = new $namespacedClass();
-            $inst->setArguments($arguments);
-            $inst->make($this->telegram, $this->update);
+            $inst->make($this->telegram, $this->update, $arguments);
         } else {
             \Log::error(["class that handles [$name] callback does not exist", $namespacedClass]);
         }

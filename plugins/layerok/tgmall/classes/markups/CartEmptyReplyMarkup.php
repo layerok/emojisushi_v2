@@ -7,37 +7,28 @@ use Telegram\Bot\Keyboard\Keyboard;
 class CartEmptyReplyMarkup
 {
     use Lang;
-    protected $keyboard;
-    /**
-     * @var Money
-     */
-    protected $money;
 
-    public function __construct()
+
+    public static function getKeyboard()
     {
-        $this->money = app(Money::class);
         $k = new Keyboard();
         $k->inline();
 
         $k->row($k::inlineButton([
-            'text' => $this->lang('in_menu'),
+            'text' => self::lang('in_menu'),
             'callback_data' => json_encode([
                 'name' => 'menu'
             ])
         ]));
 
         $k->row($k::inlineButton([
-            'text' => $this->lang('in_menu_main'),
+            'text' => self::lang('in_menu_main'),
             'callback_data' => json_encode([
                 'name' => 'start'
             ])
         ]));
 
-        $this->keyboard = $k;
+        return $k;
     }
 
-    public function getKeyboard(): Keyboard
-    {
-        return $this->keyboard;
-    }
 }

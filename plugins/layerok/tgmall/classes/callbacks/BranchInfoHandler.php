@@ -14,12 +14,12 @@ class BranchInfoHandler extends CallbackQueryHandler
     use Warn;
 
     protected $extendMiddlewares = [
-        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
+        \Layerok\TgMall\Classes\Middleware\CheckNotChosenBranchMiddleware::class
     ];
 
     protected $types = ["phones", "delivery", "website"];
 
-    protected function validate(): bool
+    public function validate(): bool
     {
         if (!in_array($this->arguments['type'], $this->types)) {
             \Log::error('invalid type');
@@ -30,10 +30,6 @@ class BranchInfoHandler extends CallbackQueryHandler
 
     public function handle()
     {
-        if (!$this->validate()) {
-            return;
-        }
-
         $method = $this->arguments['type'];
 
         if (method_exists($this, $method)) {

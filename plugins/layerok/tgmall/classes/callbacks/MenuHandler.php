@@ -11,7 +11,7 @@ class MenuHandler extends CallbackQueryHandler
     use Lang;
 
     protected $extendMiddlewares = [
-        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
+        \Layerok\TgMall\Classes\Middleware\CheckNotChosenBranchMiddleware::class
     ];
     public function handle()
     {
@@ -55,7 +55,7 @@ class MenuHandler extends CallbackQueryHandler
         });
 
         $keyboard->row($keyboard::inlineButton([
-            'text' => $this->lang('in_menu_main'),
+            'text' => self::lang('in_menu_main'),
             'callback_data' => json_encode([
                 'name' => 'start',
                 'arguments' => []
@@ -63,7 +63,7 @@ class MenuHandler extends CallbackQueryHandler
         ]));
 
         $replyWith = [
-            'text' => $this->lang('menu_text'),
+            'text' => self::lang('menu_text'),
             'reply_markup' => $keyboard->toJson()
         ];
 

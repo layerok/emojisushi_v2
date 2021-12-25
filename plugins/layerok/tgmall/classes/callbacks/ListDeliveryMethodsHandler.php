@@ -11,12 +11,12 @@ class ListDeliveryMethodsHandler extends CallbackQueryHandler
     use Lang;
 
     protected $extendMiddlewares = [
-        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
+        \Layerok\TgMall\Classes\Middleware\CheckNotChosenBranchMiddleware::class
     ];
     public function handle()
     {
         \Telegram::sendMessage([
-            'text' => $this->lang('chose_delivery_method'),
+            'text' => self::lang('chose_delivery_method'),
             'chat_id' => $this->update->getChat()->id,
             'reply_markup' => DeliveryMethodsReplyMarkup::getKeyboard()
         ]);

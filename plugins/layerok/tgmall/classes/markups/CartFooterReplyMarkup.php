@@ -11,12 +11,9 @@ use Telegram\Bot\Keyboard\Keyboard;
 class CartFooterReplyMarkup
 {
     use Lang;
-    protected $keyboard;
 
-
-    public function __construct(Cart $cart)
+    public static function getKeyboard(Cart $cart)
     {
-
         $k = new Keyboard();
         $k->inline();
 
@@ -25,7 +22,7 @@ class CartFooterReplyMarkup
                 'text' => str_replace(
                     "*price*",
                     PriceUtils::formattedCartTotal($cart),
-                    $this->lang('all_amount_order')
+                    self::lang('all_amount_order')
                 ),
                 'callback_data' => json_encode([
                     'name' => Constants::NOOP
@@ -33,7 +30,7 @@ class CartFooterReplyMarkup
             ]));
 
             $k->row($k::inlineButton(([
-                'text' => $this->lang('take_order'),
+                'text' => self::lang('take_order'),
                 'callback_data' => json_encode([
                     'name' => 'checkout'
                 ])
@@ -41,24 +38,20 @@ class CartFooterReplyMarkup
         }
 
         $k->row($k::inlineButton([
-            'text' => $this->lang('in_menu'),
+            'text' => self::lang('in_menu'),
             'callback_data' => json_encode([
                 'name' => 'menu'
             ])
         ]));
 
         $k->row($k::inlineButton([
-            'text' => $this->lang('in_menu_main'),
+            'text' => self::lang('in_menu_main'),
             'callback_data' => json_encode([
                 'name' => 'start'
             ])
         ]));
 
-        $this->keyboard = $k;
+        return $k;
     }
 
-    public function getKeyboard(): Keyboard
-    {
-        return $this->keyboard;
-    }
 }

@@ -5,7 +5,7 @@ use Lovata\BaseCode\Models\Branches;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
-class CheckBranchMiddleware extends AbstractMiddleware
+class CheckNotChosenBranchMiddleware extends AbstractMiddleware
 {
 
     public function isSpotChosen(): bool

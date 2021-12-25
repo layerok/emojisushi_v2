@@ -7,7 +7,7 @@ use Layerok\TgMall\Classes\Messages\OrderCommentHandler;
 class LeaveCommentHandler extends CallbackQueryHandler
 {
     protected $extendMiddlewares = [
-        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
+        \Layerok\TgMall\Classes\Middleware\CheckNotChosenBranchMiddleware::class
     ];
     public function handle()
     {

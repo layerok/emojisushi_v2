@@ -7,9 +7,7 @@ class MainMenuReplyMarkup
 {
     use Lang;
 
-    protected $keyboard;
-
-    public function __construct()
+    public static function getKeyboard()
     {
         $keyboard = new Keyboard();
         $keyboard->inline();
@@ -20,7 +18,7 @@ class MainMenuReplyMarkup
         $row4 = [];
 
         $row1[] = $keyboard::inlineButton([
-            'text' => $this->lang('menu'),
+            'text' => self::lang('menu'),
             'callback_data' => json_encode([
                 'name' => 'menu',
                 'arguments' => []
@@ -31,22 +29,22 @@ class MainMenuReplyMarkup
 
         //todo
 /*        $row2[] = $keyboard::inlineButton([
-            'text' => $this->lang('delivery_and_pay'),
+            'text' => self::lang('delivery_and_pay'),
             'callback_data' => "delivery_and_pay"
         ]);
         $row2[] = $keyboard::inlineButton([
-            'text' => $this->lang('my_order'),
+            'text' => self::lang('my_order'),
             'callback_data' => "my_order"
         ]);
 
         $row3[] = $keyboard::inlineButton([
-            'text' => $this->lang('review'),
+            'text' => self::lang('review'),
             'callback_data' => "review"
         ]);*/
 
 
         $row1[] = $keyboard::inlineButton([
-            'text' => $this->lang('busket'),
+            'text' => self::lang('busket'),
             'callback_data' => json_encode([
                 'name' => 'cart',
                 'arguments' => [
@@ -56,7 +54,7 @@ class MainMenuReplyMarkup
         ]);
 
         $row2[] = $keyboard::inlineButton([
-            'text' => $this->lang('contact'),
+            'text' => self::lang('contact'),
             'callback_data' => json_encode([
                 'name' => 'branch_info',
                 'arguments' => [
@@ -90,11 +88,7 @@ class MainMenuReplyMarkup
         $keyboard->row(...$row3);
         $keyboard->row(...$row4);
 
-        $this->keyboard = $keyboard;
+        return $keyboard;
     }
 
-    public function getKeyboard(): Keyboard
-    {
-        return $this->keyboard;
-    }
 }

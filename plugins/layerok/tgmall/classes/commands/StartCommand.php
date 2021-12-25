@@ -24,15 +24,13 @@ class StartCommand extends Command
         $from = $update->getMessage()->getChat();
 
         $text = sprintf(
-            $this->lang('start_text'),
+            self::lang('start_text'),
             $from->firstName
         );
 
-        $replyMarkup = new MainMenuReplyMarkup();
-
         $this->replyWithMessage([
             'text' => $text,
-            'reply_markup' => $replyMarkup->getKeyboard()
+            'reply_markup' => MainMenuReplyMarkup::getKeyboard()
         ]);
     }
 }

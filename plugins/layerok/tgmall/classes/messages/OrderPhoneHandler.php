@@ -73,7 +73,7 @@ class OrderPhoneHandler extends AbstractMessageHandler
         });
 
         \Telegram::sendMessage([
-            'text' => $this->lang('chose_payment_method'),
+            'text' => self::lang('chose_payment_method'),
             'chat_id' => $this->chat->id,
             'reply_markup' => $k
         ]);

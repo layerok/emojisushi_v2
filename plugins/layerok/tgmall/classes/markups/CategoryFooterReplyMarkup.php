@@ -9,9 +9,7 @@ class CategoryFooterReplyMarkup
 {
     use Lang;
 
-    protected $keyboard;
-
-    public function __construct(Cart $cart, $category_id, $page = 1)
+    public static function getKeyboard(Cart $cart, $category_id, $page = 1)
     {
         $cart->refresh();
         $countPositionInOrder = "";
@@ -38,7 +36,7 @@ class CategoryFooterReplyMarkup
         }
 
         $btn1 = $k::inlineButton([
-            'text' => $this->lang("busket") . $countPositionInOrder,
+            'text' => self::lang("busket") . $countPositionInOrder,
             'callback_data' => json_encode([
                 'name' => 'cart',
                 'arguments' => [
@@ -47,13 +45,13 @@ class CategoryFooterReplyMarkup
             ])
         ]);
         $btn2 = $k::inlineButton([
-            'text' => $this->lang("in_menu"),
+            'text' => self::lang("in_menu"),
             'callback_data' => json_encode([
                 'name' => 'menu'
             ])
         ]);
         $btn3 = $k::inlineButton([
-            'text' => $this->lang("in_menu_main"),
+            'text' => self::lang("in_menu_main"),
             'callback_data' => json_encode([
                 'name' => 'start',
                 'arguments' => []
@@ -63,11 +61,6 @@ class CategoryFooterReplyMarkup
         $k->row($btn1);
         $k->row($btn2);
         $k->row($btn3);
-        $this->keyboard = $k;
-    }
-
-    public function getKeyboard(): Keyboard
-    {
-        return $this->keyboard;
+        return $k;
     }
 }

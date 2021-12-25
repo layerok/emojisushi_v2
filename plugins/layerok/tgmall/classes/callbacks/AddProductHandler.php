@@ -4,8 +4,8 @@ namespace Layerok\TgMall\Classes\Callbacks;
 
 use Layerok\TgMall\Classes\Markups\CartProductReplyMarkup;
 use Layerok\TgMall\Classes\Markups\CategoryFooterReplyMarkup;
-use Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
-use Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware;
+use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
+use Layerok\TgMall\Classes\Middleware\CheckNotChosenBranchMiddleware;
 use Layerok\TgMall\Classes\Traits\Lang;
 use Layerok\TgMall\Classes\Traits\Warn;
 use Lovata\BaseCode\Models\HideProduct;
@@ -25,7 +25,7 @@ class AddProductHandler extends CallbackQueryHandler
     protected $product;
 
     protected $extendMiddlewares = [
-        CheckBranchMiddleware::class
+        CheckNotChosenBranchMiddleware::class
     ];
 
     public function validate(): bool
@@ -55,10 +55,6 @@ class AddProductHandler extends CallbackQueryHandler
     {
         $this->chat = $this->update->getChat();
 
-        if (!$this->validate()) {
-            return;
-        }
-
         $hidden = HideProduct::where([
             ['branch_id', '=', $this->customer->branch->id],
             ['product_id', '=', $this->arguments['id']]
@@ -77,14 +73,15 @@ class AddProductHandler extends CallbackQueryHandler
 
 
         if ($cartCountMsg) {
-            $categoryProductReplyMarkup = new ProductInCartReplyMarkup();
-
-
             try {
                 \Telegram::editMessageReplyMarkup([
                     'chat_id' => $this->chat->id,
                     'message_id' => $this->getUpdate()->getMessage()->message_id,
-                    'reply_markup' => $categoryProductReplyMarkup->getKeyboard()
+                    'reply_markup' => CategoryProductReplyMarkup::getKeyboard(
+                        $this->cart,
+                        $this->product,
+                        1
+                    )
                 ]);
             } catch (\Exception $e) {
                 \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
@@ -115,7 +112,7 @@ class AddProductHandler extends CallbackQueryHandler
 
     public function categoryFooterButtons($page, $category_id): Keyboard
     {
-        $replyMarkup = new CategoryFooterReplyMarkup($this->cart, $category_id, $page);
+        $replyMarkup = CategoryFooterReplyMarkup::getKeyboard($this->cart, $category_id, $page);
         return $replyMarkup->getKeyboard();
     }
 }

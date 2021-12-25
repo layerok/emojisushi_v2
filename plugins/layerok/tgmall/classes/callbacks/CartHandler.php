@@ -6,7 +6,6 @@ use Layerok\Tgmall\Classes\Markups\CartEmptyReplyMarkup;
 use Layerok\Tgmall\Classes\Markups\CartFooterReplyMarkup;
 use Layerok\TgMall\Classes\Markups\CartProductReplyMarkup;
 use Layerok\TgMall\Classes\Markups\CategoryFooterReplyMarkup;
-use Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
 use Layerok\TgMall\Classes\Utils\PriceUtils;
 use Layerok\TgMall\Classes\Utils\Utils;
 
@@ -25,7 +24,7 @@ class CartHandler extends CallbackQueryHandler
     use Lang;
 
     protected $extendMiddlewares = [
-        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
+        \Layerok\TgMall\Classes\Middleware\CheckNotChosenBranchMiddleware::class
     ];
 
     private $brokenImageFileId = "AgACAgQAAxkDAAIBGGGtGjcxSQraUNasYICGA2UkTLeOAAJyrTEbmQABbVHg3HGg2xXRvQEAAwIAA3gAAyIE";
@@ -89,10 +88,6 @@ class CartHandler extends CallbackQueryHandler
 
     public function handle()
     {
-
-        if (!$this->validate()) {
-            return;
-        }
         $update = $this->getUpdate();
         $this->chat = $update->getChat();
 
@@ -156,17 +151,15 @@ class CartHandler extends CallbackQueryHandler
                 Currency::$defaultCurrency
             );
 
-            $cartProductReplyMarkup = new CartProductReplyMarkup(
-                $cartProduct->product->id,
-                $cartProduct->quantity,
-                $totalPrice
-            );
-
             try {
                 \Telegram::editMessageReplyMarkup([
                     'chat_id' => $this->chat->id,
                     'message_id' => $this->getUpdate()->getMessage()->message_id,
-                    'reply_markup' => $cartProductReplyMarkup->getKeyboard()
+                    'reply_markup' => CartProductReplyMarkup::getKeyboard(
+                        $cartProduct->product->id,
+                        $cartProduct->quantity,
+                        $totalPrice
+                    )
                 ]);
             } catch (\Exception $e) {
                 \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
@@ -233,7 +226,7 @@ class CartHandler extends CallbackQueryHandler
     public function listProducts()
     {
         $this->replyWithMessage([
-            'text' => $this->lang('busket')
+            'text' => self::lang('busket')
         ]);
 
         $this->cart->products->map(function ($cartProduct) {
@@ -245,9 +238,6 @@ class CartHandler extends CallbackQueryHandler
                 Currency::$defaultCurrency
             );
 
-            $cartProductReplyMarkup = new CartProductReplyMarkup($id, $quantity, $totalPrice);
-            $k = $cartProductReplyMarkup->getKeyboard();
-
             $caption = Utils::getCaption($cartProduct->product);
 
             if (!is_null($cartProduct->product->image)) {
@@ -255,7 +245,11 @@ class CartHandler extends CallbackQueryHandler
                 $response = $this->replyWithPhoto([
                     'photo' => $photoIdOrUrl,
                     'caption' => $caption,
-                    'reply_markup' => $k->toJson(),
+                    'reply_markup' => CartProductReplyMarkup::getKeyboard(
+                        $id,
+                        $quantity,
+                        $totalPrice
+                    ),
                     'parse_mode' => 'html',
                 ]);
 
@@ -291,8 +285,8 @@ class CartHandler extends CallbackQueryHandler
     public function cartFooterMessage()
     {
         $text = $this->cart->products->count() === 0 ?
-            $this->lang('cart_is_empty') :
-            $this->lang('rasd');
+            self::lang('cart_is_empty') :
+            self::lang('rasd');
         return [
             'text' => $text,
             'reply_markup' => $this->cartFooterKeyboard()
@@ -302,9 +296,9 @@ class CartHandler extends CallbackQueryHandler
     public function cartFooterKeyboard(): Keyboard
     {
         if ($this->cart->products->count() === 0) {
-            $replyMarkup = new CartEmptyReplyMarkup();
+            $replyMarkup = CartEmptyReplyMarkup::getKeyboard();
         } else {
-            $replyMarkup = new CartFooterReplyMarkup($this->cart);
+            $replyMarkup = CartFooterReplyMarkup::getKeyboard($this->cart);
         }
 
         return $replyMarkup->getKeyboard();

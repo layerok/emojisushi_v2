@@ -6,7 +6,6 @@ namespace Layerok\TgMall\Classes\Callbacks;
 use Layerok\TgMall\Classes\Constants;
 use Layerok\TgMall\Classes\Markups\CategoryFooterReplyMarkup;
 use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
-use Layerok\TgMall\Classes\Markups\ProductInCartReplyMarkup;
 use Layerok\TgMall\Classes\Utils\Utils;
 use Telegram\Bot\FileUpload\InputFile;
 use Layerok\TgMall\Classes\Traits\Lang;
@@ -22,7 +21,7 @@ class CategoryHandler extends CallbackQueryHandler
     use Warn;
 
     protected $extendMiddlewares = [
-        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
+        \Layerok\TgMall\Classes\Middleware\CheckNotChosenBranchMiddleware::class
     ];
 
     private $brokenImagePath = "https://emojisushi.com.ua/storage/app/media/broken.png";
@@ -62,12 +61,6 @@ class CategoryHandler extends CallbackQueryHandler
     public function handle()
     {
 
-
-        $valid = $this->validate();
-
-        if (!$valid) {
-            return;
-        }
         $this->id = $this->arguments['id'];
 
         $category = CategoryModel::where('id', '=', $this->id)
@@ -136,13 +129,6 @@ class CategoryHandler extends CallbackQueryHandler
                     return;
                 }
 
-                if ($this->cart->isInCart($product)) {
-                    $replyMarkup = new ProductInCartReplyMarkup();
-                } else {
-                    $replyMarkup = new CategoryProductReplyMarkup($product, 1);
-                }
-
-                $k = $replyMarkup->getKeyboard();
 
                 $caption = Utils::getCaption($product);
 
@@ -151,7 +137,11 @@ class CategoryHandler extends CallbackQueryHandler
                     $response = $this->replyWithPhoto([
                         'photo' => $photoIdOrUrl,
                         'caption' => $caption,
-                        'reply_markup' => $k->toJson(),
+                        'reply_markup' => CategoryProductReplyMarkup::getKeyboard(
+                            $this->cart,
+                            $product,
+                            1
+                        ),
                         'parse_mode' => 'html',
                     ]);
 
@@ -171,7 +161,7 @@ class CategoryHandler extends CallbackQueryHandler
 
 
         $message = $this->replyWithMessage([
-            'text' => $this->lang("triple_dot"),
+            'text' => self::lang("triple_dot"),
             'reply_markup' => $k->toJson()
         ]);
 
@@ -190,7 +180,7 @@ class CategoryHandler extends CallbackQueryHandler
 
     public function footerButtons(): Keyboard
     {
-        $replyMarkup = new CategoryFooterReplyMarkup($this->cart, $this->id, $this->page);
+        $replyMarkup = CategoryFooterReplyMarkup::getKeyboard($this->cart, $this->id, $this->page);
         return $replyMarkup->getKeyboard();
     }
 }

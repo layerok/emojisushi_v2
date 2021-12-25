@@ -15,8 +15,8 @@ class ChoseDeliveryMethodHandler extends CallbackQueryHandler
 {
     use Lang;
     protected $extendMiddlewares = [
-        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class,
-        \Layerok\TgMall\Classes\Middleware\CheckCartMiddleware::class
+        \Layerok\TgMall\Classes\Middleware\CheckNotChosenBranchMiddleware::class,
+        \Layerok\TgMall\Classes\Middleware\CheckEmptyCartMiddleware::class
     ];
 
     public function handle()
@@ -39,7 +39,7 @@ class ChoseDeliveryMethodHandler extends CallbackQueryHandler
 
         // был выбран самовывоз
         \Telegram::sendMessage([
-            'text' => $this->lang('leave_comment_question'),
+            'text' => self::lang('leave_comment_question'),
             'chat_id' => $this->update->getChat()->id,
             'reply_markup' => LeaveCommentReplyMarkup::getKeyboard()
         ]);

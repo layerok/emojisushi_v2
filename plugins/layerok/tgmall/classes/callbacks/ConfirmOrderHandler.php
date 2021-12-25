@@ -20,8 +20,8 @@ class ConfirmOrderHandler extends CallbackQueryHandler
     protected $products;
     protected $data;
     protected $extendMiddlewares = [
-        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class,
-        \Layerok\TgMall\Classes\Middleware\CheckCartMiddleware::class
+        \Layerok\TgMall\Classes\Middleware\CheckNotChosenBranchMiddleware::class,
+        \Layerok\TgMall\Classes\Middleware\CheckEmptyCartMiddleware::class
     ];
 
     public function handle()
@@ -42,7 +42,7 @@ class ConfirmOrderHandler extends CallbackQueryHandler
         $k = new Keyboard();
         $k->inline();
         $k->row($k::inlineButton([
-            'text' => $this->lang('in_menu_main'),
+            'text' => self::lang('in_menu_main'),
             'callback_data' => json_encode([
                 'name' => 'start'
             ])

@@ -48,6 +48,11 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
 
     abstract public function handle();
 
+    public function validate(): bool
+    {
+        return true;
+    }
+
     public function getArguments(): array
     {
         return $this->arguments;
@@ -60,10 +65,11 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
         return $this;
     }
 
-    public function make(Api $telegram, Update $update)
+    public function make(Api $telegram, Update $update, $arguments): void
     {
         $this->telegram = $telegram;
         $this->update = $update;
+        $this->arguments = $arguments;
         $chat = $this->update->getChat();
         $this->extendMiddlewares();
         foreach ($this->middlewares as $middleware) {
@@ -73,13 +79,19 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
             if (!$isPassed) {
                 /*\Log::info([get_class($m), ' middleware failed']);*/
                 $m->onFailed();
-                return null;
+                return;
             }
         }
 
         $this->before($update);
 
-        return call_user_func_array([$this, 'handle'], array_values($this->getArguments()));
+        $isValid = $this->validate();
+
+        if (!$isValid) {
+            return;
+        }
+
+        call_user_func_array([$this, 'handle'], array_values($this->getArguments()));
     }
 
     protected function extendMiddlewares()

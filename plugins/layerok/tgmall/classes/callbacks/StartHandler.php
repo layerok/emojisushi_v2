@@ -11,7 +11,7 @@ class StartHandler extends CallbackQueryHandler
     use Lang;
 
     protected $extendMiddlewares = [
-        \Layerok\TgMall\Classes\Middleware\CheckBranchMiddleware::class
+        \Layerok\TgMall\Classes\Middleware\CheckNotChosenBranchMiddleware::class
     ];
     public function handle()
     {
@@ -19,15 +19,13 @@ class StartHandler extends CallbackQueryHandler
         $from = $update->getMessage()->getChat();
 
         $text = sprintf(
-            $this->lang('start_text'),
+            self::lang('start_text'),
             $from->getFirstName()
         );
 
-        $replyMarkup = new MainMenuReplyMarkup();
-
         $this->replyWithMessage([
             'text' => $text,
-            'reply_markup' => $replyMarkup->getKeyboard()
+            'reply_markup' => MainMenuReplyMarkup::getKeyboard()
         ]);
     }
 }

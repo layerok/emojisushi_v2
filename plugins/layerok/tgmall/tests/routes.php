@@ -291,11 +291,6 @@ Route::get('/test/laravel/db/json', function() {
     dd($message);
 });
 
-Route::get('/test/tgmall/reply/markups', function() {
-    $cartProductMarkup = new CartProductReplyMarkup(2, 3, '200 uah');
-    $markup = $cartProductMarkup->getReplyMarkup();
-    dd($markup);
-});
 
 Route::get('/test/laravel/db/upserts', function() {
     $data = [
