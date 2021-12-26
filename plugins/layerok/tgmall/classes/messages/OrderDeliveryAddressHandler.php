@@ -15,16 +15,10 @@ class OrderDeliveryAddressHandler extends AbstractMessageHandler
         $this->state->setOrderInfoAddress($this->text);
 
         $this->telegram->sendMessage([
-            'text' => "Желаете добавить палочки к заказу",
+            'text' => self::lang('add_sticks_question'),
             'chat_id' => $this->update->getChat()->id,
             'reply_markup' => SticksDialogReplyMarkup::getKeyboard()
         ]);
-
-    /*    $this->telegram->sendMessage([
-            'text' => self::lang('leave_comment_question'),
-            'chat_id' => $this->update->getChat()->id,
-            'reply_markup' => LeaveCommentReplyMarkup::getKeyboard()
-        ]);*/
 
         $this->state->setMessageHandler(null);
     }

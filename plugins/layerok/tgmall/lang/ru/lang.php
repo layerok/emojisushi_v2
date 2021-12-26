@@ -106,6 +106,8 @@ return [
         "right_phone_number" => "Верный номер телефона",
         "prepare_change_question" => "Желаете, чтобы мы подготовили сдачу?",
         "leave_comment_question" => "Желаете оставить комментарий?",
-        "confirm_order_question" => "Подтверждаете заказ?"
+        "confirm_order_question" => "Подтверждаете заказ?",
+        "add_sticks_question" => "Желаете добавить палочки к заказу?",
+        "type_delivery_address" => "Введите адрес доставки"
     ]
 ];
