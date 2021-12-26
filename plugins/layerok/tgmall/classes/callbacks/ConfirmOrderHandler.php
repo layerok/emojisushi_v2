@@ -57,7 +57,7 @@ class ConfirmOrderHandler extends CallbackQueryHandler
             'first_name' => $firstName,
             'last_name' => $lastName,
             'comment' => CheckoutUtils::getPosterComment($this->state),
-            'client_address' => $address
+            'address' => $address
         ]);
 
         if (isset($result->error)) {
@@ -75,7 +75,7 @@ class ConfirmOrderHandler extends CallbackQueryHandler
             $bot_token = \Config::get('layerok.tgmall::test_bot_token');
             $chat_id = Settings::get('test_chat_id', '');
         } else {
-            $bot_token = \Config::get('layerok.tgmall::bot_token');
+            $bot_token = env('TELEGRAM_BOT_ID');
             $chat_id = $this->customer->branch->getChatId();
         }
 
@@ -85,11 +85,15 @@ class ConfirmOrderHandler extends CallbackQueryHandler
 
         $api = new Api($bot_token);
 
-        $api->sendMessage([
-            'text' => $message,
-            'parse_mode' => "html",
-            'chat_id' =>  $chat_id
-        ]);
+        try {
+            $api->sendMessage([
+                'text' => $message,
+                'parse_mode' => "html",
+                'chat_id' =>  $chat_id
+            ]);
+        } catch (\Exception $exception) {
+            Log::error((string)$exception);
+        }
     }
 
     public function onPosterError($result)

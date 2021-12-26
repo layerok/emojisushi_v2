@@ -4,6 +4,7 @@ namespace Layerok\TgMall\Classes\Messages;
 
 use Illuminate\Support\Facades\Validator;
 use Layerok\TgMall\Classes\Constants;
+use Layerok\TgMall\Classes\Markups\PaymentMethodsReplyMarkup;
 use Layerok\TgMall\Classes\Traits\Lang;
 use OFFLINE\Mall\Models\PaymentMethod;
 use Telegram\Bot\Keyboard\Keyboard;
@@ -55,27 +56,11 @@ class OrderPhoneHandler extends AbstractMessageHandler
         $this->customer->tg_phone = $this->text;
         $this->customer->save();
 
-        $k = new Keyboard();
-        $k->inline();
-
-        $methods = PaymentMethod::orderBy('sort_order', 'ASC')->get();
-
-        $methods->map(function ($item) use ($k) {
-            $k->row($k::inlineButton([
-                'text' => $item->name,
-                'callback_data' => json_encode([
-                    'name' => 'chose_payment_method',
-                    'arguments' => [
-                        'id' => $item->id
-                    ]
-                ])
-            ]));
-        });
 
         $this->telegram->sendMessage([
             'text' => self::lang('chose_payment_method'),
             'chat_id' => $this->chat->id,
-            'reply_markup' => $k
+            'reply_markup' => PaymentMethodsReplyMarkup::getKeyboard()
         ]);
         $this->state->setMessageHandler(null);
     }
