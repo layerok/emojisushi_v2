@@ -3,6 +3,7 @@
 namespace Layerok\TgMall\Classes\Utils;
 
 use Layerok\TgMall\Models\State;
+use Lovata\BaseCode\Classes\Helper\PosterProducts;
 use Lovata\BaseCode\Classes\Helper\PosterUtils;
 use Lovata\BaseCode\Models\Branches;
 use OFFLINE\Mall\Models\Cart;
@@ -63,10 +64,17 @@ class CheckoutUtils
         return $stateData['phone'];
     }
 
-    public static function getProducts(Cart $cart):array
+    public static function getProducts(Cart $cart, State $state):array
     {
         $products = $cart->products()->get();
-        return PosterUtils::parseProducts($products);
+
+        $posterProducts = new PosterProducts();
+
+        return $posterProducts
+            ->addCartProducts($products)
+            ->addSticks(
+                $state->getOrderInfoSticksCount()
+            )->all();
     }
 
     public static function getFirstName(Customer $customer)

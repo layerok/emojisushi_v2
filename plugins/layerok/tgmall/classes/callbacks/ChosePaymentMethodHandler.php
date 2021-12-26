@@ -16,12 +16,11 @@ class ChosePaymentMethodHandler extends CallbackQueryHandler
 
     public function handle()
     {
-        $this->state->mergeOrderInfo([
-            'payment_method_id' => $this->arguments['id']
-        ]);
+        $id = $this->arguments['id'];
+        $this->state->setOrderInfoPaymentMethodId($id);
 
 
-        if ($this->arguments['id'] == 4) {
+        if ($id == 4) {
             // наличными
             $this->telegram->sendMessage([
                 'text' => self::lang('prepare_change_question'),

@@ -17,188 +17,65 @@ class State extends Model
 
     public $timestamps = true;
 
-    public function setMessageHandler($handler)
+    public function setStateValue($key, $value)
     {
         $newState = array_merge(
             $this->state ?? [],
-            ['message_handler' => $handler]
+            [$key => $value]
         );
         $this->state = $newState;
         $this->save();
     }
 
-    public function setOrderInfo($info)
+    public function getStateValue($key)
     {
-        $newState = array_merge(
-            $this->state ?? [],
-            ['order_info' => $info]
-        );
-        $this->state = $newState;
-        $this->save();
-    }
-
-    public function getOrderInfo()
-    {
-        if (!isset($this->state['order_info'])) {
+        $state = $this->state;
+        if (!isset($state[$key])) {
             return null;
         }
-        return $this->state['order_info'];
+        return $state[$key];
     }
 
-    public function mergeOrderInfo($info)
+    public function setMessageHandler($handler)
     {
-        $newState = array_merge(
-            $this->state ?? [],
-            ['order_info' => array_merge(
-                $this->state['order_info'] ?? [],
-                $info
-            )]
-        );
-        $this->state = $newState;
-        $this->save();
+        $this->setStateValue('message_handler', $handler);
     }
 
     public function setCallbackHandler($handler)
     {
-        $newState = array_merge(
-            $this->state ?? [],
-            ['callback_handler' => $handler]
-        );
-        $this->state = $newState;
-        $this->save();
+        $this->setStateValue('callback_handler', $handler);
     }
 
     public function setDeleteMsgInCategory($info)
     {
-        $newState = array_merge(
-            $this->state ?? [],
-            ['delete_msg_in_category' => $info]
-        );
-        $this->state = $newState;
-        $this->save();
-    }
-
-    public function getDeleteMsgInCategory()
-    {
-        $state = $this->state;
-        if (!isset($state['delete_msg_in_category'])) {
-            return null;
-        }
-        return $state['delete_msg_in_category'];
-    }
-
-    public function setCartCountMsg($info)
-    {
-        $newState = array_merge(
-            $this->state ?? [],
-            ['cart_count_msg' => $info]
-        );
-        $this->state = $newState;
-        $this->save();
-    }
-
-    public function getCartCountMsg()
-    {
-        $state = $this->state;
-        if (!isset($state['cart_count_msg'])) {
-            return null;
-        }
-        return $state['cart_count_msg'];
+        $this->setStateValue('delete_msg_in_category', $info);
     }
 
     public function setCartTotalMsg($info)
     {
-        $newState = array_merge(
-            $this->state ?? [],
-            ['cart_total_msg' => $info]
-        );
-        $this->state = $newState;
-        $this->save();
+        $this->setStateValue('cart_total_msg', $info);
+    }
+
+    public function setCartCountMsg($info)
+    {
+        $this->setStateValue('cart_count_msg', $info);
+    }
+
+    public function getDeleteMsgInCategory()
+    {
+        return $this->getStateValue('delete_msg_in_category');
     }
 
     public function getCartTotalMsg()
     {
-        $state = $this->state;
-        if (!isset($state['cart_total_msg'])) {
-            return null;
-        }
-        return $state['cart_total_msg'];
+        return $this->getStateValue('cart_total_msg');
     }
 
-    public function getOrderInfoComment()
+    public function getCartCountMsg()
     {
-        $orderInfo = $this->getOrderInfo();
-
-        if (!isset($orderInfo)) {
-            return null;
-        }
-
-        if (!isset($orderInfo['comment'])) {
-            return null;
-        }
-
-        return $orderInfo['comment'];
+        return $this->getStateValue('cart_count_msg');
     }
 
-    public function getOrderInfoChange()
-    {
-        $orderInfo = $this->getOrderInfo();
-
-        if (!isset($orderInfo)) {
-            return null;
-        }
-
-        if (!isset($orderInfo['change'])) {
-            return null;
-        }
-
-        return $orderInfo['change'];
-    }
-
-    public function getOrderInfoPaymentMethodId()
-    {
-        $orderInfo = $this->getOrderInfo();
-
-        if (!isset($orderInfo)) {
-            return null;
-        }
-
-        if (!isset($orderInfo['payment_method_id'])) {
-            return null;
-        }
-
-        return $orderInfo['payment_method_id'];
-    }
-
-    public function getOrderInfoDeliveryMethodId()
-    {
-        $orderInfo = $this->getOrderInfo();
-
-        if (!isset($orderInfo)) {
-            return null;
-        }
-
-        if (!isset($orderInfo['delivery_method_id'])) {
-            return null;
-        }
-
-        return $orderInfo['delivery_method_id'];
-    }
-
-    public function getOrderInfoAddress()
-    {
-        $orderInfo = $this->getOrderInfo();
-
-        if (!isset($orderInfo)) {
-            return null;
-        }
-
-        if (!isset($orderInfo['address'])) {
-            return null;
-        }
-
-        return $orderInfo['address'];
-    }
 
     public function setCartTotalMsgTotal($total)
     {
@@ -218,6 +95,116 @@ class State extends Model
                 ['count' => $count]
             )
         );
+    }
+
+    public function getOrderInfo()
+    {
+        return $this->getStateValue('order_info');
+    }
+
+    public function setOrderInfo($info)
+    {
+        $this->setStateValue('order_info', $info);
+    }
+
+    public function mergeOrderInfo($info)
+    {
+        $newState = array_merge(
+            $this->state ?? [],
+            ['order_info' => array_merge(
+                $this->getOrderInfo() ?? [],
+                $info
+            )]
+        );
+        $this->state = $newState;
+        $this->save();
+    }
+
+    public function getOrderInfoValue($key)
+    {
+        $orderInfo = $this->getOrderInfo();
+
+        if (!isset($orderInfo)) {
+            return null;
+        }
+
+        if (!isset($orderInfo[$key])) {
+            return null;
+        }
+
+        return $orderInfo[$key];
+    }
+
+    public function setOrderInfoValue($key, $value)
+    {
+        $this->mergeOrderInfo([
+            $key => $value
+        ]);
+    }
+
+    public function getOrderInfoComment()
+    {
+        return $this->getOrderInfoValue('comment');
+    }
+
+    public function getOrderInfoChange()
+    {
+        return $this->getOrderInfoValue('change');
+    }
+
+    public function getOrderInfoPaymentMethodId()
+    {
+        return $this->getOrderInfoValue('payment_method_id');
+    }
+
+    public function getOrderInfoDeliveryMethodId()
+    {
+        return $this->getOrderInfoValue('delivery_method_id');
+    }
+
+    public function getOrderInfoAddress()
+    {
+        return $this->getOrderInfoValue('address');
+    }
+
+    public function getOrderInfoSticksCount()
+    {
+        return $this->getOrderInfoValue('sticks_count');
+    }
+
+    public function setOrderInfoSticksCount($value)
+    {
+        $this->setOrderInfoValue('sticks_count', $value);
+    }
+
+    public function setOrderInfoPaymentMethodId($value)
+    {
+        $this->setOrderInfoValue('payment_method_id', $value);
+    }
+
+    public function setOrderInfoDeliveryMethodId($value)
+    {
+        $this->setOrderInfoValue('delivery_method_id', $value);
+    }
+
+    public function setOrderInfoComment($value)
+    {
+        $this->setOrderInfoValue('comment', $value);
+    }
+
+    public function setOrderInfoAddress($value)
+    {
+        $this->setOrderInfoValue('address', $value);
+    }
+
+    public function setOrderInfoPhone($value)
+    {
+        $this->setOrderInfoValue('phone', $value);
+    }
+
+    public function setOrderInfoChange($value)
+    {
+        $this->setOrderInfoValue('change', $value);
     }
 
 

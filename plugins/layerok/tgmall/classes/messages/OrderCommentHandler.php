@@ -15,9 +15,7 @@ class OrderCommentHandler extends AbstractMessageHandler
     use Lang;
     public function handle()
     {
-        $this->state->mergeOrderInfo([
-            'comment' => $this->text
-        ]);
+        $this->state->setOrderInfoComment($this->text);
 
         $receipt = new Receipt();
         $receipt->headline(self::lang('confirm_order_question'));
@@ -31,7 +29,7 @@ class OrderCommentHandler extends AbstractMessageHandler
             'delivery_method_name' => CheckoutUtils::getDeliveryMethodName($this->state),
             'change' => CheckoutUtils::getChange($this->state),
             'spot_name' => $this->customer->branch->name,
-            'products' => CheckoutUtils::getProducts($this->cart),
+            'products' => CheckoutUtils::getProducts($this->cart, $this->state),
             'total' => PriceUtils::formattedCartTotal($this->cart)
         ]);
 

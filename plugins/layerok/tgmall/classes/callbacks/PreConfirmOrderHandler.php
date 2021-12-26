@@ -17,7 +17,7 @@ class PreConfirmOrderHandler extends CallbackQueryHandler
     {
         $chat = $this->update->getChat();
 
-        $products = CheckoutUtils::getProducts($this->cart);
+        $products = CheckoutUtils::getProducts($this->cart, $this->state);
         $phone = CheckoutUtils::getPhone($this->customer, $this->state);
         $firstName = CheckoutUtils::getFirstName($this->customer);
         $lastName = CheckoutUtils::getLastName($this->customer);

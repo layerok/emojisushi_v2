@@ -49,9 +49,7 @@ class OrderPhoneHandler extends AbstractMessageHandler
             return;
         }
 
-        $this->state->mergeOrderInfo([
-            'phone' => $this->text
-        ]);
+        $this->state->setOrderInfoPhone($this->text);
 
         $this->customer->tg_phone = $this->text;
         $this->customer->save();

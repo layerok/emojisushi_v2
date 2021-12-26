@@ -13,6 +13,14 @@ class Utils
         $photoObject = $response->getPhoto();
 
         if ($photoObject) {
+            $last = $photoObject->last();
+
+            if (!isset($last)) {
+                return;
+            }
+
+            $file_id = $last['file_id'];
+
             if (is_null($product->image)) {
                 return;
             }
@@ -21,13 +29,7 @@ class Utils
                 return;
             }
 
-            $first = $photoObject->first();
-
-            if (!isset($first)) {
-                return;
-            }
-
-            $product->image->file_id = $first['file_id'];
+            $product->image->file_id = $file_id;
             $product->image->save();
         }
     }

@@ -3,6 +3,7 @@
 namespace Layerok\TgMall\Classes\Callbacks;
 
 use Layerok\TgMall\Classes\Constants;
+use Layerok\TgMall\Classes\Markups\SticksDialogReplyMarkup;
 use Layerok\TgMall\Classes\Markups\LeaveCommentReplyMarkup;
 use Layerok\TgMall\Classes\Markups\YesNoReplyMarkup;
 use Layerok\TgMall\Classes\Messages\OrderCommentHandler;
@@ -22,9 +23,7 @@ class ChoseDeliveryMethodHandler extends CallbackQueryHandler
     public function handle()
     {
         $id = $this->arguments['id'];
-        $this->state->mergeOrderInfo([
-            'delivery_method_id' => $id
-        ]);
+        $this->state->setOrderInfoDeliveryMethodId($id);
 
         if ($id == 3) {
             // доставка курьером
@@ -36,13 +35,14 @@ class ChoseDeliveryMethodHandler extends CallbackQueryHandler
 
             return;
         }
-
         // был выбран самовывоз
         $this->telegram->sendMessage([
-            'text' => self::lang('leave_comment_question'),
+            'text' => "Желаете добавить палочки к заказу",
             'chat_id' => $this->update->getChat()->id,
-            'reply_markup' => LeaveCommentReplyMarkup::getKeyboard()
+            'reply_markup' => SticksDialogReplyMarkup::getKeyboard()
         ]);
+
+
 
         $this->state->setMessageHandler(null);
     }

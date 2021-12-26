@@ -18,6 +18,10 @@ Route::post($webhookUrl, function () use ($bot_token) {
     };
 });
 
+/*Route::get('clear/file/id', function() {
+    \System\Models\File::whereNotNull('file_id')->update(['file_id' => null]);
+});*/
+
 
 include('tests/routes.php');
 

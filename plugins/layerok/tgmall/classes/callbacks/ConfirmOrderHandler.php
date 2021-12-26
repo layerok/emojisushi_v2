@@ -7,6 +7,7 @@ use Layerok\TgMall\Classes\Traits\Lang;
 use Layerok\TgMall\Classes\Utils\CheckoutUtils;
 use Layerok\TgMall\Classes\Utils\PriceUtils;
 use Layerok\TgMall\Models\Settings;
+use Lovata\BaseCode\Classes\Helper\PosterProducts;
 use Lovata\BaseCode\Classes\Helper\Receipt;
 use OFFLINE\Mall\Models\Cart;
 use poster\src\PosterApi;
@@ -27,7 +28,7 @@ class ConfirmOrderHandler extends CallbackQueryHandler
     {
 
 
-        $products = CheckoutUtils::getProducts($this->cart);
+        $products = CheckoutUtils::getProducts($this->cart, $this->state);
         $phone = CheckoutUtils::getPhone($this->customer, $this->state);
         $firstName = CheckoutUtils::getFirstName($this->customer);
         $lastName = CheckoutUtils::getLastName($this->customer);

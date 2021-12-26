@@ -3,36 +3,22 @@
 namespace Layerok\TgMall\Classes\Messages;
 
 use Layerok\TgMall\Classes\Constants;
+use Layerok\TgMall\Classes\Markups\DeliveryMethodsReplyMarkup;
+use Layerok\TgMall\Classes\Traits\Lang;
 use OFFLINE\Mall\Models\ShippingMethod;
 use Telegram\Bot\Keyboard\Keyboard;
 
 class OrderPrepareChange extends AbstractMessageHandler
 {
+    use Lang;
     public function handle()
     {
-        $this->state->mergeOrderInfo([
-            'change' => $this->text
-        ]);
-        $k = new Keyboard();
-        $k->inline();
+        $this->state->setOrderInfoChange($this->text);
 
-        $methods = ShippingMethod::orderBy('sort_order', 'ASC')->get();
-
-        $methods->map(function ($item) use ($k) {
-            $k->row($k::inlineButton([
-                'text' => $item->name,
-                'callback_data' => json_encode([
-                    'name' => 'chose_delivery_method',
-                    'arguments' => [
-                        'id' => $item->id
-                    ]
-                ])
-            ]));
-        });
         $this->telegram->sendMessage([
-            'text' => 'Выберите тип доставки',
+            'text' => self::lang('chose_delivery_method'),
             'chat_id' => $this->update->getChat()->id,
-            'reply_markup' => $k
+            'reply_markup' => DeliveryMethodsReplyMarkup::getKeyboard()
         ]);
 
         $this->state->setMessageHandler(null);

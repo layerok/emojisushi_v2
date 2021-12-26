@@ -16,7 +16,7 @@ class ListPaymentMethodsHandler extends CallbackQueryHandler
     public function handle()
     {
         $this->telegram->sendMessage([
-            'text' => self::lang('chose_delivery_method'),
+            'text' => self::lang('chose_payment_method'),
             'chat_id' => $this->update->getChat()->id,
             'reply_markup' => PaymentMethodsReplyMarkup::getKeyboard()
         ]);
