@@ -2,6 +2,7 @@
 
 namespace Layerok\TgMall\Classes\Messages;
 
+use Illuminate\Support\Facades\Validator;
 use Layerok\TgMall\Classes\Markups\IsRightPhoneReplyMarkup;
 use Layerok\TgMall\Classes\Markups\PaymentMethodsReplyMarkup;
 use Layerok\TgMall\Classes\Markups\YesNoReplyMarkup;
@@ -13,8 +14,39 @@ class OrderNameHandler extends AbstractMessageHandler
 {
     use Lang;
 
+    protected $errors;
+
+    public function validate(): bool
+    {
+        $data = [
+            'firstname' => $this->text
+        ];
+
+        $rules = [
+            'firstname' => 'required',
+        ];
+
+        $messages = [
+            'firstname.required' => "Имя обязательно для заполнения",
+        ];
+
+        $validation = Validator::make($data, $rules, $messages);
+
+        if ($validation->fails()) {
+            $this->errors = $validation->errors()->get('firstname');
+            return false;
+        }
+        return true;
+    }
+
     public function handle()
     {
+        $isValid = $this->validate();
+
+        if (!$isValid) {
+            $this->handleErrors();
+            return;
+        }
 
         $this->customer->firstname = $this->text;
         $this->customer->save();
@@ -33,5 +65,15 @@ class OrderNameHandler extends AbstractMessageHandler
             'chat_id' => $this->update->getChat()->id
         ]);
         $this->state->setMessageHandler(OrderPhoneHandler::class);
+    }
+
+    public function handleErrors()
+    {
+        foreach ($this->errors as $error) {
+            $this->telegram->sendMessage([
+                'text' => $error . '. Попробуйте снова.',
+                'chat_id' => $this->chat->id
+            ]);
+        }
     }
 }
