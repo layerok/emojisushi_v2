@@ -11,6 +11,7 @@ class YesSticksHandler extends CallbackQueryHandler
     use Lang;
     public function handle()
     {
+        $this->state->setOrderInfoSticksCount(1);
         $this->telegram->sendMessage([
             'text' => 'Добавьте желаемое кол-во палочек',
             'reply_markup' => SticksCounterReplyMarkup::getKeyboard(1),
