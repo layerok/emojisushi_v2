@@ -1,6 +1,7 @@
 <?php namespace Layerok\TgMall\Models;
 
 use October\Rain\Database\Model;
+use OFFLINE\Mall\Models\PaymentMethod;
 
 class State extends Model
 {
@@ -34,6 +35,14 @@ class State extends Model
         );
         $this->state = $newState;
         $this->save();
+    }
+
+    public function getOrderInfo()
+    {
+        if (!isset($this->state['order_info'])) {
+            return null;
+        }
+        return $this->state['order_info'];
     }
 
     public function mergeOrderInfo($info)
@@ -115,5 +124,101 @@ class State extends Model
         }
         return $state['cart_total_msg'];
     }
+
+    public function getOrderInfoComment()
+    {
+        $orderInfo = $this->getOrderInfo();
+
+        if (!isset($orderInfo)) {
+            return null;
+        }
+
+        if (!isset($orderInfo['comment'])) {
+            return null;
+        }
+
+        return $orderInfo['comment'];
+    }
+
+    public function getOrderInfoChange()
+    {
+        $orderInfo = $this->getOrderInfo();
+
+        if (!isset($orderInfo)) {
+            return null;
+        }
+
+        if (!isset($orderInfo['change'])) {
+            return null;
+        }
+
+        return $orderInfo['change'];
+    }
+
+    public function getOrderInfoPaymentMethodId()
+    {
+        $orderInfo = $this->getOrderInfo();
+
+        if (!isset($orderInfo)) {
+            return null;
+        }
+
+        if (!isset($orderInfo['payment_method_id'])) {
+            return null;
+        }
+
+        return $orderInfo['payment_method_id'];
+    }
+
+    public function getOrderInfoDeliveryMethodId()
+    {
+        $orderInfo = $this->getOrderInfo();
+
+        if (!isset($orderInfo)) {
+            return null;
+        }
+
+        if (!isset($orderInfo['delivery_method_id'])) {
+            return null;
+        }
+
+        return $orderInfo['delivery_method_id'];
+    }
+
+    public function getOrderInfoAddress()
+    {
+        $orderInfo = $this->getOrderInfo();
+
+        if (!isset($orderInfo)) {
+            return null;
+        }
+
+        if (!isset($orderInfo['address'])) {
+            return null;
+        }
+
+        return $orderInfo['address'];
+    }
+
+    public function setCartTotalMsgTotal($total)
+    {
+        $this->setCartTotalMsg(
+            array_merge(
+                $this->getCartTotalMsg() ?? [],
+                ['total' => $total]
+            )
+        );
+    }
+
+    public function setCartCountMsgCount($count)
+    {
+        $this->setCartCountMsg(
+            array_merge(
+                $this->getCartCountMsg() ?? [],
+                ['count' => $count]
+            )
+        );
+    }
+
 
 }

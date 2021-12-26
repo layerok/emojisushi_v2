@@ -69,12 +69,9 @@ class AddProductHandler extends CallbackQueryHandler
 
         $cartCountMsg = $this->state->getCartCountMsg();
 
-
-
-
         if ($cartCountMsg) {
             try {
-                \Telegram::editMessageReplyMarkup([
+                $this->telegram->editMessageReplyMarkup([
                     'chat_id' => $this->chat->id,
                     'message_id' => $this->getUpdate()->getMessage()->message_id,
                     'reply_markup' => CategoryProductReplyMarkup::getKeyboard(
@@ -93,25 +90,21 @@ class AddProductHandler extends CallbackQueryHandler
                 return;
             }
 
-            $k = $this->categoryFooterButtons(
-                $cartCountMsg['page'],
-                $cartCountMsg['category_id']
-            );
-
             try {
-                \Telegram::editMessageReplyMarkup([
+                $this->telegram->editMessageReplyMarkup([
                     'chat_id' => $this->chat->id,
                     'message_id' => $cartCountMsg['id'],
-                    'reply_markup' => $k->toJson()
+                    'reply_markup' => CategoryFooterReplyMarkup::getKeyboard(
+                        $this->cart,
+                        $cartCountMsg['category_id'],
+                        $cartCountMsg['page']
+                    )
                 ]);
+                $this->state->setCartCountMsgCount($this->cart->products->count());
             } catch (\Exception $e) {
                 \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
             }
         }
     }
 
-    public function categoryFooterButtons($page, $category_id): Keyboard
-    {
-        return CategoryFooterReplyMarkup::getKeyboard($this->cart, $category_id, $page);
-    }
 }

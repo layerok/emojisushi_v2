@@ -102,6 +102,7 @@ return [
         "chose_branch" => "Выберите заведение",
         "right_phone_number" => "Верный номер телефона",
         "prepare_change_question" => "Желаете, чтобы мы подготовили сдачу?",
-        "leave_comment_question" => "Желаете оставить комментарий?"
+        "leave_comment_question" => "Желаете оставить комментарий?",
+        "confirm_order_question" => "Подтверждаете заказ?"
     ]
 ];

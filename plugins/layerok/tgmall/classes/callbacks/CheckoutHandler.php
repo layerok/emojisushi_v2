@@ -42,7 +42,7 @@ class CheckoutHandler extends CallbackQueryHandler
                 ]));
             });
 
-            \Telegram::sendMessage([
+            $this->telegram->sendMessage([
                 'text' => self::lang('chose_payment_method'),
                 'chat_id' => $this->update->getChat()->id,
                 'reply_markup' => $k

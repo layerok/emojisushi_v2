@@ -21,7 +21,7 @@ class ListBranchesHandler extends CallbackQueryHandler
             $k->row($k::inlineButton($btn->getData()));
         });
 
-        Telegram::sendMessage([
+        $this->telegram->sendMessage([
             'chat_id' =>  $this->getUpdate()->getChat()->id,
             'text' => self::lang('chose_branch'),
             'reply_markup' => $k

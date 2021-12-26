@@ -23,7 +23,7 @@ class ChosePaymentMethodHandler extends CallbackQueryHandler
 
         if ($this->arguments['id'] == 4) {
             // наличными
-            \Telegram::sendMessage([
+            $this->telegram->sendMessage([
                 'text' => self::lang('prepare_change_question'),
                 'chat_id' => $this->update->getChat()->id,
                 'reply_markup' => PreparePaymentChangeReplyMarkup::getKeyboard()
@@ -33,7 +33,7 @@ class ChosePaymentMethodHandler extends CallbackQueryHandler
         }
 
         // картой
-        \Telegram::sendMessage([
+        $this->telegram->sendMessage([
             'text' => self::lang('chose_delivery_method'),
             'chat_id' => $this->update->getChat()->id,
             'reply_markup' => DeliveryMethodsReplyMarkup::getKeyboard()

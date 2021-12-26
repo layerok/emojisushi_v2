@@ -3,16 +3,14 @@
 namespace Layerok\TgMall\Classes\Callbacks;
 
 use Illuminate\Support\Facades\Log;
-use Layerok\TgMall\Classes\Constants;
 use Layerok\TgMall\Classes\Traits\Lang;
 use Layerok\TgMall\Classes\Utils\CheckoutUtils;
-use Layerok\TgMall\Classes\Utils\PosterUtils;
-use Lovata\BaseCode\Classes\Helper\ReceiptUtils;
+use Layerok\TgMall\Models\Settings;
+use Lovata\BaseCode\Classes\Helper\Receipt;
 use OFFLINE\Mall\Models\Cart;
-use OFFLINE\Mall\Models\PaymentMethod;
-use OFFLINE\Mall\Models\ShippingMethod;
 use poster\src\PosterApi;
 use Telegram\Bot\Keyboard\Keyboard;
+use \Telegram\Bot\Api;
 
 class ConfirmOrderHandler extends CallbackQueryHandler
 {
@@ -26,59 +24,69 @@ class ConfirmOrderHandler extends CallbackQueryHandler
 
     public function handle()
     {
-        $cart = Cart::byUser($this->customer->user);
+        $receipt = new Receipt();
 
-        $this->data = CheckoutUtils::prepareData($this->state, $this->customer, $cart);
+        $products = CheckoutUtils::getProducts($this->cart);
+        $phone = CheckoutUtils::getPhone($this->customer, $this->state);
+        $firstName = CheckoutUtils::getFirstName($this->customer);
+        $lastName = CheckoutUtils::getLastName($this->customer);
+        $address = CheckoutUtils::getCLientAddress($this->state);
 
-        $this->sendTelegram($this->data);
-
-        /*$result = $this->sendPoster($data);
-
-            if (isset($result->error)) {
-                $this->onPosterError($result);
-                return false;
-            }*/
-
-        $k = new Keyboard();
-        $k->inline();
-        $k->row($k::inlineButton([
-            'text' => self::lang('in_menu_main'),
-            'callback_data' => json_encode([
-                'name' => 'start'
-            ])
-        ]));
-
-        $cart->products()->delete();
-        \Telegram::sendMessage([
-            'text' => 'Спасибо. Ваш заказ принят в обработку. ' .
-             'В ближайшее время наш менеджер свяжеться с Вами.',
-            'chat_id' => $this->update->getChat()->id,
-            'reply_markup' => $k
+        $receipt->headline("Новый заказ");
+        $receipt->make([
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'phone' => $phone,
+            'address' => $address,
+            'comment' => CheckoutUtils::getComment($this->state),
+            'payment_method_name' => CheckoutUtils::getPaymentMethodName($this->state),
+            'delivery_method_name' => CheckoutUtils::getDeliveryMethodName($this->state),
+            'change' => CheckoutUtils::getChange($this->state),
+            'spot_name' => $this->customer->branch->name,
+            'products' => $products
         ]);
+        $this->sendTelegram($receipt->getText());
+
+        $result = $this->sendPoster([
+            'spot_id' => CheckoutUtils::getSpotId($this->customer->branch),
+            'phone' => $phone,
+            'products' => $products,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'comment' => CheckoutUtils::getPosterComment($this->state),
+            'client_address' => $address
+        ]);
+
+        if (isset($result->error)) {
+            $this->onPosterError($result);
+            return false;
+        }
+
+        $this->onPosterSuccess();
     }
 
 
-
-    public function sendTelegram($data)
+    public function sendTelegram($message)
     {
-        $message = ReceiptUtils::makeReceipt('Новый заказ', $data);
-        $api = new \Telegram\Bot\Api(env('TELEGRAM_BOT_ID'));
-
-        if (env('TG_MALL_TEST_MODE')) {
-            $test_chat_id = env('TG_MALL_TEST_CHAT_ID');
-
-            $api->sendMessage([
-                'text' => $message,
-                'parse_mode' => "html",
-                'chat_id' => $test_chat_id
-            ]);
+        if (Settings::get('test_mode', env('TG_MALL_TEST_MODE', false))) {
+            $bot_token = \Config::get('layerok.tgmall::test_bot_token');
+            $chat_id = Settings::get('test_chat_id', '');
         } else {
-            $api->sendMessage([
-                'text' => $message,
-                'parse_mode' => "html",
-                'chat_id' => $this->customer->branch['telegram_chat_id']
-            ]);
+            $bot_token = \Config::get('layerok.tgmall::bot_token');
+            $chat_id = $this->customer->branch->getChatId();
         }
+
+        if (empty($chat_id) || empty($bot_token)) {
+            return;
+        }
+
+        $api = new Api($bot_token);
+
+        $api->sendMessage([
+            'text' => $message,
+            'parse_mode' => "html",
+            'chat_id' =>  $chat_id
+        ]);
     }
 
     public function onPosterError($result)
@@ -91,6 +99,26 @@ class ConfirmOrderHandler extends CallbackQueryHandler
         PosterApi::init();
         return (object)PosterApi::incomingOrders()
             ->createIncomingOrder($data);
+    }
+
+    protected function onPosterSuccess()
+    {
+        $k = new Keyboard();
+        $k->inline();
+        $k->row($k::inlineButton([
+            'text' => self::lang('in_menu_main'),
+            'callback_data' => json_encode([
+                'name' => 'start'
+            ])
+        ]));
+
+        $this->cart->products()->delete();
+        $this->telegram->sendMessage([
+            'text' => 'Спасибо. Ваш заказ принят в обработку. ' .
+                'В ближайшее время наш менеджер свяжеться с Вами.',
+            'chat_id' => $this->update->getChat()->id,
+            'reply_markup' => $k
+        ]);
     }
 
 }

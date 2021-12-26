@@ -10,7 +10,7 @@ class PreparePaymentChangeHandler extends CallbackQueryHandler
     use Lang;
     public function handle()
     {
-        \Telegram::sendMessage([
+        $this->telegram->sendMessage([
             'text' => self::lang('payment_change'),
             'chat_id' => $this->update->getChat()->id
         ]);

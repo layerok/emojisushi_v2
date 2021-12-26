@@ -12,7 +12,7 @@ class LeaveCommentHandler extends CallbackQueryHandler
     public function handle()
     {
         // самовывоз
-        \Telegram::sendMessage([
+        $this->telegram->sendMessage([
             'text' => 'Комментарий к заказу',
             'chat_id' => $this->update->getChat()->id,
         ]);

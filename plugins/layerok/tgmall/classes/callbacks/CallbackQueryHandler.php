@@ -3,6 +3,7 @@
 namespace Layerok\TgMall\Classes\Callbacks;
 
 use Layerok\TgMall\Models\State;
+use October\Rain\Exception\ValidationException;
 use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\Customer;
 use OFFLINE\Mall\Models\User;
@@ -111,25 +112,45 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
 
         $this->customer = Customer::where('tg_chat_id', '=', $chat->id)->first();
         if (!$this->customer) {
-            // Аккуратно, если какой-то поле не прошло валидацую бот бесшумно
-            // не пустить дальше пользователя
             $firstName = empty($from->getFirstName()) ? 'Не указано': $from->firstName;
-            $lastName = empty($from->getLastName()) ? 'Не указано': $from->lastName;
-            $pass = "qweasdqweasd";
-            $user = User::create([
+            $lastName = empty($from->getLastName()) ? "": $from->lastName;
+            $pass = str_random(8);
+            $userData = [
                 'name' => $firstName,
                 'surname' => $lastName,
                 'username' => $from->username,
                 'password' => $pass,
                 'password_confirmation' => $pass
-            ]);
-            $this->customer = Customer::create([
+            ];
+            try {
+                $user = User::create($userData);
+            } catch (ValidationException $exception) {
+                \Log::error([
+                    'status' => 'error',
+                    'msg'    => (string)$exception,
+                    'errors' => $exception->getErrors()
+                ]);
+                return;
+            }
+
+            $customerData = [
                 "tg_chat_id" => $chat->id,
-                "firstname" => $from->firstName,
+                "firstname" => $firstName,
                 "lastname"  => $lastName,
                 "tg_username" => $from->username,
                 "user_id" => $user->id
-            ]);
+            ];
+            try {
+                $this->customer = Customer::create($customerData);
+            } catch (ValidationException $exception) {
+                \Log::error([
+                    'status' => 'error',
+                    'msg'    => (string)$exception,
+                    'errors' => $exception->getErrors()
+                ]);
+                return;
+            }
+
         }
 
         $this->cart = Cart::byUser($this->customer->user);

@@ -1,6 +1,7 @@
 <?php namespace Layerok\TgMall\Classes\Markups;
 
 use Layerok\TgMall\Classes\Traits\Lang;
+use Layerok\TgMall\Models\Settings;
 use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\Category;
 use Telegram\Bot\Keyboard\Keyboard;
@@ -16,12 +17,12 @@ class CategoryFooterReplyMarkup
         if ($cart->products->count()) {
             $countPositionInOrder = " (" . $cart->products->count() . ")";
         }
-        $limit = \Config::get('layerok.tgmall::productsInPage');
+        $limit = Settings::get('products_per_page', 10);
         $all = Category::where('id', '=', $category_id)->first()->products;
         $lastPage = ceil($all->count() / $limit);
         $k = new Keyboard();
         $k->inline();
-        if ($lastPage !== $page) {
+        if ($lastPage > $page) {
             $loadBtn = $k::inlineButton([
                 'text' => 'Загрузить еще из этой категории',
                 'callback_data' => json_encode([

@@ -15,7 +15,7 @@ class ListDeliveryMethodsHandler extends CallbackQueryHandler
     ];
     public function handle()
     {
-        \Telegram::sendMessage([
+        $this->telegram->sendMessage([
             'text' => self::lang('chose_delivery_method'),
             'chat_id' => $this->update->getChat()->id,
             'reply_markup' => DeliveryMethodsReplyMarkup::getKeyboard()

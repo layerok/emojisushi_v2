@@ -12,13 +12,6 @@ fields:
         label: Режим тестирования
         description: При работе с ботом будут использоваться тестовые данные
         type: switch
-    test_bot_token:
-        label: bot token для тестов
-        description: Этот бот будет доступен в режими тестирования
-        span: left
-    bot_token:
-        label: bot token боевого бота
-        span: right
     test_chat_id:
         label: chat_id для тестов
         description: В этот чат будут приходить заказы
@@ -27,6 +20,12 @@ fields:
         label: chat_id разработчика
         description: У этого chat_id может обходить режим обслуживания
         span: right
+    products_per_page:
+        label: Товаров на странице
+        type: number
+        span: left
+        min: 1
+        max: 100
 
 
 

@@ -17,8 +17,10 @@ use Telegram\Bot\Objects\Update;
 abstract class AbstractMessageHandler implements MessageHandlerInterface
 {
     use Lang;
+
     /** @var Update */
     protected $update;
+
     /** @var Api */
     protected $telegram;
 
@@ -32,6 +34,9 @@ abstract class AbstractMessageHandler implements MessageHandlerInterface
     /** @var Customer */
     protected $customer;
 
+    /** @var Cart */
+    protected $cart;
+
     public function make(Api $telegram, Update $update, State $state)
     {
         $this->update = $update;
@@ -41,6 +46,7 @@ abstract class AbstractMessageHandler implements MessageHandlerInterface
         $this->chat = $this->update->getChat();
         $this->text = $this->update->getMessage()->text;
         $this->customer = Customer::where('tg_chat_id', '=', $this->chat->id)->first();
+        $this->cart = Cart::byUser($this->customer->user);
     }
 
     abstract public function handle();

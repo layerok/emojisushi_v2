@@ -124,11 +124,10 @@ class CartHandler extends CallbackQueryHandler
             ['product_id', '=', $this->arguments['id']]
         ])->first();
 
-        if (isset($cartProduct) && $cartProduct->quantity + $this->arguments['qty'] < 1) {
+        if (isset($cartProduct) && ($cartProduct->quantity + $this->arguments['qty']) < 1) {
             return;
         }
 
-        $k = null;
         $this->cart->addProduct($this->product, $this->arguments['qty']);
         $this->cart->refresh();
 
@@ -152,7 +151,7 @@ class CartHandler extends CallbackQueryHandler
             );
 
             try {
-                \Telegram::editMessageReplyMarkup([
+                $this->telegram->editMessageReplyMarkup([
                     'chat_id' => $this->chat->id,
                     'message_id' => $this->getUpdate()->getMessage()->message_id,
                     'reply_markup' => CartProductReplyMarkup::getKeyboard(
@@ -165,17 +164,20 @@ class CartHandler extends CallbackQueryHandler
                 \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
             }
 
-            if ($cartTotalMsg['total'] == $this->cart->totals()->totalPostTaxes()) {
+            $cartTotal = $this->cart->totals()->totalPostTaxes();
+
+            if ($cartTotalMsg['total'] == $cartTotal) {
                 // Общая стоимость товаров в корзине совпадает с тем что написано в сообщении
                 return;
             }
 
             try {
-                \Telegram::editMessageReplyMarkup([
+                $this->telegram->editMessageReplyMarkup([
                     'chat_id' => $this->chat->id,
                     'message_id' => $cartTotalMsg['id'],
                     'reply_markup' => $k->toJson()
                 ]);
+                $this->state->setCartTotalMsgTotal($cartTotal);
             } catch (\Exception $e) {
                 \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
             }
@@ -194,7 +196,7 @@ class CartHandler extends CallbackQueryHandler
         $this->cart->refresh();
 
         try {
-            \Telegram::deleteMessage([
+            $this->telegram->deleteMessage([
                 'chat_id' => $this->chat->id,
                 'message_id' => $this->getUpdate()->getMessage()->message_id
             ]);
@@ -205,18 +207,20 @@ class CartHandler extends CallbackQueryHandler
         $cartTotalMsg = $this->state->getCartTotalMsg();
 
         if (isset($cartTotalMsg)) {
-            if ($cartTotalMsg['total'] == $this->cart->totals()->totalPostTaxes()) {
+            $cartTotal = $this->cart->totals()->totalPostTaxes();
+            if ($cartTotalMsg['total'] == $cartTotal) {
                 // Общая стоимость товаров в корзине совпадает с тем что написано в сообщении
                 return;
             }
             try {
-                \Telegram::editMessageText(array_merge(
+                $this->telegram->editMessageText(array_merge(
                     $this->cartFooterMessage(),
                     [
                         'message_id' => $cartTotalMsg['id'],
                         'chat_id' => $this->chat->id
                     ]
                 ));
+                $this->state->setCartTotalMsgTotal($cartTotal);
             } catch (\Exception $e) {
                 \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
             }
@@ -239,17 +243,17 @@ class CartHandler extends CallbackQueryHandler
             );
 
             $caption = Utils::getCaption($cartProduct->product);
-
+            $keyboard = CartProductReplyMarkup::getKeyboard(
+                $id,
+                $quantity,
+                $totalPrice
+            );
             if (!is_null($cartProduct->product->image)) {
                 $photoIdOrUrl = Utils::getPhotoIdOrUrl($cartProduct->product);
                 $response = $this->replyWithPhoto([
                     'photo' => $photoIdOrUrl,
                     'caption' => $caption,
-                    'reply_markup' => CartProductReplyMarkup::getKeyboard(
-                        $id,
-                        $quantity,
-                        $totalPrice
-                    ),
+                    'reply_markup' => $keyboard,
                     'parse_mode' => 'html',
                 ]);
 
@@ -257,7 +261,7 @@ class CartHandler extends CallbackQueryHandler
             } else {
                 $this->replyWithMessage([
                     'text' => $caption,
-                    'reply_markup' => $k->toJson(),
+                    'reply_markup' => $keyboard,
                     'parse_mode' => 'html',
                 ]);
             }

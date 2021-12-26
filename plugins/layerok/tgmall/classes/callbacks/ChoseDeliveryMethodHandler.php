@@ -28,7 +28,7 @@ class ChoseDeliveryMethodHandler extends CallbackQueryHandler
 
         if ($id == 3) {
             // доставка курьером
-            \Telegram::sendMessage([
+            $this->telegram->sendMessage([
                 'text' => 'Введите адрес доставки',
                 'chat_id' => $this->update->getChat()->id,
             ]);
@@ -38,7 +38,7 @@ class ChoseDeliveryMethodHandler extends CallbackQueryHandler
         }
 
         // был выбран самовывоз
-        \Telegram::sendMessage([
+        $this->telegram->sendMessage([
             'text' => self::lang('leave_comment_question'),
             'chat_id' => $this->update->getChat()->id,
             'reply_markup' => LeaveCommentReplyMarkup::getKeyboard()

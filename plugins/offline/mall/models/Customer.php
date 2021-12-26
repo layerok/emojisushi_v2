@@ -32,7 +32,6 @@ class Customer extends Model
 
     public $rules = [
         'firstname' => 'required',
-        'lastname'  => 'required',
         'is_guest'  => 'boolean',
         'user_id'   => 'required|exists:users,id',
     ];

@@ -15,7 +15,7 @@ class OrderDeliveryAddressHandler extends AbstractMessageHandler
             'address' => $this->text
         ]);
 
-        \Telegram::sendMessage([
+        $this->telegram->sendMessage([
             'text' => self::lang('leave_comment_question'),
             'chat_id' => $this->update->getChat()->id,
             'reply_markup' => LeaveCommentReplyMarkup::getKeyboard()

@@ -72,7 +72,7 @@ class OrderPhoneHandler extends AbstractMessageHandler
             ]));
         });
 
-        \Telegram::sendMessage([
+        $this->telegram->sendMessage([
             'text' => self::lang('chose_payment_method'),
             'chat_id' => $this->chat->id,
             'reply_markup' => $k
@@ -83,7 +83,7 @@ class OrderPhoneHandler extends AbstractMessageHandler
     public function handleErrors()
     {
         foreach ($this->errors as $error) {
-            Telegram::sendMessage([
+            $this->telegram->sendMessage([
                 'text' => $error . '. Попробуйте снова.',
                 'chat_id' => $this->chat->id
             ]);

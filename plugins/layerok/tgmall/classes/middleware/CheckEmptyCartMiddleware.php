@@ -29,7 +29,7 @@ class CheckEmptyCartMiddleware extends AbstractMiddleware
 
     public function onFailed():void
     {
-        \Telegram::sendMessage([
+        $this->telegram->sendMessage([
             'text' => 'Ваш корзина пуста. Пожалуйста добавьте товар в корзину.',
             'chat_id' => $this->update->getChat()->id,
             'reply_markup' => CartEmptyReplyMarkup::getKeyboard()

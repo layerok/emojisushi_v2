@@ -7,6 +7,7 @@ use Layerok\TgMall\Classes\Constants;
 use Layerok\TgMall\Classes\Markups\CategoryFooterReplyMarkup;
 use Layerok\TgMall\Classes\Markups\CategoryProductReplyMarkup;
 use Layerok\TgMall\Classes\Utils\Utils;
+use Layerok\TgMall\Models\Settings;
 use Telegram\Bot\FileUpload\InputFile;
 use Layerok\TgMall\Classes\Traits\Lang;
 use Layerok\TgMall\Classes\Traits\Warn;
@@ -74,7 +75,7 @@ class CategoryHandler extends CallbackQueryHandler
         $chat = $update->getChat();
 
 
-        $limit = \Config::get('layerok.tgmall::productsInPage');
+        $limit = Settings::get('products_per_page', 10);
 
 
         $offset = ($this->page - 1) * $limit;
@@ -100,7 +101,7 @@ class CategoryHandler extends CallbackQueryHandler
             $deleteMsg = $this->state->getDeleteMsgInCategory();
             if ($deleteMsg) {
                 try {
-                    \Telegram::deleteMessage([
+                    $this->telegram->deleteMessage([
                         'chat_id' => $chat->id,
                         'message_id' => $deleteMsg['id']
                     ]);
@@ -129,6 +130,11 @@ class CategoryHandler extends CallbackQueryHandler
                     return;
                 }
 
+                $keyboard = CategoryProductReplyMarkup::getKeyboard(
+                    $this->cart,
+                    $product,
+                    1
+                );
 
                 $caption = Utils::getCaption($product);
 
@@ -137,11 +143,7 @@ class CategoryHandler extends CallbackQueryHandler
                     $response = $this->replyWithPhoto([
                         'photo' => $photoIdOrUrl,
                         'caption' => $caption,
-                        'reply_markup' => CategoryProductReplyMarkup::getKeyboard(
-                            $this->cart,
-                            $product,
-                            1
-                        ),
+                        'reply_markup' => $keyboard,
                         'parse_mode' => 'html',
                     ]);
 
@@ -149,7 +151,7 @@ class CategoryHandler extends CallbackQueryHandler
                 } else {
                     $this->replyWithMessage([
                         'text' => $caption,
-                        'reply_markup' => $k->toJson(),
+                        'reply_markup' => $keyboard,
                         'parse_mode' => 'html',
                     ]);
                 }
@@ -157,12 +159,14 @@ class CategoryHandler extends CallbackQueryHandler
             }
         ); // end of map
 
-        $k = $this->footerButtons();
-
 
         $message = $this->replyWithMessage([
             'text' => self::lang("triple_dot"),
-            'reply_markup' => $k->toJson()
+            'reply_markup' => CategoryFooterReplyMarkup::getKeyboard(
+                $this->cart,
+                $this->id,
+                $this->page
+            )
         ]);
 
         $msg_id = $message->messageId;
@@ -178,12 +182,4 @@ class CategoryHandler extends CallbackQueryHandler
         ]);
     }
 
-    public function footerButtons(): Keyboard
-    {
-        return CategoryFooterReplyMarkup::getKeyboard(
-            $this->cart,
-            $this->id,
-            $this->page
-        );
-    }
 }

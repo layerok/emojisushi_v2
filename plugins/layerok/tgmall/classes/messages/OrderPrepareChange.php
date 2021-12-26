@@ -29,7 +29,7 @@ class OrderPrepareChange extends AbstractMessageHandler
                 ])
             ]));
         });
-        \Telegram::sendMessage([
+        $this->telegram->sendMessage([
             'text' => 'Выберите тип доставки',
             'chat_id' => $this->update->getChat()->id,
             'reply_markup' => $k

@@ -34,7 +34,7 @@ class CheckNotChosenBranchMiddleware extends AbstractMiddleware
             $k->row($k::inlineButton($btn->getData()));
         });
 
-        Telegram::sendMessage([
+        $this->telegram->sendMessage([
             'chat_id' =>  $this->update->getChat()->id,
             'text' => 'Выберите заведение',
             'reply_markup' => $k
