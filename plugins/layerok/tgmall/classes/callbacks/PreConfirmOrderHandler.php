@@ -5,6 +5,7 @@ namespace Layerok\TgMall\Classes\Callbacks;
 use Layerok\TgMall\Classes\Markups\ConfirmOrderReplyMarkup;
 use Layerok\TgMall\Classes\Traits\Lang;
 use Layerok\TgMall\Classes\Utils\CheckoutUtils;
+use Layerok\TgMall\Classes\Utils\PriceUtils;
 use Lovata\BaseCode\Classes\Helper\Receipt;
 use OFFLINE\Mall\Models\Cart;
 use Telegram\Bot\Keyboard\Keyboard;
@@ -34,7 +35,8 @@ class PreConfirmOrderHandler extends CallbackQueryHandler
             'delivery_method_name' => CheckoutUtils::getDeliveryMethodName($this->state),
             'change' => CheckoutUtils::getChange($this->state),
             'spot_name' => $this->customer->branch->name,
-            'products' => $products
+            'products' => $products,
+            'total' => PriceUtils::formattedCartTotal($this->cart),
         ]);
 
         $this->telegram->sendMessage([

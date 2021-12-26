@@ -26,7 +26,7 @@ class CheckMaintenanceModeMiddleware extends AbstractMiddleware
         $chat = $this->update->getChat();
         $this->telegram->sendMessage([
             'text' =>  'Приносим наши извинения. Над ботом временно ведутся технические работы.' .
-                ' А пока Вы можете воспользоваться нашим сайтом https://emojisushi.com.ua',
+                ' Пока Вы можете воспользоваться нашим сайтом https://emojisushi.com.ua',
             'chat_id' => $chat->id
         ]);
     }

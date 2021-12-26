@@ -34,6 +34,7 @@ class Webhook
                     $bus = new CallbackQueryBus($telegram, $update);
                     $bus->process($name, $arguments);
 
+
                     $telegram->answerCallbackQuery([
                         'callback_query_id' => $update->getCallbackQuery()->id,
                     ]);

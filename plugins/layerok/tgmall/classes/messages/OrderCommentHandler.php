@@ -5,6 +5,7 @@ namespace Layerok\TgMall\Classes\Messages;
 use Layerok\TgMall\Classes\Markups\ConfirmOrderReplyMarkup;
 use Layerok\TgMall\Classes\Traits\Lang;
 use Layerok\TgMall\Classes\Utils\CheckoutUtils;
+use Layerok\TgMall\Classes\Utils\PriceUtils;
 use Lovata\BaseCode\Classes\Helper\Receipt;
 use OFFLINE\Mall\Models\Cart;
 use Telegram\Bot\Keyboard\Keyboard;
@@ -30,7 +31,8 @@ class OrderCommentHandler extends AbstractMessageHandler
             'delivery_method_name' => CheckoutUtils::getDeliveryMethodName($this->state),
             'change' => CheckoutUtils::getChange($this->state),
             'spot_name' => $this->customer->branch->name,
-            'products' => CheckoutUtils::getProducts($this->cart)
+            'products' => CheckoutUtils::getProducts($this->cart),
+            'total' => PriceUtils::formattedCartTotal($this->cart)
         ]);
 
 

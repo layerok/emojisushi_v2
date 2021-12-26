@@ -5,6 +5,7 @@ namespace Layerok\TgMall\Classes\Callbacks;
 use Illuminate\Support\Facades\Log;
 use Layerok\TgMall\Classes\Traits\Lang;
 use Layerok\TgMall\Classes\Utils\CheckoutUtils;
+use Layerok\TgMall\Classes\Utils\PriceUtils;
 use Layerok\TgMall\Models\Settings;
 use Lovata\BaseCode\Classes\Helper\Receipt;
 use OFFLINE\Mall\Models\Cart;
@@ -24,7 +25,7 @@ class ConfirmOrderHandler extends CallbackQueryHandler
 
     public function handle()
     {
-        $receipt = new Receipt();
+
 
         $products = CheckoutUtils::getProducts($this->cart);
         $phone = CheckoutUtils::getPhone($this->customer, $this->state);
@@ -32,6 +33,7 @@ class ConfirmOrderHandler extends CallbackQueryHandler
         $lastName = CheckoutUtils::getLastName($this->customer);
         $address = CheckoutUtils::getCLientAddress($this->state);
 
+        $receipt = new Receipt();
         $receipt->headline("Новый заказ");
         $receipt->make([
             'first_name' => $firstName,
@@ -43,7 +45,8 @@ class ConfirmOrderHandler extends CallbackQueryHandler
             'delivery_method_name' => CheckoutUtils::getDeliveryMethodName($this->state),
             'change' => CheckoutUtils::getChange($this->state),
             'spot_name' => $this->customer->branch->name,
-            'products' => $products
+            'products' => $products,
+            'total' => PriceUtils::formattedCartTotal($this->cart)
         ]);
         $this->sendTelegram($receipt->getText());
 
