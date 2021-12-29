@@ -1,0 +1,11 @@
+# ===================================
+#  List Behavior Config
+# ===================================
+
+title: Заведения
+list: ~/plugins/lovata/basecode/models/branches/list_columns.yaml
+modelClass: Lovata\BaseCode\Models\Branches
+recordUrl: lovata/basecode/branches/update/:id
+showCheckboxes: true
+toolbar:
+    buttons: list_toolbar

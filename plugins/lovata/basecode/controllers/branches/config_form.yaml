@@ -1,0 +1,17 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+name: Заведение
+form: $/lovata/basecode/models/branches/fields.yaml
+modelClass: Lovata\Basecode\Models\Branches
+
+create:
+    title: Новое заведение
+    redirect: lovata/basecode/branches/update/:id
+    redirectClose: lovata/basecode/branches/index
+    flashSave: Заведение сохранено
+
+update:
+    title: Редактировать заведение
+

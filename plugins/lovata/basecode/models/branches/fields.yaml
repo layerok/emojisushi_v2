@@ -1,0 +1,31 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+    name:
+        label: Название
+        description: Название этого заведения
+        span: left
+        required: true
+    phones:
+        label: Телефоны
+        description: Введите телефоны через запятую
+        span: right
+    telegram_chat_id:
+        label: Телеграм chat_id
+        span: left
+    telegram_bot_id:
+        label: Телеграм bot_id
+        span: right
+    poster_spot_tablet_id:
+        size: small
+        label: poster tablet id
+        span: left
+        default: 1
+    delivery:
+        label: Информация о доставке
+        span: left
+        size: large
+        type: codeeditor
+        language: html
