@@ -48,7 +48,8 @@ class ConfirmOrderHandler extends CallbackQueryHandler
             'spot_name' => $this->customer->branch->name,
             'products' => $products,
             'total' => PriceUtils::formattedCartTotal($this->cart)
-        ]);
+        ])->newLine()
+            ->p('Заказ сделан через телеграм-бота');
         $this->sendTelegram($receipt->getText());
 
         $result = $this->sendPoster([
@@ -99,7 +100,7 @@ class ConfirmOrderHandler extends CallbackQueryHandler
 
     public function onPosterError($result)
     {
-        Log::info("Ошибка при оформлении заказа: " . $result->message);
+        Log::error("[Telegram bot] Ошибка при оформлении заказа: " . $result->message);
     }
 
     public function sendPoster($data)

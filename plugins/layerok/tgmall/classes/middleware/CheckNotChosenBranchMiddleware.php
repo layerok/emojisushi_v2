@@ -2,6 +2,7 @@
 
 use Layerok\TgMall\Classes\Buttons\ChoseBranchButton;
 use Lovata\BaseCode\Models\Branches;
+use OFFLINE\Mall\Models\Customer;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
@@ -10,7 +11,14 @@ class CheckNotChosenBranchMiddleware extends AbstractMiddleware
 
     public function isSpotChosen(): bool
     {
-        if (!isset($this->customer->branch)) {
+        $id = $this->update->getChat()->id;
+        $customer = Customer::where('tg_chat_id', '=', $id)->first();
+
+        if (!isset($customer)) {
+            return false;
+        }
+
+        if (!isset($customer->branch)) {
             return false;
         }
         return true;

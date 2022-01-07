@@ -1,6 +1,8 @@
 <?php
 namespace Lovata\BaseCode\Classes\Helper;
 
+use Backend\FormWidgets\RecordFinder;
+
 class Receipt
 {
     public $emojis = [
@@ -35,7 +37,7 @@ class Receipt
      * ]
      */
 
-    public function make($params):string
+    public function make($params):Receipt
     {
         $collection = collect($params);
         $this->param('first_name', $collection->get('first_name'))
@@ -53,7 +55,7 @@ class Receipt
             ->newLine()
             ->param('total', $collection->get('total'));
 
-        return $this->txt;
+        return $this;
     }
 
     public function products($products): Receipt

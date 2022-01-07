@@ -15,12 +15,13 @@ class ChoseBranchHandler extends CallbackQueryHandler
 
     public function validate():bool
     {
-        if (!isset($this->customer)) {
-            // customer must be created on this stage
-            return false;
-        }
 
         $this->branch = Branches::where('id', '=', $this->arguments['id'])->first();
+
+        if (!isset($this->customer)) {
+            $this->warn("Customer is not found");
+            return false;
+        }
 
         if (!isset($this->branch)) {
             $this->warn("Branch is not found");

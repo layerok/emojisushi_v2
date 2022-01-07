@@ -109,12 +109,14 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
         $chat = $update->getChat();
         $from = $update->getCallbackQuery()->getFrom();
 
+        $chat_id = $chat->id;
+//"2147483647"; Денис мой родной
+        $this->customer = Customer::where('tg_chat_id', '=', $chat_id)->first();
 
-        $this->customer = Customer::where('tg_chat_id', '=', $chat->id)->first();
-        if (!$this->customer) {
+        if (!isset($this->customer)) {
             $firstName = empty($from->getFirstName()) ? 'Не указано': $from->firstName;
             $lastName = empty($from->getLastName()) ? "": $from->lastName;
-            $pass = str_random(8);
+            $pass = "qweasdqweaasd";
             $userData = [
                 'name' => $firstName,
                 'surname' => $lastName,
@@ -134,7 +136,7 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
             }
 
             $customerData = [
-                "tg_chat_id" => $chat->id,
+                "tg_chat_id" => $chat_id,
                 "firstname" => $firstName,
                 "lastname"  => $lastName,
                 "tg_username" => $from->username,
@@ -155,14 +157,17 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
 
         $this->cart = Cart::byUser($this->customer->user);
 
-        $this->state = State::where('chat_id', '=', $chat->id)->first();
+        $this->state = State::where('chat_id', '=', $chat_id)->first();
 
         if (!isset($this->state)) {
-            $this->state = State::create([
-                'chat_id' => $chat->id,
-            ])->first();
+            $this->state = State::create(
+                [
+                    'chat_id' => $chat_id,
+                ]
+            )->first();
         }
         $this->state->setCallbackHandler(get_class($this));
+        $this->state->setMessageHandler(null);
 
         //\Log::info(State::all());
     }

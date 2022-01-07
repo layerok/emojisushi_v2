@@ -125,7 +125,8 @@ class QuickCheckout extends MallQuickCheckout
             'spot_name' => $selectedSpot->name,
             'products' => $posterProducts->all(),
             'total' => PriceUtils::formattedCartTotal($this->cart)
-        ]);
+        ])->newLine()
+            ->p('Заказ сделан через сайт');
 
         $api->sendMessage([
             'text' => $receipt->getText(),

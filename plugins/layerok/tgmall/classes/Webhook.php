@@ -2,13 +2,16 @@
 
 use Layerok\TgMall\Classes\Callbacks\CallbackQueryBus;
 use Layerok\TgMall\Classes\Commands\StartCommand;
+use Layerok\TgMall\Classes\Commands\SupportCommand;
 use Layerok\TgMall\Models\State;
 use League\Event\Emitter;
+use OFFLINE\Mall\Models\Customer;
 use Telegram\Bot\Api;
 use Telegram\Bot\Commands\HelpCommand;
 use Telegram\Bot\Events\UpdateWasReceived;
 use Log;
 use Layerok\TgMall\Models\Settings;
+use Telegram\Bot\Keyboard\Keyboard;
 
 class Webhook
 {
@@ -23,7 +26,6 @@ class Webhook
                 $chat = $update->getChat();
                 $telegram = $event->getTelegram();
                 /*\Log::info($update);*/
-
 
                 if ($update->isType('callback_query')) {
                     $data = json_decode($update->getCallbackQuery()->getData(), true);
@@ -42,6 +44,12 @@ class Webhook
 
                 if ($update->isType('message')) {
                     if ($update->hasCommand()) {
+                        return;
+                    }
+
+                    $customer = Customer::where('tg_chat_id', '=', $chat->id)->first();
+
+                    if (!isset($customer)) {
                         return;
                     }
 
@@ -70,6 +78,7 @@ class Webhook
 
         $api = new Api($bot_token);
         $api->addCommand(StartCommand::class);
+ /*       $api->addCommand(SupportCommand::class);*/
         $api->addCommand(HelpCommand::class);
 
         $api->setEventEmitter($emitter);

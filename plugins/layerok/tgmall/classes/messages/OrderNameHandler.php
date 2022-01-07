@@ -23,11 +23,12 @@ class OrderNameHandler extends AbstractMessageHandler
         ];
 
         $rules = [
-            'firstname' => 'required',
+            'firstname' => 'required|min:2',
         ];
 
         $messages = [
             'firstname.required' => "Имя обязательно для заполнения",
+            'firstname.min' => "Имя должно содержать минимум :min символа"
         ];
 
         $validation = Validator::make($data, $rules, $messages);

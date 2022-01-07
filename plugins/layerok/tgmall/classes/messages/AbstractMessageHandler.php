@@ -46,6 +46,13 @@ abstract class AbstractMessageHandler implements MessageHandlerInterface
         $this->chat = $this->update->getChat();
         $this->text = $this->update->getMessage()->text;
         $this->customer = Customer::where('tg_chat_id', '=', $this->chat->id)->first();
+        if (!isset($this->customer)) {
+            \Log::error('customer with chat_id [' . $this->chat->id . '] not found');
+            \Log::error($update);
+            \Log::error(['chat' =>$this->chat]);
+
+            return;
+        }
         $this->cart = Cart::byUser($this->customer->user);
     }
 
