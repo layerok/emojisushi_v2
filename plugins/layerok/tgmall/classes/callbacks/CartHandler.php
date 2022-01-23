@@ -191,18 +191,16 @@ class CartHandler extends CallbackQueryHandler
             ['product_id', '=', $this->arguments['id']]
         ])->first();
 
-        // todo: add check for existence
+        $this->deleteCartProductMessage();
+
+        if (!isset($cartProduct)) {
+            // Эта ситуация может произойти, когда пользователь удаляет товар
+            // из неактуальной корзины
+            return;
+        }
+
         $this->cart->removeProduct($cartProduct);
         $this->cart->refresh();
-
-        try {
-            $this->telegram->deleteMessage([
-                'chat_id' => $this->chat->id,
-                'message_id' => $this->getUpdate()->getMessage()->message_id
-            ]);
-        } catch (\Exception $e) {
-            \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
-        }
 
         $cartTotalMsg = $this->state->getCartTotalMsg();
 
@@ -224,6 +222,18 @@ class CartHandler extends CallbackQueryHandler
             } catch (\Exception $e) {
                 \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
             }
+        }
+    }
+
+    public function deleteCartProductMessage()
+    {
+        try {
+            $this->telegram->deleteMessage([
+                'chat_id' => $this->chat->id,
+                'message_id' => $this->getUpdate()->getMessage()->message_id
+            ]);
+        } catch (\Exception $e) {
+            \Log::warning("Caught Exception ('{$e->getMessage()}')\n{$e}\n");
         }
     }
 

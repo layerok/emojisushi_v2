@@ -11,6 +11,7 @@ use Telegram\Bot\Commands\HelpCommand;
 use Telegram\Bot\Events\UpdateWasReceived;
 use Log;
 use Layerok\TgMall\Models\Settings;
+use Telegram\Bot\Exceptions\TelegramResponseException;
 use Telegram\Bot\Keyboard\Keyboard;
 
 class Webhook
@@ -37,9 +38,13 @@ class Webhook
                     $bus->process($name, $arguments);
 
 
-                    $telegram->answerCallbackQuery([
-                        'callback_query_id' => $update->getCallbackQuery()->id,
-                    ]);
+                    try {
+                        $telegram->answerCallbackQuery([
+                            'callback_query_id' => $update->getCallbackQuery()->id,
+                        ]);
+                    } catch (TelegramResponseException $e) {
+                        \Log::error($e);
+                    }
                 }
 
                 if ($update->isType('message')) {
