@@ -61,7 +61,7 @@ class Plugin extends PluginBase
                 'label' => "Заведения",
                 'description' => "Управлять заведениями",
                 'icon'   => 'icon-globe',
-                'url'    => Backend::url('lovata/basecode/branches/index'),
+                'url'    => Backend::url('lovata/basecode/branches'),
                 'keywords'  => 'заведения заведение филиал'
             ]
         ];

@@ -195,7 +195,7 @@ class CartHandler extends CallbackQueryHandler
 
         if (!isset($cartProduct)) {
             // Эта ситуация может произойти, когда пользователь удаляет товар
-            // из неактуальной корзины
+            // из не актуальной корзины
             return;
         }
 

@@ -1,0 +1,48 @@
+{% set url = (productPage | page({slug: product.data.slug, variant: product.variant.hashId})) %}
+{% set image = product.variant ? product.variant.image : product.data.image %}
+
+{#{% if product.variant %}#}
+{#    {{ product.variant.properties_description | raw }}#}
+{#{% endif %}#}
+{#{% if product.custom_field_values %}#}
+{#    {{ product.custom_field_value_description | raw }}#}
+{#{% endif %}#}
+{#{{ url }}#}
+
+{#{{ 'offline.mall::frontend.quantity' | trans }}#}
+
+{#{{ 'offline.mall::frontend.remove' | trans }}#}
+
+{#{{ product.totalPostTaxes | money }}#}
+
+<div class="flex relative mb-3" >
+    <button data-id="{{ product.hashId }}" href="javascript:;"
+        class="js-mall-remove-product px-0 self-start dark:text-white text-black absolute right-0 top-0 cursor-pointer bg-transparent">×</button>
+
+    <div class="w-2/5 hidden lg:inline-block">
+        <img src="{{ image.getPath() }}" style="max-height:150px; width:auto">
+    </div>
+    <div class="w-full lg:w-3/5 lg:px-2 flex lg:flex-col flex-row justify-between">
+        <div>
+            <h3 class="text-sm lg:text-xl font-bold mt-0 lg:mb-2 mb-0">{{ product.variant.name ?: product.data.name }}</h3>
+            <p class=" my-0 text-sm lg:hidden">{{ product.quantity }} шт</p>
+        </div>
+        <p class="text-xs font-normal mb-3 hidden lg:inline-block">
+            {{ product.product.description | raw}}
+        </p>
+        <div class="flex justify-between lg:items-end items-start">
+            <div class=" text-bold mr-4 lg:mr-0">
+                {{ product.totalPostTaxes | money }}
+{#                <span class="f2-ns f4">89</span> <span class="f4-ns f6"> грн.</span>#}
+            </div>
+            <p class="text-bold my-0 text-sm hidden lg:hidden">{{ product.quantity }} шт</p>
+        </div>
+        <p class="hidden lg:inline-block">{{ product.weight }} г</p>
+    </div>
+</div>
+
+
+{#{% for option in product.service_options %}#}
+{#     {{ loop.first ? 'mall-cart__services--first' }} {{ loop.last ? 'mall-cart__services--last' }}#}
+{#    {{ option.name }}#}
+{#{% endfor %}#}

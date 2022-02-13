@@ -112,7 +112,23 @@ class OctoberInstall extends Command
     protected function setupCommonValues()
     {
         $url = $this->ask('Application URL', Config::get('app.url'));
-        $this->writeToConfig('app', ['url' => $url]);
+
+        try {
+            $availableLocales = (new \Backend\Models\Preference)->getLocaleOptions();
+            $localesByName = [];
+            foreach ($availableLocales as $locale => $name) {
+                $localesByName[$name[0]] = $locale;
+            }
+
+            $localeName = $this->choice('Default Backend Locale', array_keys($localesByName));
+
+            $locale = $localesByName[$localeName];
+        } catch (\Exception $e) {
+            // Installation failed halfway through, recover gracefully
+            $locale = $this->ask('Default Backend Locale', 'en');
+        }
+
+        $this->writeToConfig('app', ['url' => $url, 'locale' => $locale]);
     }
 
     protected function setupAdvancedValues()
@@ -201,8 +217,7 @@ class OctoberInstall extends Command
 
     protected function setupDatabaseConfig()
     {
-        $type = $this->choice('Database type', ['MySQL', 'Postgres', 'SQLite', 'SQL Server']);
-
+        $type = $this->choice('Database type', ['MySQL', 'Postgres', 'SQLite', 'SQL Server'], 'SQLite');
         $typeMap = [
             'SQLite' => 'sqlite',
             'MySQL' => 'mysql',
@@ -325,7 +340,7 @@ class OctoberInstall extends Command
         $message = [
             ".====================================================================.",
             "                                                                      ",
-            " .d8888b.   .o8888b.  database  .d8888b.  d8888b. d88888b d8888b.  .d888b. ",
+            " .d8888b.   .o8888b.   db  .d8888b.  d8888b. d88888b d8888b.  .d888b. ",
             ".8P    Y8. d8P    Y8   88 .8P    Y8. 88  `8D 88'     88  `8D .8P , Y8.",
             "88      88 8P      oooo88 88      88 88oooY' 88oooo  88oobY' 88  |  88",
             "88      88 8b      ~~~~88 88      88 88~~~b. 88~~~~  88`8b   88  |/ 88",

@@ -1,4 +1,4 @@
-<?
+<?php
 namespace Lovata\BaseCode\Controllers;
 
 use Backend\Facades\BackendMenu;
@@ -23,7 +23,7 @@ class Branches extends \Backend\Classes\Controller
         BackendMenu::setContext('Lovata.Basecode', 'branches');
     }
 
-    public function index()    // <=== Action method
+    public function index()
     {
         $this->pageTitle = "Заведения";
         $this->vars['myVariable'] = 'value';

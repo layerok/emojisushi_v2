@@ -1,0 +1,77 @@
+
+
+<div class="px-4 w-full">
+
+    <div >
+        <h2 class="text-center text-2xl fw4">Оформление заказа</h2>
+        <div class="flex flex-col lg:flex-row">
+            <div class="order-2 lg:order-1 lg:w-2/5 lg:pr-3 mt-4 lg:mt-0">
+
+                <div><span class="dark:text-yellow-400">Телефон</span> - обязательное поле</div>
+
+                <form class="js-mall-quick-checkout mt-2" data-request data-request-validate>
+
+                    {% partial __SELF__ ~ '::shippingmethod' %}
+                    {% partial __SELF__ ~ '::customerinfo' %}
+                    {% partial __SELF__ ~ '::paymentmethod' %}
+                    <div class="my-4 bg-blue-500 p-4" data-validate-error>
+                        <p class="" data-message></p>
+                    </div>
+
+                    {% if __SELF__.cart.products.count > 0 %}
+{#                        <div class="mall-signup-terms">#}
+{#                            <label class="mall-checkbox">#}
+{#                                <input class="js-mall-toggle-signup-terms"#}
+{#                                       type="checkbox"#}
+{#                                       name="terms_accepted"#}
+{#                                       value="1"#}
+{#                                >#}
+{#                                <span>#}
+{#                                    {% partial __SELF__ ~ '::termslabel' %}#}
+{#                                    <div data-validate-for="terms_accepted"></div>#}
+{#                                </span>#}
+{#                            </label>#}
+{#                        </div>#}
+                        <div class="flex justify-center items-center">
+                            <button id="checkout-loader"
+                                    class="hidden relative link db w4 bg-secondary text-center text-black p-3 rounded-full cursor-pointer">
+                                <span style="opacity:0">{{ 'offline.mall::frontend.checkout.checkout' | trans }}</span>
+                                <div style="transform: scale(0.3); position: absolute ;top: -14px;left: 26px;" class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+
+                            </button>
+                            <button id="place-order" type="submit"
+                                    class="js-mall-checkout relative bg-secondary text-center text-black p-3 rounded-full cursor-pointer">
+                                <span>{{ 'offline.mall::frontend.checkout.checkout' | trans }}</span>
+
+                            </button>
+                            <div class="ml-4 font-bold ">
+                                <span data-cart-total=""
+                                      class="text-2xl mall-cart-total">{{ cart.totals.totalPostTaxes | money }}</span>
+
+                            </div>
+                        </div>
+
+                    {% endif %}
+
+
+                </form>
+                <div id="form-holder" class="mt-3"></div>
+            </div>
+            <div class=" mt-8 order-1 lg:order-2 w-full lg:w-3/5 p-2 border dark:border-secondary rounded border-black overflow-y-scroll self-start" style="max-height: 520px ">
+                <div class="js-mall-cart-checkout">
+                    {% partial __SELF__ ~ '::cart' %}
+                </div>
+                <div class="lg:px-2">
+                    {% partial "links/edit" %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{#    <h2 data-cart-empty="" class=" dn  tc f2 fw4">Корзина пуста :(</h2>#}
+
+</div>
+
+
+

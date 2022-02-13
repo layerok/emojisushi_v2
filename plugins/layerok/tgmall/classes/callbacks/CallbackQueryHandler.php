@@ -160,11 +160,9 @@ abstract class CallbackQueryHandler implements CallbackQueryHandlerInterface
         $this->state = State::where('chat_id', '=', $chat_id)->first();
 
         if (!isset($this->state)) {
-            $this->state = State::create(
-                [
-                    'chat_id' => $chat_id,
-                ]
-            )->first();
+            $this->state = State::create([
+                'chat_id' => $chat_id,
+            ])->first();
         }
         $this->state->setCallbackHandler(get_class($this));
         $this->state->setMessageHandler(null);

@@ -1,0 +1,44 @@
+
+{#        {{ cart.shipping_method.name }}#}
+{#{% if method.logo %}#}
+{#    {{ method.logo.thumb(75, 75) }}#}
+{#{% endif %}#}
+
+{#           {{ method.price().integer > 0#}
+{#           ? (method.price().string | raw)#}
+{#           : ('offline.mall::frontend.no_additional_charges' | trans) }}#}
+
+{#{% if method.guaranteed_delivery_days %}#}
+{#    #}
+{#        {% set days = method.guaranteed_delivery_days %}#}
+{#        {{ 'offline.mall::frontend.shipping_method.guaranteed_delivery_days'#}
+{#        | transchoice(days, {days: days}) }}#}
+{#    #}
+{#{% endif %}#}
+
+{#<button href="javascript:;"#}
+{#        data-request="onChangeShippingMethod"#}
+{#        data-request-data="id: '{{ method.id }}'"#}
+{#        data-request-success="$.publish('mall.cart.shippingMethodChanged', data)"#}
+{#        class=" w-full  p-2 text-center cursor-pointer text-black {{ isActiveMethod ? 'bg-secondary' : 'bg-white' }}  {{ loop.first ? 'rounded-l' }} {{ loop.last ? 'rounded-r' }}" >#}
+{#    {{ method.name }}#}
+{#</button>#}
+
+
+<div class="flex mb-3 pb-2">
+    {% for key, method in __SELF__.shippingMethods %}
+        {% set isActiveMethod = cart.shipping_method.id == method.id %}
+
+        <input id="deliveryMethod{{ key }}" class="checked-bg-secondary checked-black hidden"
+               type="radio" name="delivery" value="{{ method.name }}" checked="">
+        <label class=" w-full bg-white  p-2 text-center cursor-pointer text-black   {{ loop.first ? 'rounded-l' }} {{ loop.last ? 'rounded-r' }}"
+               for="deliveryMethod{{ key }}">
+            {{ method.name }}
+        </label>
+
+
+    {% else %}
+        <p>No method available.</p>
+    {% endfor %}
+</div>
+

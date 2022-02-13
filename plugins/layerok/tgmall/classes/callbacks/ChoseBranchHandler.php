@@ -18,11 +18,6 @@ class ChoseBranchHandler extends CallbackQueryHandler
 
         $this->branch = Branches::where('id', '=', $this->arguments['id'])->first();
 
-        if (!isset($this->customer)) {
-            $this->warn("Customer is not found");
-            return false;
-        }
-
         if (!isset($this->branch)) {
             $this->warn("Branch is not found");
             return false;
