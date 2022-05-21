@@ -1,14 +1,21 @@
 <?php
 namespace Layerok\TgMall;
 
-use Monolog\Formatter\LineFormatter;
-use OFFLINE\Mall\Models\Customer;
+
 use System\Classes\PluginBase;
+use Request;
 
 class Plugin extends PluginBase
 {
     public $require = ['Offline.Mall'];
 
+    public function boot()
+    {
+        // to change host for assets
+        if (!empty(env('NGROK_URL')) && Request::instance()->server->has('HTTP_X_ORIGINAL_HOST')) {
+            $this->app['url']->forceRootUrl(env('NGROK_URL'));
+        }
+    }
 
     public function register()
     {

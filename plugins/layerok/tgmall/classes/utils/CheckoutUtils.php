@@ -36,14 +36,15 @@ class CheckoutUtils
 
     public static function getDeliveryMethodName(State $state)
     {
-        $delivery = ShippingMethod::find($state->getOrderInfoDeliveryMethodId())->first();
+        $id = $state->getOrderInfoDeliveryMethodId();
+        $delivery = ShippingMethod::find($id);
         return $delivery->name;
     }
 
     public static function getPaymentMethodName(State $state)
     {
-        $payment_method = PaymentMethod::find($state->getOrderInfoPaymentMethodId())
-            ->first();
+        $id = $state->getOrderInfoPaymentMethodId();
+        $payment_method = PaymentMethod::find($id);
 
         return $payment_method->name;
     }
